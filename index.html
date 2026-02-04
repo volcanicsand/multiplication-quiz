@@ -1,0 +1,679 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Penny's Multiplication Island</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap');
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: 'Nunito', sans-serif;
+            background: #e8f5e2;
+            background-image:
+                radial-gradient(circle at 20% 50%, rgba(167, 219, 167, 0.4) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(135, 206, 235, 0.3) 0%, transparent 50%),
+                radial-gradient(circle at 50% 80%, rgba(255, 218, 185, 0.3) 0%, transparent 50%);
+            min-height: 100vh;
+            color: #5c4a32;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 1rem;
+        }
+
+        .header {
+            text-align: center;
+            padding: 1.5rem 0 1rem;
+        }
+
+        .header h1 {
+            font-size: 1.6rem;
+            font-weight: 800;
+            color: #3d7c47;
+            text-shadow: 1px 1px 0 rgba(255,255,255,0.5);
+            line-height: 1.2;
+        }
+
+        .header .leaf {
+            font-size: 2rem;
+            display: block;
+            margin-bottom: 0.3rem;
+        }
+
+        .header .subtitle {
+            font-size: 0.9rem;
+            color: #7a9a5a;
+            margin-top: 0.3rem;
+        }
+
+        .score-bar {
+            display: flex;
+            justify-content: space-around;
+            background: rgba(255,255,255,0.7);
+            border-radius: 20px;
+            padding: 0.6rem 1rem;
+            margin-bottom: 1rem;
+            font-weight: 700;
+            font-size: 0.9rem;
+            border: 2px solid rgba(61,124,71,0.15);
+        }
+
+        .score-bar span {
+            color: #3d7c47;
+        }
+
+        .mode-select {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .mode-btn {
+            background: rgba(255,255,255,0.8);
+            border: 2px solid rgba(61,124,71,0.2);
+            border-radius: 12px;
+            padding: 0.7rem 0.5rem;
+            font-family: 'Nunito', sans-serif;
+            font-weight: 700;
+            font-size: 0.8rem;
+            color: #5c4a32;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-align: center;
+        }
+
+        .mode-btn:hover {
+            background: rgba(255,255,255,1);
+            border-color: #3d7c47;
+            transform: translateY(-1px);
+        }
+
+        .mode-btn.active {
+            background: #3d7c47;
+            color: white;
+            border-color: #3d7c47;
+        }
+
+        .mode-btn .mode-icon {
+            display: block;
+            font-size: 1.3rem;
+            margin-bottom: 0.2rem;
+        }
+
+        .question-card {
+            background: rgba(255,255,255,0.85);
+            border-radius: 20px;
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+            border: 2px solid rgba(61,124,71,0.12);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+        }
+
+        .question-label {
+            font-size: 0.75rem;
+            font-weight: 700;
+            color: #7a9a5a;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 0.5rem;
+        }
+
+        .question-text {
+            font-size: 1.8rem;
+            font-weight: 800;
+            color: #3d5a28;
+            line-height: 1.4;
+            margin-bottom: 1.2rem;
+            text-align: center;
+        }
+
+        .question-text .highlight {
+            color: #c0732a;
+        }
+
+        .answer-area {
+            display: flex;
+            gap: 0.5rem;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .answer-input {
+            width: 120px;
+            padding: 0.8rem 1rem;
+            font-family: 'Nunito', sans-serif;
+            font-weight: 700;
+            font-size: 1.4rem;
+            text-align: center;
+            border: 3px solid rgba(61,124,71,0.3);
+            border-radius: 12px;
+            background: #f0f7ec;
+            color: #3d5a28;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        .answer-input:focus {
+            border-color: #3d7c47;
+        }
+
+        .answer-input.correct {
+            border-color: #3d7c47;
+            background: #c8e6c0;
+        }
+
+        .answer-input.wrong {
+            border-color: #c0732a;
+            background: #f5d0c0;
+        }
+
+        .submit-btn {
+            background: #3d7c47;
+            color: white;
+            border: none;
+            border-radius: 12px;
+            padding: 0.8rem 1.5rem;
+            font-family: 'Nunito', sans-serif;
+            font-weight: 700;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .submit-btn:hover {
+            background: #2d5a33;
+        }
+
+        .feedback {
+            text-align: center;
+            padding: 1rem;
+            font-weight: 700;
+            font-size: 1.1rem;
+            border-radius: 12px;
+            margin-top: 1rem;
+            display: none;
+        }
+
+        .feedback.correct {
+            display: block;
+            background: #d4edda;
+            color: #2d5a1e;
+        }
+
+        .feedback.wrong {
+            display: block;
+            background: #fde8e0;
+            color: #8b4513;
+        }
+
+        .next-btn {
+            display: none;
+            width: 100%;
+            background: #3d7c47;
+            color: white;
+            border: none;
+            border-radius: 12px;
+            padding: 0.9rem;
+            font-family: 'Nunito', sans-serif;
+            font-weight: 700;
+            font-size: 1.05rem;
+            cursor: pointer;
+            margin-top: 0.8rem;
+            transition: background 0.2s;
+        }
+
+        .next-btn:hover {
+            background: #2d5a33;
+        }
+
+        .streak-display {
+            text-align: center;
+            font-size: 0.85rem;
+            color: #7a9a5a;
+            font-weight: 600;
+            margin-top: 0.3rem;
+        }
+
+        .round-end {
+            text-align: center;
+            padding: 1.5rem;
+        }
+
+        .round-end h2 {
+            color: #3d7c47;
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .round-end .final-score {
+            font-size: 2.5rem;
+            font-weight: 800;
+            color: #c0732a;
+            margin: 0.5rem 0;
+        }
+
+        .round-end .final-msg {
+            font-size: 1rem;
+            color: #5c4a32;
+            margin-bottom: 1rem;
+        }
+
+        .round-end .final-details {
+            font-size: 0.9rem;
+            color: #7a9a5a;
+            margin-bottom: 1.2rem;
+        }
+
+        .play-again-btn {
+            background: #3d7c47;
+            color: white;
+            border: none;
+            border-radius: 12px;
+            padding: 0.9rem 2rem;
+            font-family: 'Nunito', sans-serif;
+            font-weight: 700;
+            font-size: 1.05rem;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .play-again-btn:hover {
+            background: #2d5a33;
+        }
+
+        .step-tracker {
+            display: flex;
+            justify-content: center;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .step-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: rgba(61,124,71,0.2);
+            transition: background 0.3s;
+        }
+
+        .step-dot.done {
+            background: #3d7c47;
+        }
+
+        .step-dot.active {
+            background: #c0732a;
+            box-shadow: 0 0 6px rgba(192,115,42,0.4);
+        }
+
+        .breakdown-hint {
+            text-align: center;
+            font-size: 0.85rem;
+            color: #7a9a5a;
+            font-weight: 600;
+            margin-bottom: 0.8rem;
+        }
+
+        .fun-fact {
+            font-size: 0.85rem;
+            color: #7a9a5a;
+            font-style: italic;
+            margin-top: 0.5rem;
+            text-align: center;
+        }
+
+        @media (max-width: 400px) {
+            .header h1 { font-size: 1.3rem; }
+            .question-text { font-size: 1.4rem; }
+            .answer-input { font-size: 1.2rem; width: 100px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <span class="leaf">🍃</span>
+            <h1>Penny's Multiplication<br>Island</h1>
+            <div class="subtitle">Practice your times tables, island-style!</div>
+        </div>
+
+        <div class="score-bar">
+            <div>Q: <span id="qnum">1</span>/<span id="qtotal">20</span></div>
+            <div>Score: <span id="score">0</span></div>
+            <div>Streak: <span id="streak">0</span></div>
+        </div>
+
+        <div class="mode-select">
+            <button class="mode-btn active" onclick="setMode('times', this)">
+                <span class="mode-icon">🌟</span>Times Tables
+            </button>
+            <button class="mode-btn" onclick="setMode('breakdown', this)">
+                <span class="mode-icon">🧩</span>Break It Down
+            </button>
+        </div>
+
+        <div class="question-card" id="card">
+            <div class="question-label" id="q-label">Times Tables</div>
+            <div class="question-text" id="q-text">Press a mode to start!</div>
+            <div id="extra"></div>
+            <div class="answer-area" id="answer-area">
+                <input type="number" class="answer-input" id="answer-input" autocomplete="off">
+                <button class="submit-btn" id="submit-btn" onclick="submitAnswer()">Go!</button>
+            </div>
+            <div class="feedback" id="feedback"></div>
+            <button class="next-btn" id="next-btn" onclick="nextQuestion()">Next Question</button>
+        </div>
+        <div class="streak-display" id="streak-msg"></div>
+    </div>
+
+    <script>
+const TIMES_ROUND = 20;
+const BREAKDOWN_ROUND = 10;
+
+const correctMessages = [
+    "Tom Nook is impressed!",
+    "You earned some Nook Miles!",
+    "Isabelle is cheering for you!",
+    "Your island rating just went up!",
+    "K.K. Slider wrote a song about that answer!",
+    "Blathers would be proud!",
+    "That's worth a golden shovel!",
+    "You found a rare fossil... of knowledge!",
+    "Celeste saw that in the stars!",
+    "Perfect, like a blue rose!"
+];
+
+const wrongMessages = [
+    "Even Gulliver gets lost sometimes!",
+    "Wisp dropped a spirit piece...",
+    "Oops! Try again next time!",
+    "That bell bag was just slightly off!",
+    "Almost had it, villager!",
+    "Keep digging, you'll find the fossil!"
+];
+
+const streakMessages = [
+    "You're on a Nook Miles+ streak!",
+    "Unstoppable island explorer!",
+    "The villagers are amazed!",
+    "Tom Nook wants to give you a raise!",
+    "Legendary islander status!"
+];
+
+let currentMode = 'times';
+let score = 0;
+let total = 0;
+let streak = 0;
+let bestStreak = 0;
+let answered = false;
+let roundLength = TIMES_ROUND;
+
+// Break It Down state
+let bdA = 0;
+let bdB = 0;
+let bdTens = 0;
+let bdOnes = 0;
+let bdStep = 0; // 0 = step1 (10*B), 1 = step2 (ones*B), 2 = step3 (A*B)
+
+function pickRandom(arr) {
+    return arr[Math.floor(Math.random() * arr.length)];
+}
+
+function randInt(min, max) {
+    return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+
+function setMode(mode, btn) {
+    currentMode = mode;
+    document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    roundLength = mode === 'times' ? TIMES_ROUND : BREAKDOWN_ROUND;
+    document.getElementById('qtotal').textContent = roundLength;
+    startRound();
+}
+
+function startRound() {
+    score = 0;
+    total = 0;
+    streak = 0;
+    bestStreak = 0;
+    updateScoreboard();
+    nextQuestion();
+}
+
+function updateScoreboard() {
+    document.getElementById('score').textContent = score;
+    document.getElementById('streak').textContent = streak;
+    document.getElementById('qnum').textContent = Math.min(total + 1, roundLength);
+}
+
+function rebuildCard() {
+    const card = document.getElementById('card');
+    card.innerHTML = `
+        <div class="question-label" id="q-label"></div>
+        <div class="question-text" id="q-text"></div>
+        <div id="extra"></div>
+        <div class="answer-area" id="answer-area">
+            <input type="number" class="answer-input" id="answer-input" autocomplete="off">
+            <button class="submit-btn" id="submit-btn" onclick="submitAnswer()">Go!</button>
+        </div>
+        <div class="feedback" id="feedback"></div>
+        <button class="next-btn" id="next-btn" onclick="nextQuestion()">Next Question</button>
+    `;
+}
+
+function focusInput() {
+    const inp = document.getElementById('answer-input');
+    if (inp) {
+        inp.value = '';
+        inp.className = 'answer-input';
+        inp.disabled = false;
+        inp.focus();
+    }
+}
+
+function showRoundEnd() {
+    const pct = Math.round((score / roundLength) * 100);
+    let msg, emoji;
+    if (pct === 100) { msg = "Perfect score! You're the island champion!"; emoji = "🏆"; }
+    else if (pct >= 90) { msg = "Tom Nook is giving you a bonus!"; emoji = "🌟"; }
+    else if (pct >= 70) { msg = "Your island rating just hit 5 stars!"; emoji = "🍃"; }
+    else if (pct >= 50) { msg = "Great work, keep exploring!"; emoji = "🌱"; }
+    else { msg = "Every islander starts somewhere! Try again!"; emoji = "💪"; }
+
+    const card = document.getElementById('card');
+    card.innerHTML = `
+        <div class="round-end">
+            <h2>${emoji} Round Complete!</h2>
+            <div class="final-score">${score}/${roundLength}</div>
+            <div class="final-msg">${msg}</div>
+            <div class="final-details">Best streak: ${bestStreak}</div>
+            <button class="play-again-btn" onclick="startRound()">Play Again</button>
+        </div>
+    `;
+    document.getElementById('streak-msg').textContent = '';
+}
+
+// ── Times Tables Mode ──
+
+function nextTimesQuestion() {
+    rebuildCard();
+    answered = false;
+    const a = randInt(2, 12);
+    const b = randInt(2, 12);
+    const answer = a * b;
+
+    document.getElementById('q-label').textContent = 'Times Tables';
+    document.getElementById('q-text').innerHTML = `<span class="highlight">${a}</span> &times; <span class="highlight">${b}</span> = ?`;
+    document.getElementById('answer-input').dataset.answer = answer;
+
+    updateScoreboard();
+    focusInput();
+}
+
+// ── Break It Down Mode ──
+
+function nextBreakdownQuestion() {
+    rebuildCard();
+    answered = false;
+
+    bdA = randInt(13, 19);
+    bdB = randInt(2, 12);
+    bdTens = 10;
+    bdOnes = bdA - 10;
+    bdStep = 0;
+
+    document.getElementById('q-label').textContent = 'Break It Down';
+
+    showBreakdownStep();
+    updateScoreboard();
+    focusInput();
+}
+
+function showBreakdownStep() {
+    const extra = document.getElementById('extra');
+    const qText = document.getElementById('q-text');
+    const inp = document.getElementById('answer-input');
+
+    // Step tracker dots
+    extra.innerHTML = `
+        <div class="step-tracker">
+            <div class="step-dot ${bdStep === 0 ? 'active' : (bdStep > 0 ? 'done' : '')}"></div>
+            <div class="step-dot ${bdStep === 1 ? 'active' : (bdStep > 1 ? 'done' : '')}"></div>
+            <div class="step-dot ${bdStep === 2 ? 'active' : ''}"></div>
+        </div>
+        <div class="breakdown-hint">Breaking down ${bdA} &times; ${bdB} into (${bdTens} + ${bdOnes}) &times; ${bdB}</div>
+    `;
+
+    if (bdStep === 0) {
+        qText.innerHTML = `Step 1: <span class="highlight">${bdTens}</span> &times; <span class="highlight">${bdB}</span> = ?`;
+        inp.dataset.answer = bdTens * bdB;
+    } else if (bdStep === 1) {
+        qText.innerHTML = `Step 2: <span class="highlight">${bdOnes}</span> &times; <span class="highlight">${bdB}</span> = ?`;
+        inp.dataset.answer = bdOnes * bdB;
+    } else {
+        qText.innerHTML = `Final: <span class="highlight">${bdA}</span> &times; <span class="highlight">${bdB}</span> = ?`;
+        inp.dataset.answer = bdA * bdB;
+
+        // Update hint to show the addition
+        extra.innerHTML = `
+            <div class="step-tracker">
+                <div class="step-dot done"></div>
+                <div class="step-dot done"></div>
+                <div class="step-dot active"></div>
+            </div>
+            <div class="breakdown-hint">${bdTens * bdB} + ${bdOnes * bdB} = ?</div>
+        `;
+    }
+}
+
+// ── Shared Logic ──
+
+function nextQuestion() {
+    if (total >= roundLength) {
+        showRoundEnd();
+        return;
+    }
+    if (currentMode === 'times') {
+        nextTimesQuestion();
+    } else {
+        nextBreakdownQuestion();
+    }
+}
+
+function submitAnswer() {
+    if (answered) return;
+    const inp = document.getElementById('answer-input');
+    const userAnswer = inp.value.trim();
+    if (userAnswer === '') return;
+
+    const correct = parseInt(inp.dataset.answer);
+    const isCorrect = parseInt(userAnswer) === correct;
+
+    // In breakdown mode, handle steps
+    if (currentMode === 'breakdown' && bdStep < 2) {
+        if (isCorrect) {
+            inp.classList.add('correct');
+            bdStep++;
+            setTimeout(() => {
+                inp.value = '';
+                inp.className = 'answer-input';
+                showBreakdownStep();
+                inp.focus();
+            }, 600);
+        } else {
+            inp.classList.add('wrong');
+            const feedback = document.getElementById('feedback');
+            feedback.className = 'feedback wrong';
+            feedback.textContent = `The answer is ${correct}. Let's keep going!`;
+            bdStep++;
+            setTimeout(() => {
+                feedback.className = 'feedback';
+                feedback.style.display = 'none';
+                inp.value = '';
+                inp.className = 'answer-input';
+                showBreakdownStep();
+                inp.focus();
+            }, 1500);
+        }
+        return;
+    }
+
+    // Final answer (times tables or breakdown step 3)
+    answered = true;
+    total++;
+    inp.disabled = true;
+
+    const feedback = document.getElementById('feedback');
+
+    if (isCorrect) {
+        score++;
+        streak++;
+        if (streak > bestStreak) bestStreak = streak;
+        inp.classList.add('correct');
+        feedback.className = 'feedback correct';
+        feedback.innerHTML = pickRandom(correctMessages);
+    } else {
+        streak = 0;
+        inp.classList.add('wrong');
+        feedback.className = 'feedback wrong';
+        feedback.innerHTML = `${pickRandom(wrongMessages)} The answer was <strong>${correct}</strong>.`;
+    }
+
+    updateScoreboard();
+
+    const nextBtn = document.getElementById('next-btn');
+    nextBtn.style.display = 'block';
+    nextBtn.textContent = total >= roundLength ? 'See Results 🎉' : 'Next Question';
+
+    if (streak >= 5) {
+        document.getElementById('streak-msg').textContent = `🔥 ${streak} in a row! ${pickRandom(streakMessages)}`;
+    } else if (streak >= 3) {
+        document.getElementById('streak-msg').textContent = `✨ ${streak} in a row! Nice!`;
+    } else {
+        document.getElementById('streak-msg').textContent = '';
+    }
+}
+
+// Enter key submits
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'Enter') {
+        const nextBtn = document.getElementById('next-btn');
+        if (nextBtn && nextBtn.style.display === 'block') {
+            nextQuestion();
+        } else {
+            submitAnswer();
+        }
+    }
+});
+
+// Start
+startRound();
+    </script>
+</body>
+</html>
