@@ -526,12 +526,326 @@
             margin-top: 0.5rem;
         }
 
+        /* Level selector */
+        .level-select {
+            display: flex;
+            gap: 0.4rem;
+            margin-bottom: 1rem;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .level-btn {
+            background: rgba(255,255,255,0.8);
+            border: 2px solid rgba(61,124,71,0.2);
+            border-radius: 10px;
+            padding: 0.45rem 0.7rem;
+            font-family: 'Nunito', sans-serif;
+            font-weight: 700;
+            font-size: 0.75rem;
+            color: #5c4a32;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-align: center;
+            white-space: nowrap;
+        }
+
+        .level-btn:hover:not(.locked) {
+            background: rgba(255,255,255,1);
+            border-color: #3d7c47;
+            transform: translateY(-1px);
+        }
+
+        .level-btn.active {
+            background: #3d7c47;
+            color: white;
+            border-color: #3d7c47;
+        }
+
+        .level-btn.locked {
+            opacity: 0.45;
+            cursor: not-allowed;
+            filter: grayscale(0.5);
+        }
+
+        .level-btn .level-icon {
+            margin-right: 0.2rem;
+        }
+
+        /* Level unlock celebration */
+        .unlock-msg {
+            text-align: center;
+            background: linear-gradient(135deg, #d4edda 0%, #fff8e1 100%);
+            border: 2px solid #3d7c47;
+            border-radius: 14px;
+            padding: 1rem 1.2rem;
+            margin: 1rem 0;
+            animation: unlockPop 0.5s ease-out;
+        }
+
+        .unlock-msg .unlock-icon {
+            font-size: 2rem;
+            display: block;
+            margin-bottom: 0.3rem;
+        }
+
+        .unlock-msg .unlock-title {
+            font-weight: 800;
+            font-size: 1.1rem;
+            color: #3d7c47;
+        }
+
+        .unlock-msg .unlock-detail {
+            font-size: 0.9rem;
+            color: #5c4a32;
+            margin-top: 0.2rem;
+        }
+
+        @keyframes unlockPop {
+            0% { transform: scale(0.8); opacity: 0; }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        /* Prize Tracker */
+        .prize-tracker-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.4rem;
+            background: rgba(255,255,255,0.7);
+            border: 2px solid rgba(192,115,42,0.2);
+            border-radius: 12px;
+            padding: 0.45rem 1rem;
+            margin-bottom: 1rem;
+            font-family: 'Nunito', sans-serif;
+            font-weight: 700;
+            font-size: 0.85rem;
+            color: #c0732a;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-align: center;
+        }
+
+        .prize-tracker-btn:hover {
+            background: rgba(255,255,255,1);
+            border-color: #c0732a;
+            transform: translateY(-1px);
+        }
+
+        .prize-tracker-btn .prize-mini-bar {
+            width: 60px;
+            height: 8px;
+            background: rgba(192,115,42,0.15);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .prize-tracker-btn .prize-mini-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #c0732a, #3d7c47);
+            border-radius: 4px;
+            transition: width 0.5s;
+        }
+
+        .prize-view h3 {
+            color: #3d7c47;
+            font-size: 1.2rem;
+            margin-bottom: 0.2rem;
+            text-align: center;
+        }
+
+        .prize-view .prize-subtitle {
+            color: #7a9a5a;
+            font-size: 0.9rem;
+            text-align: center;
+            margin-bottom: 0.8rem;
+        }
+
+        .prize-progress-bar {
+            background: rgba(61,124,71,0.1);
+            border-radius: 10px;
+            height: 18px;
+            overflow: hidden;
+            margin-bottom: 1.2rem;
+            position: relative;
+        }
+
+        .prize-progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #c0732a, #3d7c47);
+            border-radius: 10px;
+            transition: width 0.5s;
+        }
+
+        .prize-progress-label {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.7rem;
+            font-weight: 800;
+            color: #3d5a28;
+        }
+
+        .prize-item {
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            padding: 0.6rem 0.5rem;
+            border-radius: 10px;
+            margin-bottom: 0.3rem;
+            transition: background 0.2s;
+        }
+
+        .prize-item.earned {
+            background: rgba(61,124,71,0.08);
+        }
+
+        .prize-item.next-up {
+            background: rgba(192,115,42,0.1);
+            border: 2px solid rgba(192,115,42,0.25);
+        }
+
+        .prize-item.future {
+            opacity: 0.5;
+        }
+
+        .prize-item-icon {
+            font-size: 1.2rem;
+            min-width: 28px;
+            text-align: center;
+        }
+
+        .prize-item-info {
+            flex: 1;
+        }
+
+        .prize-item-milestone {
+            font-weight: 800;
+            font-size: 0.85rem;
+            color: #3d5a28;
+        }
+
+        .prize-item-name {
+            font-size: 0.8rem;
+            color: #7a9a5a;
+            font-weight: 600;
+        }
+
+        .prize-item.earned .prize-item-name {
+            color: #3d7c47;
+        }
+
+        .prize-item.next-up .prize-item-name {
+            color: #c0732a;
+        }
+
+        .prize-edit-link {
+            display: block;
+            text-align: center;
+            margin-top: 0.8rem;
+            margin-bottom: 0.5rem;
+            font-size: 0.8rem;
+            font-weight: 700;
+            color: #7a9a5a;
+            cursor: pointer;
+            text-decoration: underline;
+        }
+
+        .prize-edit-link:hover {
+            color: #3d7c47;
+        }
+
+        .prize-edit-row {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 0.4rem;
+        }
+
+        .prize-edit-label {
+            font-weight: 800;
+            font-size: 0.8rem;
+            color: #3d5a28;
+            min-width: 50px;
+        }
+
+        .prize-edit-input {
+            flex: 1;
+            padding: 0.4rem 0.6rem;
+            font-family: 'Nunito', sans-serif;
+            font-size: 0.85rem;
+            border: 2px solid rgba(61,124,71,0.3);
+            border-radius: 8px;
+            background: #f0f7ec;
+            color: #3d5a28;
+            outline: none;
+        }
+
+        .prize-edit-input:focus {
+            border-color: #3d7c47;
+        }
+
+        .prize-save-btn {
+            display: block;
+            width: 100%;
+            background: #3d7c47;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            padding: 0.6rem;
+            font-family: 'Nunito', sans-serif;
+            font-weight: 700;
+            font-size: 0.9rem;
+            cursor: pointer;
+            margin-top: 0.6rem;
+            transition: background 0.2s;
+        }
+
+        .prize-save-btn:hover {
+            background: #2d5a33;
+        }
+
+        .prize-earned-msg {
+            text-align: center;
+            background: linear-gradient(135deg, #fff8e1 0%, #d4edda 100%);
+            border: 2px solid #c0732a;
+            border-radius: 14px;
+            padding: 1rem 1.2rem;
+            margin: 1rem 0;
+            animation: unlockPop 0.5s ease-out;
+        }
+
+        .prize-earned-msg .prize-earned-icon {
+            font-size: 2rem;
+            display: block;
+            margin-bottom: 0.3rem;
+        }
+
+        .prize-earned-msg .prize-earned-title {
+            font-weight: 800;
+            font-size: 1.1rem;
+            color: #c0732a;
+        }
+
+        .prize-earned-msg .prize-earned-detail {
+            font-size: 0.9rem;
+            color: #5c4a32;
+            margin-top: 0.2rem;
+        }
+
         @media (max-width: 400px) {
             .header h1 { font-size: 1.3rem; }
             .question-text { font-size: 1.4rem; }
             .answer-input { font-size: 1.2rem; width: 100px; }
             .mode-select { grid-template-columns: 1fr 1fr; }
             .mode-select .mode-btn:nth-child(3) { grid-column: 1 / -1; }
+            .level-btn { font-size: 0.7rem; padding: 0.35rem 0.55rem; }
         }
     </style>
 </head>
@@ -574,6 +888,13 @@
                 </button>
             </div>
 
+            <div class="level-select" id="level-select"></div>
+
+            <div class="prize-tracker-btn" id="prize-tracker-btn" onclick="showPrizeView()" style="display:none;">
+                <span>🏆 <span id="prize-progress-text">0/50</span></span>
+                <div class="prize-mini-bar"><div class="prize-mini-fill" id="prize-mini-fill" style="width:0%"></div></div>
+            </div>
+
             <div class="question-card" id="card">
                 <div class="question-label" id="q-label">Times Tables</div>
                 <div class="question-text" id="q-text">Press a mode to start!</div>
@@ -611,8 +932,9 @@ let currentUser = null;
 
 // Firestore data (loaded on login)
 let multData = {
-    stats: { totalAnswered: 0, totalCorrect: 0, bestStreak: 0, roundsPlayed: 0 },
-    problems: {}
+    stats: { totalAnswered: 0, totalCorrect: 0, bestStreak: 0, roundsPlayed: 0, unlockedLevel: 1 },
+    problems: {},
+    prizes: {}
 };
 
 // ── Auth ──
@@ -644,9 +966,15 @@ function handleUserStatusClick() {
     if (currentUser) {
         auth.signOut();
         multData = {
-            stats: { totalAnswered: 0, totalCorrect: 0, bestStreak: 0, roundsPlayed: 0 },
-            problems: {}
+            stats: { totalAnswered: 0, totalCorrect: 0, bestStreak: 0, roundsPlayed: 0, unlockedLevel: 1 },
+            problems: {},
+            prizes: {}
         };
+        initDefaultPrizes();
+        currentLevel = 1;
+        unlockedLevel = 1;
+        renderLevelSelect();
+        renderPrizeButton();
     } else {
         document.getElementById('login-screen').style.display = 'block';
         document.getElementById('login-email').focus();
@@ -687,6 +1015,19 @@ async function loadMultiplicationData() {
             const m = doc.data().multiplication;
             multData.stats = m.stats || multData.stats;
             multData.problems = m.problems || {};
+            // Merge saved prizes with defaults (preserves new milestones)
+            if (m.prizes) {
+                for (const key of Object.keys(m.prizes)) {
+                    multData.prizes[key] = m.prizes[key];
+                }
+            }
+            initDefaultPrizes();
+            if (multData.stats.unlockedLevel) {
+                unlockedLevel = multData.stats.unlockedLevel;
+                if (currentLevel > unlockedLevel) currentLevel = unlockedLevel;
+                renderLevelSelect();
+            }
+            renderPrizeButton();
         }
     } catch (e) {
         console.log('Could not load multiplication data:', e);
@@ -704,9 +1045,63 @@ async function saveMultiplicationData() {
     }
 }
 
+// ── Prize Milestones ──
+const PRIZE_MILESTONES = [50, 100, 200, 350, 500, 750, 1000];
+
+function initDefaultPrizes() {
+    if (!multData.prizes) multData.prizes = {};
+    for (const m of PRIZE_MILESTONES) {
+        if (!multData.prizes[m]) {
+            multData.prizes[m] = { name: "", earned: false };
+        }
+    }
+}
+initDefaultPrizes();
+
+// ── Levels ──
+const LEVELS = [
+    { num: 1, name: "Beach", icon: "🏖️", factors: [5, 10] },
+    { num: 2, name: "Meadow", icon: "🌻", factors: [2, 4, 11] },
+    { num: 3, name: "Forest", icon: "🌲", factors: [3, 6, 9] },
+    { num: 4, name: "Volcano", icon: "🌋", factors: [7, 8, 12] },
+    { num: 5, name: "Champion Island", icon: "🏆", factors: [2,3,4,5,6,7,8,9,10,11,12] },
+];
+const UNLOCK_THRESHOLD = 0.8; // 80% to unlock next level
+
+let currentLevel = 1;
+let unlockedLevel = 1;
+
 // ── Quiz State ──
 const TIMES_ROUND = 20;
 const BREAKDOWN_ROUND = 10;
+
+function renderLevelSelect() {
+    const container = document.getElementById('level-select');
+    // Only show for times tables mode
+    if (currentMode !== 'times' || practiceViewActive) {
+        container.style.display = 'none';
+        return;
+    }
+    container.style.display = 'flex';
+    container.innerHTML = LEVELS.map(lv => {
+        const isLocked = lv.num > unlockedLevel;
+        const isActive = lv.num === currentLevel;
+        let cls = 'level-btn';
+        if (isActive) cls += ' active';
+        if (isLocked) cls += ' locked';
+        const lockIcon = isLocked ? '🔒 ' : '';
+        return `<button class="${cls}" onclick="selectLevel(${lv.num})" ${isLocked ? 'disabled' : ''}>
+            <span class="level-icon">${lv.icon}</span>${lockIcon}${lv.name}
+        </button>`;
+    }).join('');
+}
+
+function selectLevel(num) {
+    if (num > unlockedLevel) return;
+    currentLevel = num;
+    renderLevelSelect();
+    startRound();
+}
 
 const correctMessages = [
     "Tom Nook is impressed!",
@@ -782,16 +1177,20 @@ function setMode(mode, btn) {
     roundLength = mode === 'times' ? TIMES_ROUND : BREAKDOWN_ROUND;
     document.getElementById('qtotal').textContent = roundLength;
     document.querySelector('.score-bar').style.display = '';
+    renderLevelSelect();
     startRound();
 }
 
 function startRound() {
+    practiceViewActive = false;
     score = 0;
     total = 0;
     streak = 0;
     bestStreak = 0;
     roundProblems = [];
+    document.querySelector('.score-bar').style.display = '';
     updateScoreboard();
+    renderPrizeButton();
     nextQuestion();
 }
 
@@ -855,8 +1254,42 @@ function showRoundEnd() {
         if (rp.correct) multData.stats.totalCorrect++;
     }
 
+    // Check for level unlock
+    let unlockHTML = '';
+    if (currentMode === 'times'
+        && score / roundLength >= UNLOCK_THRESHOLD
+        && currentLevel === unlockedLevel
+        && unlockedLevel < 5) {
+        unlockedLevel++;
+        multData.stats.unlockedLevel = unlockedLevel;
+        const newLevel = LEVELS[unlockedLevel - 1];
+        unlockHTML = `
+            <div class="unlock-msg">
+                <span class="unlock-icon">${newLevel.icon}</span>
+                <div class="unlock-title">Level Unlocked!</div>
+                <div class="unlock-detail">${newLevel.name} is now open!</div>
+            </div>
+        `;
+    }
+
+    // Check for prize milestones
+    const newlyEarnedPrizes = checkPrizeEarned();
+
     // Save to Firestore (batch at end of round)
     saveMultiplicationData();
+
+    // Build prize earned celebration HTML
+    let prizeHTML = '';
+    for (const m of newlyEarnedPrizes) {
+        const prizeName = multData.prizes[m].name || 'a mystery prize';
+        prizeHTML += `
+            <div class="prize-earned-msg">
+                <span class="prize-earned-icon">🏆</span>
+                <div class="prize-earned-title">Prize Earned!</div>
+                <div class="prize-earned-detail">${prizeName} — Ask your parent!</div>
+            </div>
+        `;
+    }
 
     // Build missed problems list from this round
     const missed = roundProblems.filter(rp => !rp.correct);
@@ -887,12 +1320,16 @@ function showRoundEnd() {
             <div class="final-score">${score}/${roundLength}</div>
             <div class="final-msg">${msg}</div>
             <div class="final-details">Best streak this round: ${bestStreak}</div>
+            ${unlockHTML}
+            ${prizeHTML}
             ${missedHTML}
             ${alltimeHTML}
             <button class="play-again-btn" onclick="startRound()">Play Again</button>
         </div>
     `;
     document.getElementById('streak-msg').textContent = '';
+    renderLevelSelect();
+    renderPrizeButton();
 }
 
 // ── Times Tables Mode ──
@@ -900,13 +1337,17 @@ function showRoundEnd() {
 function nextTimesQuestion() {
     rebuildCard();
     answered = false;
-    const a = randInt(2, 12);
-    const b = randInt(2, 12);
+    const level = LEVELS[currentLevel - 1];
+    const focusFactor = pickRandom(level.factors);
+    const otherFactor = randInt(2, 12);
+    // Randomly swap so the focus factor isn't always on the left
+    const a = Math.random() < 0.5 ? focusFactor : otherFactor;
+    const b = a === focusFactor ? otherFactor : focusFactor;
     currentProblemA = a;
     currentProblemB = b;
     const answer = a * b;
 
-    document.getElementById('q-label').textContent = 'Times Tables';
+    document.getElementById('q-label').textContent = `Level ${level.num} — ${level.name} ${level.icon}`;
     document.getElementById('q-text').innerHTML = `<span class="highlight">${a}</span> &times; <span class="highlight">${b}</span> = ?`;
     document.getElementById('answer-input').dataset.answer = answer;
 
@@ -978,6 +1419,7 @@ function showPracticeView() {
     document.getElementById('btn-practice').classList.add('active');
     document.querySelector('.score-bar').style.display = 'none';
     document.getElementById('streak-msg').textContent = '';
+    renderLevelSelect();
 
     const card = document.getElementById('card');
 
@@ -1176,7 +1618,174 @@ document.addEventListener('keydown', function(e) {
     }
 });
 
+// ── Prize Tracker ──
+
+function getNextMilestone() {
+    const total = multData.stats.totalAnswered;
+    for (const m of PRIZE_MILESTONES) {
+        if (total < m) return m;
+    }
+    return null; // all milestones earned
+}
+
+function renderPrizeButton() {
+    const btn = document.getElementById('prize-tracker-btn');
+    const total = multData.stats.totalAnswered;
+    const next = getNextMilestone();
+
+    if (next === null) {
+        // All milestones earned
+        btn.style.display = 'flex';
+        document.getElementById('prize-progress-text').textContent = 'All prizes earned!';
+        document.getElementById('prize-mini-fill').style.width = '100%';
+    } else {
+        btn.style.display = 'flex';
+        document.getElementById('prize-progress-text').textContent = `${total}/${next}`;
+        // Find the previous milestone to calculate segment progress
+        const idx = PRIZE_MILESTONES.indexOf(next);
+        const prevMilestone = idx > 0 ? PRIZE_MILESTONES[idx - 1] : 0;
+        const segmentProgress = ((total - prevMilestone) / (next - prevMilestone)) * 100;
+        document.getElementById('prize-mini-fill').style.width = Math.min(segmentProgress, 100) + '%';
+    }
+}
+
+function showPrizeView() {
+    practiceViewActive = true;
+    document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
+    document.querySelector('.score-bar').style.display = 'none';
+    document.getElementById('streak-msg').textContent = '';
+    renderLevelSelect();
+
+    const card = document.getElementById('card');
+    const total = multData.stats.totalAnswered;
+    const next = getNextMilestone();
+
+    // Build progress bar for next milestone
+    let progressHTML = '';
+    if (next !== null) {
+        const idx = PRIZE_MILESTONES.indexOf(next);
+        const prevMilestone = idx > 0 ? PRIZE_MILESTONES[idx - 1] : 0;
+        const segmentProgress = ((total - prevMilestone) / (next - prevMilestone)) * 100;
+        progressHTML = `
+            <div class="prize-progress-bar">
+                <div class="prize-progress-fill" style="width:${Math.min(segmentProgress, 100)}%"></div>
+                <div class="prize-progress-label">${total} / ${next} questions</div>
+            </div>
+        `;
+    } else {
+        progressHTML = `
+            <div class="prize-progress-bar">
+                <div class="prize-progress-fill" style="width:100%"></div>
+                <div class="prize-progress-label">All milestones complete!</div>
+            </div>
+        `;
+    }
+
+    // Build milestone list
+    let milestonesHTML = '';
+    for (const m of PRIZE_MILESTONES) {
+        const prize = multData.prizes[m];
+        const isEarned = prize.earned || total >= m;
+        const isNext = m === next;
+        const prizeName = prize.name || '???';
+
+        let cls = 'prize-item';
+        let icon = '';
+
+        if (isEarned) {
+            cls += ' earned';
+            icon = '✅';
+        } else if (isNext) {
+            cls += ' next-up';
+            icon = '🎯';
+        } else {
+            cls += ' future';
+            icon = '🔒';
+        }
+
+        milestonesHTML += `
+            <div class="${cls}">
+                <div class="prize-item-icon">${icon}</div>
+                <div class="prize-item-info">
+                    <div class="prize-item-milestone">${m} questions</div>
+                    <div class="prize-item-name">${prizeName}</div>
+                </div>
+            </div>
+        `;
+    }
+
+    // Edit link (only when logged in)
+    let editHTML = '';
+    if (currentUser) {
+        editHTML = `<div class="prize-edit-link" onclick="showPrizeEdit()">Edit Prizes</div>`;
+    }
+
+    card.innerHTML = `
+        <div class="prize-view">
+            <h3>🏆 Prize Progress</h3>
+            <div class="prize-subtitle">${total} total questions answered</div>
+            ${progressHTML}
+            ${milestonesHTML}
+            ${editHTML}
+            <button class="back-btn" onclick="setMode('times', document.getElementById('btn-times'))">Back to Times Tables</button>
+        </div>
+    `;
+}
+
+function showPrizeEdit() {
+    const card = document.getElementById('card');
+    let editRowsHTML = '';
+    for (const m of PRIZE_MILESTONES) {
+        const prize = multData.prizes[m];
+        editRowsHTML += `
+            <div class="prize-edit-row">
+                <div class="prize-edit-label">${m}</div>
+                <input type="text" class="prize-edit-input" id="prize-input-${m}" value="${prize.name}" placeholder="Enter prize name..." maxlength="80">
+            </div>
+        `;
+    }
+
+    card.innerHTML = `
+        <div class="prize-view">
+            <h3>🏆 Edit Prizes</h3>
+            <div class="prize-subtitle">Set a prize for each milestone</div>
+            ${editRowsHTML}
+            <button class="prize-save-btn" onclick="savePrizeNames()">Save Prizes</button>
+            <button class="back-btn" onclick="showPrizeView()">Cancel</button>
+        </div>
+    `;
+
+    // Focus first input
+    const firstInput = document.getElementById('prize-input-' + PRIZE_MILESTONES[0]);
+    if (firstInput) firstInput.focus();
+}
+
+function savePrizeNames() {
+    for (const m of PRIZE_MILESTONES) {
+        const input = document.getElementById('prize-input-' + m);
+        if (input) {
+            multData.prizes[m].name = input.value.trim();
+        }
+    }
+    saveMultiplicationData();
+    showPrizeView();
+}
+
+function checkPrizeEarned() {
+    const total = multData.stats.totalAnswered;
+    const newlyEarned = [];
+    for (const m of PRIZE_MILESTONES) {
+        if (total >= m && !multData.prizes[m].earned) {
+            multData.prizes[m].earned = true;
+            newlyEarned.push(m);
+        }
+    }
+    return newlyEarned;
+}
+
 // Start
+renderLevelSelect();
+renderPrizeButton();
 startRound();
     </script>
 </body>
