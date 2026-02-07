@@ -5214,11 +5214,107 @@ loadMultiplicationData = async function() {
     initNewFeatures();
 };
 
+// ── Isabelle's Morning Announcements ──
+const ISABELLE_ANNOUNCEMENTS = [
+    "Good morning! I hope you're ready for a wonderful day of math practice!",
+    "Today's weather is perfect for learning! Let's do our best!",
+    "I've heard there might be some bonus questions today. How exciting!",
+    "Remember to take breaks and stay hydrated, dear islander!",
+    "Tom Nook mentioned he's impressed by how hard you've been working!",
+    "Blathers told me the museum is waiting for more of your discoveries!",
+    "K.K. Slider might drop by later with a new song if you do well!",
+    "The villagers are cheering for you today! You've got this!",
+    "I polished your trophies this morning. They're looking great!",
+    "Your pet buddy seems extra happy today! Give them some love!",
+    "The flowers in your garden are blooming beautifully!",
+    "I've prepared some special prizes for the wheel today!",
+];
+
+const ISABELLE_EVENTS = [
+    { condition: () => getTimeBonus().active, message: "It's late! You get the Night Owl Bonus - 1.5x points! 🌙" },
+    { condition: () => canSpinToday(), message: "The Prize Wheel is ready for a spin today! 🎰" },
+    { condition: () => multData.stats.dailyStreak >= 3, message: `Amazing! You're on a ${multData.stats.dailyStreak}-day streak! Keep it up! 🔥` },
+    { condition: () => garden.flowers.length >= 10, message: "Your garden is flourishing with beautiful flowers! 🌺" },
+    { condition: () => petBuddy.level >= 3, message: `${petBuddy.name} is growing so big! Level ${petBuddy.level} already! 🐕` },
+];
+
+function showIsabelleAnnouncement() {
+    const mainAnnouncement = pickRandom(ISABELLE_ANNOUNCEMENTS);
+    const events = ISABELLE_EVENTS.filter(e => e.condition());
+    const eventAnnouncement = events.length > 0 ? pickRandom(events).message : null;
+
+    const popup = document.createElement('div');
+    popup.id = 'isabelle-popup';
+    popup.style.cssText = `
+        position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+        background: rgba(0,0,0,0.85); display: flex; align-items: center;
+        justify-content: center; z-index: 5000; animation: fadeIn 0.5s ease-out;
+    `;
+
+    popup.innerHTML = `
+        <div style="background: linear-gradient(135deg, #a8e6cf 0%, #dcedc1 50%, #ffd3b6 100%);
+            border-radius: 20px; padding: 1.5rem; max-width: 340px; text-align: center;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3); animation: levelUpPop 0.6s ease-out;">
+
+            <div style="font-size: 4rem; margin-bottom: 0.5rem;">🐕</div>
+            <h2 style="color: #3d7c47; font-size: 1.3rem; margin-bottom: 0.5rem;">Isabelle's Announcements</h2>
+
+            <div style="background: rgba(255,255,255,0.7); border-radius: 12px; padding: 1rem; margin: 1rem 0;">
+                <p style="color: #5c4a32; font-size: 0.95rem; line-height: 1.5;">"${mainAnnouncement}"</p>
+            </div>
+
+            ${eventAnnouncement ? `
+                <div style="background: rgba(255,215,0,0.2); border: 2px solid #ffd700; border-radius: 12px; padding: 0.8rem; margin: 1rem 0;">
+                    <p style="color: #5c4a32; font-size: 0.9rem; font-weight: 600;">📢 ${eventAnnouncement}</p>
+                </div>
+            ` : ''}
+
+            <p style="color: #7a9a5a; font-size: 0.85rem; margin-bottom: 1rem;">
+                "That's all for today! Have a wonderful time on your island!"
+            </p>
+
+            <button onclick="closeIsabelleAnnouncement()" style="
+                background: #3d7c47; color: white; border: none; border-radius: 12px;
+                padding: 0.8rem 2rem; font-family: inherit; font-weight: 700;
+                font-size: 1rem; cursor: pointer;">
+                Let's Go! 🎉
+            </button>
+        </div>
+    `;
+
+    document.body.appendChild(popup);
+}
+
+function closeIsabelleAnnouncement() {
+    const popup = document.getElementById('isabelle-popup');
+    if (popup) {
+        popup.style.animation = 'fadeIn 0.3s ease-out reverse';
+        setTimeout(() => {
+            popup.remove();
+            startRound(); // Start the game after closing
+        }, 300);
+    }
+}
+
+// Check if should show announcement (once per session)
+let announcementShown = false;
+
+function initGame() {
+    renderLevelSelect();
+    renderPrizeButton();
+    initNewFeatures();
+
+    // Show Isabelle's announcement on first load
+    if (!announcementShown) {
+        announcementShown = true;
+        showIsabelleAnnouncement();
+    } else {
+        startRound();
+    }
+}
+
 // Start
-renderLevelSelect();
-renderPrizeButton();
-initNewFeatures();
-startRound();
+initGame();
     </script>
 </body>
 </html>
