@@ -839,6 +839,56 @@
             margin-top: 0.2rem;
         }
 
+        /* Island Place Unlock */
+        .place-unlock-msg {
+            text-align: center;
+            background: linear-gradient(135deg, #e0f7fa 0%, #b2ebf2 50%, #e1bee7 100%);
+            border: 3px solid #3d7c47;
+            border-radius: 16px;
+            padding: 1.2rem 1.2rem;
+            margin: 1rem 0;
+            animation: placeUnlock 0.6s ease-out;
+        }
+
+        .place-unlock-msg .place-icon {
+            font-size: 3rem;
+            display: block;
+            margin-bottom: 0.4rem;
+            animation: bounce 0.5s ease-out 0.3s;
+        }
+
+        .place-unlock-msg .place-title {
+            font-weight: 800;
+            font-size: 1rem;
+            color: #3d7c47;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .place-unlock-msg .place-name {
+            font-weight: 800;
+            font-size: 1.3rem;
+            color: #5c4a32;
+            margin: 0.3rem 0;
+        }
+
+        .place-unlock-msg .place-desc {
+            font-size: 0.95rem;
+            color: #7a9a5a;
+            font-style: italic;
+        }
+
+        @keyframes placeUnlock {
+            0% { transform: scale(0.5) rotate(-5deg); opacity: 0; }
+            50% { transform: scale(1.1) rotate(2deg); }
+            100% { transform: scale(1) rotate(0deg); opacity: 1; }
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
         @media (max-width: 400px) {
             .header h1 { font-size: 1.3rem; }
             .question-text { font-size: 1.4rem; }
@@ -1043,6 +1093,44 @@ async function saveMultiplicationData() {
     } catch (e) {
         console.log('Could not save multiplication data:', e);
     }
+}
+
+// ── Island Places (unlock every 20 correct) ──
+const ISLAND_PLACES = [
+    { name: "Nook's Cranny", icon: "🏪", desc: "Tom Nook's shop is open for business!" },
+    { name: "The Museum", icon: "🏛️", desc: "Blathers can't wait to see your collection!" },
+    { name: "Able Sisters", icon: "🧵", desc: "Mabel and Sable have clothes for you!" },
+    { name: "Resident Services", icon: "🏢", desc: "Isabelle is ready to help!" },
+    { name: "The Campsite", icon: "⛺", desc: "Visitors are coming to your island!" },
+    { name: "Starfall Cliff", icon: "🌠", desc: "A magical place where stars fall!" },
+    { name: "Rainbow Falls", icon: "🌈", desc: "The most colorful waterfall on the island!" },
+    { name: "Mushroom Grove", icon: "🍄", desc: "Giant mushrooms grow here year-round!" },
+    { name: "Fossil Canyon", icon: "🦴", desc: "Ancient treasures hide in these rocks!" },
+    { name: "Butterfly Garden", icon: "🦋", desc: "Flick's favorite place to visit!" },
+    { name: "Crystal Cave", icon: "💎", desc: "Glittering gems light up the darkness!" },
+    { name: "Cloud Overlook", icon: "☁️", desc: "Touch the clouds from up here!" },
+    { name: "Honeybee Meadow", icon: "🐝", desc: "Sweet honey flows from golden hives!" },
+    { name: "Firefly Lake", icon: "✨", desc: "Glowing fireflies dance at night!" },
+    { name: "K.K. Concert Hall", icon: "🎸", desc: "K.K. Slider plays here every night!" },
+    { name: "Treasure Cove", icon: "🏴‍☠️", desc: "Gulliver found pirate gold here!" },
+    { name: "Northern Lights Peak", icon: "🌌", desc: "The aurora shines above the mountain!" },
+    { name: "Sakura Springs", icon: "🌸", desc: "Cherry blossoms bloom forever here!" },
+    { name: "Mermaid Lagoon", icon: "🧜‍♀️", desc: "Pascal shares secrets in these waters!" },
+    { name: "Golden Palace", icon: "👑", desc: "The ultimate island achievement!" }
+];
+
+function getUnlockedPlaces() {
+    const totalCorrect = multData.stats.totalCorrect || 0;
+    return Math.min(Math.floor(totalCorrect / 20), ISLAND_PLACES.length);
+}
+
+function checkNewPlaceUnlocked(prevCorrect, newCorrect) {
+    const prevPlaces = Math.floor(prevCorrect / 20);
+    const newPlaces = Math.floor(newCorrect / 20);
+    if (newPlaces > prevPlaces && newPlaces <= ISLAND_PLACES.length) {
+        return ISLAND_PLACES[newPlaces - 1];
+    }
+    return null;
 }
 
 // ── Prize Milestones ──
@@ -1273,6 +1361,9 @@ function showRoundEnd() {
     }
     multData.stats.roundsPlayed++;
 
+    // Remember previous correct count for place unlock check
+    const prevCorrect = multData.stats.totalCorrect || 0;
+
     // Update problem-level data
     const today = new Date().toISOString().split('T')[0];
     for (const rp of roundProblems) {
@@ -1308,8 +1399,24 @@ function showRoundEnd() {
     // Check for prize milestones
     const newlyEarnedPrizes = checkPrizeEarned();
 
+    // Check for new island place unlock
+    const newPlace = checkNewPlaceUnlocked(prevCorrect, multData.stats.totalCorrect);
+
     // Save to Firestore (batch at end of round)
     saveMultiplicationData();
+
+    // Build place unlock celebration HTML
+    let placeHTML = '';
+    if (newPlace) {
+        placeHTML = `
+            <div class="place-unlock-msg">
+                <span class="place-icon">${newPlace.icon}</span>
+                <div class="place-title">New Place Discovered!</div>
+                <div class="place-name">${newPlace.name}</div>
+                <div class="place-desc">${newPlace.desc}</div>
+            </div>
+        `;
+    }
 
     // Build prize earned celebration HTML
     let prizeHTML = '';
@@ -1354,6 +1461,7 @@ function showRoundEnd() {
             <div class="final-msg">${msg}</div>
             <div class="final-details">Best streak this round: ${bestStreak}</div>
             ${unlockHTML}
+            ${placeHTML}
             ${prizeHTML}
             ${missedHTML}
             ${alltimeHTML}
