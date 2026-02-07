@@ -1550,6 +1550,57 @@
             background: linear-gradient(180deg, #87ceeb 0%, #98d8c8 30%, #f7dc6f 60%, #f39c12 100%);
         }
 
+        body.theme-pink {
+            background: linear-gradient(180deg, #ffb6c1 0%, #ff69b4 30%, #ff1493 60%, #ffb6c1 100%);
+        }
+
+        body.theme-multiplayer {
+            background: linear-gradient(180deg, #ff9ff3 0%, #f368e0 30%, #ff6b6b 60%, #feca57 100%);
+        }
+
+        /* Multiplayer */
+        .multiplayer-scoreboard {
+            display: flex;
+            justify-content: space-around;
+            background: rgba(255,255,255,0.9);
+            border-radius: 15px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            border: 3px solid #ff69b4;
+        }
+
+        .player-score {
+            text-align: center;
+            padding: 0.5rem 1.5rem;
+            border-radius: 10px;
+        }
+
+        .player-score.active {
+            background: linear-gradient(135deg, #ff9ff3, #f368e0);
+            transform: scale(1.05);
+        }
+
+        .player-score .player-name {
+            font-weight: 800;
+            font-size: 1rem;
+            color: #5c4a32;
+        }
+
+        .player-score .player-points {
+            font-size: 1.8rem;
+            font-weight: 800;
+            color: #ff1493;
+        }
+
+        .player-turn-indicator {
+            text-align: center;
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: #ff1493;
+            margin-bottom: 0.5rem;
+            animation: pulseBadge 1s ease-in-out infinite;
+        }
+
         /* Collectibles */
         .collectibles-bar {
             display: flex;
@@ -5113,8 +5164,222 @@ function getTimeBonus() {
 }
 
 // ── Add buttons for new features ──
+// ══════════════════════════════════════════════════════════════════════════
+// MULTIPLAYER MODE
+// ══════════════════════════════════════════════════════════════════════════
+
+let multiplayerMode = false;
+let players = [
+    { name: 'Player 1', score: 0, color: '#ff69b4' },
+    { name: 'Player 2', score: 0, color: '#00bfff' }
+];
+let currentPlayer = 0;
+let multiplayerRound = 0;
+const MULTIPLAYER_ROUNDS = 10;
+
+function showMultiplayerSetup() {
+    practiceViewActive = true;
+    document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
+    document.querySelector('.score-bar').style.display = 'none';
+    document.body.classList.add('theme-multiplayer');
+
+    const card = document.getElementById('card');
+    card.innerHTML = `
+        <div style="text-align: center;">
+            <h3 style="color: #ff1493;">👫 2 Player Mode!</h3>
+            <p style="color: #5c4a32; margin-bottom: 1rem;">Take turns answering questions. Highest score wins!</p>
+
+            <div style="background: rgba(255,255,255,0.8); border-radius: 15px; padding: 1rem; margin-bottom: 1rem;">
+                <div style="margin-bottom: 1rem;">
+                    <label style="color: #ff69b4; font-weight: 700;">🌸 Player 1:</label>
+                    <input type="text" id="player1-name" value="${players[0].name}"
+                        style="margin-left: 0.5rem; padding: 0.4rem; border-radius: 8px; border: 2px solid #ff69b4; font-family: inherit; width: 120px;">
+                </div>
+                <div>
+                    <label style="color: #00bfff; font-weight: 700;">💙 Player 2:</label>
+                    <input type="text" id="player2-name" value="${players[1].name}"
+                        style="margin-left: 0.5rem; padding: 0.4rem; border-radius: 8px; border: 2px solid #00bfff; font-family: inherit; width: 120px;">
+                </div>
+            </div>
+
+            <button class="minigame-btn" onclick="startMultiplayer()" style="background: linear-gradient(135deg, #ff69b4, #00bfff);">
+                🎮 Start Game!
+            </button>
+            <button class="back-btn" onclick="exitMultiplayer()">Back</button>
+        </div>
+    `;
+}
+
+function startMultiplayer() {
+    players[0].name = document.getElementById('player1-name').value || 'Player 1';
+    players[1].name = document.getElementById('player2-name').value || 'Player 2';
+    players[0].score = 0;
+    players[1].score = 0;
+    currentPlayer = 0;
+    multiplayerRound = 0;
+    multiplayerMode = true;
+
+    nextMultiplayerQuestion();
+}
+
+function nextMultiplayerQuestion() {
+    if (multiplayerRound >= MULTIPLAYER_ROUNDS * 2) {
+        showMultiplayerResults();
+        return;
+    }
+
+    const card = document.getElementById('card');
+    answered = false;
+
+    // Pick a random multiplication problem
+    const a = randInt(2, 12);
+    const b = randInt(2, 12);
+    const answer = a * b;
+
+    currentProblemA = a;
+    currentProblemB = b;
+
+    const player = players[currentPlayer];
+
+    card.innerHTML = `
+        <div class="multiplayer-scoreboard">
+            <div class="player-score ${currentPlayer === 0 ? 'active' : ''}">
+                <div class="player-name">🌸 ${players[0].name}</div>
+                <div class="player-points">${players[0].score}</div>
+            </div>
+            <div class="player-score ${currentPlayer === 1 ? 'active' : ''}">
+                <div class="player-name">💙 ${players[1].name}</div>
+                <div class="player-points">${players[1].score}</div>
+            </div>
+        </div>
+
+        <div class="player-turn-indicator">
+            ${currentPlayer === 0 ? '🌸' : '💙'} ${player.name}'s Turn!
+        </div>
+
+        <div class="question-text" style="margin: 1rem 0;">
+            <span class="highlight">${a}</span> × <span class="highlight">${b}</span> = ?
+        </div>
+
+        <div class="answer-area">
+            <input type="number" class="answer-input" id="mp-answer" autocomplete="off" data-answer="${answer}">
+            <button class="submit-btn" onclick="submitMultiplayerAnswer()">Go!</button>
+        </div>
+
+        <div class="feedback" id="mp-feedback"></div>
+        <button class="next-btn" id="mp-next" style="display:none;" onclick="nextMultiplayerTurn()">Next Turn</button>
+    `;
+
+    document.getElementById('mp-answer').focus();
+
+    // Add enter key listener
+    document.getElementById('mp-answer').onkeydown = (e) => {
+        if (e.key === 'Enter') {
+            if (document.getElementById('mp-next').style.display === 'block') {
+                nextMultiplayerTurn();
+            } else {
+                submitMultiplayerAnswer();
+            }
+        }
+    };
+}
+
+function submitMultiplayerAnswer() {
+    if (answered) return;
+
+    const inp = document.getElementById('mp-answer');
+    const userAnswer = inp.value.trim();
+    if (userAnswer === '') return;
+
+    answered = true;
+    const correct = parseInt(inp.dataset.answer);
+    const isCorrect = parseInt(userAnswer) === correct;
+
+    const feedback = document.getElementById('mp-feedback');
+    const player = players[currentPlayer];
+
+    if (isCorrect) {
+        player.score += 10;
+        inp.classList.add('correct');
+        feedback.className = 'feedback correct';
+        feedback.innerHTML = `✨ Correct! +10 points for ${player.name}!`;
+        playSound('correct');
+        launchConfetti();
+    } else {
+        inp.classList.add('wrong');
+        feedback.className = 'feedback wrong';
+        feedback.innerHTML = `The answer was ${correct}. No points this time!`;
+        playSound('wrong');
+    }
+
+    // Update scoreboard
+    document.querySelectorAll('.player-points')[currentPlayer].textContent = player.score;
+
+    document.getElementById('mp-next').style.display = 'block';
+    multiplayerRound++;
+}
+
+function nextMultiplayerTurn() {
+    currentPlayer = currentPlayer === 0 ? 1 : 0;
+    nextMultiplayerQuestion();
+}
+
+function showMultiplayerResults() {
+    const card = document.getElementById('card');
+    const winner = players[0].score > players[1].score ? players[0] :
+                   players[1].score > players[0].score ? players[1] : null;
+
+    launchConfetti();
+    playSound('fanfare');
+
+    card.innerHTML = `
+        <div style="text-align: center;">
+            <h2 style="color: #ff1493;">🎉 Game Over!</h2>
+
+            <div class="multiplayer-scoreboard" style="margin: 1.5rem 0;">
+                <div class="player-score ${winner === players[0] ? 'active' : ''}">
+                    <div class="player-name">🌸 ${players[0].name}</div>
+                    <div class="player-points">${players[0].score}</div>
+                </div>
+                <div class="player-score ${winner === players[1] ? 'active' : ''}">
+                    <div class="player-name">💙 ${players[1].name}</div>
+                    <div class="player-points">${players[1].score}</div>
+                </div>
+            </div>
+
+            ${winner ?
+                `<div style="font-size: 3rem; margin: 1rem 0;">🏆</div>
+                 <h3 style="color: #3d7c47;">${winner.name} Wins!</h3>` :
+                `<div style="font-size: 3rem; margin: 1rem 0;">🤝</div>
+                 <h3 style="color: #3d7c47;">It's a Tie!</h3>`
+            }
+
+            <button class="play-again-btn" onclick="showMultiplayerSetup()" style="margin-top: 1rem; background: linear-gradient(135deg, #ff69b4, #00bfff);">
+                Play Again!
+            </button>
+            <button class="back-btn" onclick="exitMultiplayer()">Back to Solo Mode</button>
+        </div>
+    `;
+}
+
+function exitMultiplayer() {
+    multiplayerMode = false;
+    document.body.classList.remove('theme-multiplayer');
+    setMode('times', document.getElementById('btn-times'));
+}
+
 function addMoreButtons() {
     const modeSelect = document.querySelector('.mode-select');
+
+    // Multiplayer button
+    if (!modeSelect.querySelector('#btn-multiplayer')) {
+        const btn = document.createElement('button');
+        btn.id = 'btn-multiplayer';
+        btn.className = 'mode-btn';
+        btn.innerHTML = '<span class="mode-icon">👫</span>2 Player';
+        btn.onclick = showMultiplayerSetup;
+        modeSelect.appendChild(btn);
+    }
 
     // Wheel button
     if (!modeSelect.querySelector('#btn-wheel')) {
