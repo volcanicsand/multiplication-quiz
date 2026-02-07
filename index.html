@@ -1024,6 +1024,74 @@
             50% { transform: scale(1.05); }
         }
 
+        /* Running Character */
+        .runner {
+            position: fixed;
+            bottom: 80px;
+            left: -60px;
+            width: 40px;
+            height: 60px;
+            z-index: 50;
+            pointer-events: none;
+        }
+
+        .runner svg {
+            width: 100%;
+            height: 100%;
+        }
+
+        .runner.running {
+            animation: runAcross 2s ease-in-out forwards;
+        }
+
+        @keyframes runAcross {
+            0% { left: -60px; }
+            100% { left: calc(100% + 60px); }
+        }
+
+        .runner .body {
+            fill: #ffb74d;
+        }
+        .runner .head {
+            fill: #ffcc80;
+        }
+        .runner .eyes {
+            fill: #5d4037;
+        }
+        .runner .mouth {
+            fill: #e65100;
+        }
+        .runner .hair {
+            fill: #8d6e63;
+        }
+        .runner .shirt {
+            fill: #4fc3f7;
+        }
+        .runner .pants {
+            fill: #7986cb;
+        }
+        .runner .shoes {
+            fill: #f44336;
+        }
+
+        .runner.running .legs {
+            animation: legMove 0.2s ease-in-out infinite alternate;
+        }
+
+        .runner.running .arms {
+            animation: armMove 0.2s ease-in-out infinite alternate-reverse;
+        }
+
+        @keyframes legMove {
+            0% { transform: rotate(-20deg); }
+            100% { transform: rotate(20deg); }
+        }
+
+        @keyframes armMove {
+            0% { transform: rotate(20deg); }
+            100% { transform: rotate(-20deg); }
+        }
+
         /* Daily Streak */
         .daily-streak-display {
             display: inline-flex;
@@ -1082,6 +1150,36 @@
 <body>
     <div id="confetti-container" class="confetti-container"></div>
     <div class="mascot" id="mascot">🦝</div>
+
+    <!-- Running character -->
+    <div class="runner" id="runner">
+        <svg viewBox="0 0 40 60" xmlns="http://www.w3.org/2000/svg">
+            <!-- Hair -->
+            <ellipse class="hair" cx="20" cy="8" rx="10" ry="8"/>
+            <!-- Head -->
+            <circle class="head" cx="20" cy="12" r="9"/>
+            <!-- Eyes -->
+            <circle class="eyes" cx="16" cy="11" r="2"/>
+            <circle class="eyes" cx="24" cy="11" r="2"/>
+            <!-- Happy mouth -->
+            <path class="mouth" d="M 16 16 Q 20 20 24 16" fill="none" stroke="#e65100" stroke-width="1.5" stroke-linecap="round"/>
+            <!-- Body/Shirt -->
+            <rect class="shirt" x="12" y="21" width="16" height="14" rx="3"/>
+            <!-- Arms -->
+            <g class="arms" style="transform-origin: 12px 24px;">
+                <rect class="shirt" x="4" y="22" width="8" height="4" rx="2"/>
+            </g>
+            <g class="arms" style="transform-origin: 28px 24px;">
+                <rect class="shirt" x="28" y="22" width="8" height="4" rx="2"/>
+            </g>
+            <!-- Pants -->
+            <rect class="pants" x="12" y="35" width="7" height="12" rx="2"/>
+            <rect class="pants" x="21" y="35" width="7" height="12" rx="2"/>
+            <!-- Shoes -->
+            <ellipse class="shoes" cx="15" cy="50" rx="5" ry="3"/>
+            <ellipse class="shoes" cx="25" cy="50" rx="5" ry="3"/>
+        </svg>
+    </div>
 
     <div class="container">
         <div class="header">
@@ -1212,6 +1310,19 @@ function mascotReact(isCorrect) {
         mascot.className = 'mascot';
         mascot.textContent = '🦝';
     }, 1500);
+}
+
+// Running character
+function runCharacter() {
+    const runner = document.getElementById('runner');
+    runner.classList.remove('running');
+    // Force reflow to restart animation
+    void runner.offsetWidth;
+    runner.classList.add('running');
+
+    setTimeout(() => {
+        runner.classList.remove('running');
+    }, 2000);
 }
 
 // Double points round
@@ -2149,6 +2260,7 @@ function submitAnswer() {
         feedback.className = 'feedback correct';
         playSound('correct');
         mascotReact(true);
+        runCharacter();
         feedback.innerHTML = pickRandom(correctMessages);
     } else {
         streak = 0;
