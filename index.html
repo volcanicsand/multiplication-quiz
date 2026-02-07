@@ -4036,17 +4036,12 @@ function showACNHMenu() {
     card.innerHTML = `
         <div style="text-align: center;">
             <h3 style="color: #ff69b4;">🏝️ Animal Crossing Corner!</h3>
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.8rem; margin: 1rem 0;">
-                <button class="minigame-btn" onclick="startPersonalityQuiz()" style="padding: 1rem; background: linear-gradient(135deg, #ff69b4, #ff1493); color: white;">
-                    <div style="font-size: 2rem;">🎭</div>
-                    <div>Which Villager Are You?</div>
-                </button>
-                <button class="minigame-btn" onclick="startACNHTrivia()" style="padding: 1rem; background: linear-gradient(135deg, #ff69b4, #ff1493); color: white;">
-                    <div style="font-size: 2rem;">❓</div>
-                    <div>ACNH Trivia!</div>
-                </button>
-            </div>
-            <button class="back-btn" onclick="setMode('times', document.getElementById('btn-times'))">Back to Math</button>
+            <p style="color: #5c4a32; margin-bottom: 1rem;">Find out which villager personality you are!</p>
+            <button class="minigame-btn" onclick="startPersonalityQuiz()" style="padding: 1.5rem 2rem; background: linear-gradient(135deg, #ff69b4, #ff1493); color: white; font-size: 1.1rem;">
+                <div style="font-size: 3rem; margin-bottom: 0.5rem;">🎭</div>
+                <div>Which Villager Are You?</div>
+            </button>
+            <button class="back-btn" onclick="setMode('times', document.getElementById('btn-times'))" style="margin-top: 1rem;">Back to Math</button>
         </div>
     `;
 }
