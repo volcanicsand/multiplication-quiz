@@ -11,11 +11,15 @@
 
         body {
             font-family: 'Nunito', sans-serif;
-            background: #e8f5e2;
-            background-image:
-                radial-gradient(circle at 20% 50%, rgba(167, 219, 167, 0.4) 0%, transparent 50%),
-                radial-gradient(circle at 80% 20%, rgba(135, 206, 235, 0.3) 0%, transparent 50%),
-                radial-gradient(circle at 50% 80%, rgba(255, 218, 185, 0.3) 0%, transparent 50%);
+            background: linear-gradient(180deg,
+                #ff7e5f 0%,
+                #ff9966 15%,
+                #ffb347 30%,
+                #ffd1a3 50%,
+                #ffe5c4 65%,
+                #e8f5e2 85%,
+                #c8e6c0 100%);
+            background-attachment: fixed;
             min-height: 100vh;
             color: #5c4a32;
         }
@@ -1137,6 +1141,35 @@
             border-color: #3d7c47;
         }
 
+        /* Emoji Applause Crowd */
+        .applause-crowd {
+            display: flex;
+            justify-content: center;
+            gap: 0.3rem;
+            font-size: 2rem;
+            margin: 1rem 0;
+            flex-wrap: wrap;
+        }
+
+        .applause-crowd span {
+            animation: crowdBounce 0.5s ease-in-out infinite;
+        }
+
+        .applause-crowd span:nth-child(1) { animation-delay: 0s; }
+        .applause-crowd span:nth-child(2) { animation-delay: 0.1s; }
+        .applause-crowd span:nth-child(3) { animation-delay: 0.2s; }
+        .applause-crowd span:nth-child(4) { animation-delay: 0.3s; }
+        .applause-crowd span:nth-child(5) { animation-delay: 0.4s; }
+        .applause-crowd span:nth-child(6) { animation-delay: 0.5s; }
+        .applause-crowd span:nth-child(7) { animation-delay: 0.6s; }
+        .applause-crowd span:nth-child(8) { animation-delay: 0.7s; }
+        .applause-crowd span:nth-child(9) { animation-delay: 0.8s; }
+
+        @keyframes crowdBounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-8px); }
+        }
+
         @media (max-width: 400px) {
             .header h1 { font-size: 1.3rem; }
             .question-text { font-size: 1.4rem; }
@@ -1940,10 +1973,19 @@ function showRoundEnd() {
         </div>`;
     }
 
+    // Emoji applause crowd
+    const applauseEmojis = ['👏', '🎉', '😄', '🥳', '👏', '🌟', '😊', '🎊', '👏'];
+    const applauseHTML = `
+        <div class="applause-crowd">
+            ${applauseEmojis.map(e => `<span>${e}</span>`).join('')}
+        </div>
+    `;
+
     const card = document.getElementById('card');
     card.innerHTML = `
         <div class="round-end">
             <h2>${emoji} Round Complete!</h2>
+            ${applauseHTML}
             <div class="final-score">${score}/${roundLength}</div>
             <div class="final-msg">${msg}</div>
             <div class="final-details">Best streak this round: ${bestStreak}</div>
