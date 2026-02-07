@@ -5609,6 +5609,16 @@ function addMoreButtons() {
         modeSelect.appendChild(btn);
     }
 
+    // ACNH Trivia button
+    if (!modeSelect.querySelector('#btn-acnh')) {
+        const btn = document.createElement('button');
+        btn.id = 'btn-acnh';
+        btn.className = 'mode-btn';
+        btn.innerHTML = '<span class="mode-icon">🏝️</span>ACNH Quiz';
+        btn.onclick = showACNHMenu;
+        modeSelect.appendChild(btn);
+    }
+
     // Wheel button
     if (!modeSelect.querySelector('#btn-wheel')) {
         const btn = document.createElement('button');
