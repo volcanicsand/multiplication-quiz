@@ -3775,71 +3775,386 @@ function addMapButton() {
     }
 }
 
-// ── Mini-game: Bug Catching ──
-let bugGameScore = 0;
-let bugGameTimer = null;
+// ══════════════════════════════════════════════════════════════════════════
+// MINI-GAMES
+// ══════════════════════════════════════════════════════════════════════════
 
-function showBugGame() {
+let gameScore = 0;
+
+// Games Menu
+function showGamesMenu() {
     practiceViewActive = true;
     document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
+    document.getElementById('btn-minigame')?.classList.add('active');
     document.querySelector('.score-bar').style.display = 'none';
 
     const card = document.getElementById('card');
-    bugGameScore = 0;
+    card.innerHTML = `
+        <div style="text-align:center">
+            <h3 style="color:#3d7c47;margin-bottom:1rem">🎮 Mini-Games</h3>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.8rem;max-width:300px;margin:0 auto;">
+                <button class="minigame-btn" onclick="showBugGame()" style="padding:1rem">
+                    <div style="font-size:2rem">🦋</div>
+                    <div>Bug Catching</div>
+                </button>
+                <button class="minigame-btn" onclick="showFishingGame()" style="padding:1rem">
+                    <div style="font-size:2rem">🎣</div>
+                    <div>Fishing</div>
+                </button>
+                <button class="minigame-btn" onclick="showBalloonGame()" style="padding:1rem">
+                    <div style="font-size:2rem">🎈</div>
+                    <div>Balloon Pop</div>
+                </button>
+                <button class="minigame-btn" onclick="showShellGame()" style="padding:1rem">
+                    <div style="font-size:2rem">🐚</div>
+                    <div>Shell Collecting</div>
+                </button>
+                <button class="minigame-btn" onclick="showFossilGame()" style="padding:1rem">
+                    <div style="font-size:2rem">🦴</div>
+                    <div>Fossil Dig</div>
+                </button>
+                <button class="minigame-btn" onclick="showStarGame()" style="padding:1rem">
+                    <div style="font-size:2rem">🌟</div>
+                    <div>Star Catching</div>
+                </button>
+            </div>
+            <button class="back-btn" onclick="setMode('times', document.getElementById('btn-times'))">Back to Times Tables</button>
+        </div>
+    `;
+}
 
+// ── Bug Catching Game ──
+function showBugGame() {
+    const card = document.getElementById('card');
     card.innerHTML = `
         <div class="minigame-unlock">
-            <h3>🦋 Bug Catching Game!</h3>
+            <h3>🦋 Bug Catching!</h3>
             <p style="color:#5c4a32">Catch as many bugs as you can in 15 seconds!</p>
             <button class="minigame-btn" onclick="startBugGame()">Start Game!</button>
         </div>
-        <button class="back-btn" onclick="setMode('times', document.getElementById('btn-times'))">Back to Times Tables</button>
+        <button class="back-btn" onclick="showGamesMenu()">Back to Games</button>
     `;
 }
 
 function startBugGame() {
     const card = document.getElementById('card');
-    bugGameScore = 0;
+    gameScore = 0;
 
     card.innerHTML = `
         <div style="text-align:center;margin-bottom:0.5rem">
-            <span id="bug-timer" style="font-weight:800;font-size:1.2rem;color:#3d7c47">15</span>s
-            <span style="margin-left:1rem">Score: <span id="bug-score" style="font-weight:800;color:#c0732a">0</span></span>
+            <span id="game-timer" style="font-weight:800;font-size:1.2rem;color:#3d7c47">15</span>s
+            <span style="margin-left:1rem">Score: <span id="game-score" style="font-weight:800;color:#c0732a">0</span></span>
         </div>
-        <div class="bug-game" id="bug-area"></div>
+        <div class="bug-game" id="game-area"></div>
     `;
 
-    // Start spawning bugs
-    const bugArea = document.getElementById('bug-area');
+    const gameArea = document.getElementById('game-area');
     const bugs = ['🦋', '🐛', '🐞', '🦗', '🐝', '🪲'];
 
-    const spawnBug = () => {
-        const bug = document.createElement('div');
-        bug.className = 'bug';
-        bug.textContent = pickRandom(bugs);
-        bug.style.left = Math.random() * 80 + 10 + '%';
-        bug.style.top = Math.random() * 80 + 10 + '%';
-        bug.onclick = () => {
-            bugGameScore++;
-            document.getElementById('bug-score').textContent = bugGameScore;
-            bug.style.transform = 'scale(0)';
-            setTimeout(() => bug.remove(), 100);
+    const spawnItem = () => {
+        const item = document.createElement('div');
+        item.className = 'bug';
+        item.textContent = pickRandom(bugs);
+        item.style.left = Math.random() * 80 + 10 + '%';
+        item.style.top = Math.random() * 80 + 10 + '%';
+        item.onclick = () => {
+            gameScore++;
+            document.getElementById('game-score').textContent = gameScore;
+            item.style.transform = 'scale(0)';
+            setTimeout(() => item.remove(), 100);
             playSound('correct');
         };
-        bugArea.appendChild(bug);
-
-        // Bug flies away after 1.5s
-        setTimeout(() => {
-            if (bug.parentNode) bug.remove();
-        }, 1500);
+        gameArea.appendChild(item);
+        setTimeout(() => { if (item.parentNode) item.remove(); }, 1500);
     };
 
-    // Spawn bugs every 400ms
-    const spawnInterval = setInterval(spawnBug, 400);
+    const spawnInterval = setInterval(spawnItem, 400);
+    runGameTimer(15, spawnInterval, () => endGame('bugs', '🦋', 'bugs caught'));
+}
 
-    // Countdown timer
-    let timeLeft = 15;
-    const timerEl = document.getElementById('bug-timer');
+// ── Fishing Game ──
+function showFishingGame() {
+    const card = document.getElementById('card');
+    card.innerHTML = `
+        <div class="minigame-unlock">
+            <h3>🎣 Fishing!</h3>
+            <p style="color:#5c4a32">Catch fish before they swim away! 15 seconds!</p>
+            <button class="minigame-btn" onclick="startFishingGame()">Start Fishing!</button>
+        </div>
+        <button class="back-btn" onclick="showGamesMenu()">Back to Games</button>
+    `;
+}
+
+function startFishingGame() {
+    const card = document.getElementById('card');
+    gameScore = 0;
+
+    card.innerHTML = `
+        <div style="text-align:center;margin-bottom:0.5rem">
+            <span id="game-timer" style="font-weight:800;font-size:1.2rem;color:#3d7c47">15</span>s
+            <span style="margin-left:1rem">Fish: <span id="game-score" style="font-weight:800;color:#c0732a">0</span></span>
+        </div>
+        <div class="bug-game" id="game-area" style="background:linear-gradient(180deg, #87ceeb 0%, #1e90ff 50%, #000080 100%)"></div>
+    `;
+
+    const gameArea = document.getElementById('game-area');
+    const fish = ['🐟', '🐠', '🐡', '🦈', '🐙', '🦑', '🦐', '🦀'];
+
+    const spawnItem = () => {
+        const item = document.createElement('div');
+        item.className = 'bug';
+        item.textContent = pickRandom(fish);
+        item.style.left = '-10%';
+        item.style.top = Math.random() * 70 + 15 + '%';
+        item.style.transition = 'left 2s linear';
+        item.onclick = () => {
+            gameScore++;
+            document.getElementById('game-score').textContent = gameScore;
+            item.textContent = '💥';
+            setTimeout(() => item.remove(), 200);
+            playSound('correct');
+        };
+        gameArea.appendChild(item);
+        setTimeout(() => { item.style.left = '110%'; }, 50);
+        setTimeout(() => { if (item.parentNode) item.remove(); }, 2100);
+    };
+
+    const spawnInterval = setInterval(spawnItem, 500);
+    runGameTimer(15, spawnInterval, () => endGame('fish', '🎣', 'fish caught'));
+}
+
+// ── Balloon Pop Game ──
+function showBalloonGame() {
+    const card = document.getElementById('card');
+    card.innerHTML = `
+        <div class="minigame-unlock">
+            <h3>🎈 Balloon Pop!</h3>
+            <p style="color:#5c4a32">Pop the balloons before they float away!</p>
+            <button class="minigame-btn" onclick="startBalloonGame()">Start Popping!</button>
+        </div>
+        <button class="back-btn" onclick="showGamesMenu()">Back to Games</button>
+    `;
+}
+
+function startBalloonGame() {
+    const card = document.getElementById('card');
+    gameScore = 0;
+
+    card.innerHTML = `
+        <div style="text-align:center;margin-bottom:0.5rem">
+            <span id="game-timer" style="font-weight:800;font-size:1.2rem;color:#3d7c47">15</span>s
+            <span style="margin-left:1rem">Popped: <span id="game-score" style="font-weight:800;color:#c0732a">0</span></span>
+        </div>
+        <div class="bug-game" id="game-area" style="background:linear-gradient(180deg, #87ceeb 0%, #b0e0e6 50%, #98fb98 100%)"></div>
+    `;
+
+    const gameArea = document.getElementById('game-area');
+    const balloons = ['🎈', '🟡', '🔴', '🟢', '🟣', '🔵'];
+    const colors = ['#ff6b6b', '#feca57', '#48dbfb', '#ff9ff3', '#54a0ff', '#5f27cd'];
+
+    const spawnItem = () => {
+        const item = document.createElement('div');
+        item.className = 'bug';
+        item.textContent = '🎈';
+        item.style.color = pickRandom(colors);
+        item.style.left = Math.random() * 80 + 10 + '%';
+        item.style.bottom = '-10%';
+        item.style.top = 'auto';
+        item.style.transition = 'bottom 3s linear';
+        item.style.fontSize = '2.5rem';
+        item.onclick = () => {
+            gameScore++;
+            document.getElementById('game-score').textContent = gameScore;
+            item.textContent = '💥';
+            setTimeout(() => item.remove(), 150);
+            playSound('correct');
+        };
+        gameArea.appendChild(item);
+        setTimeout(() => { item.style.bottom = '110%'; }, 50);
+        setTimeout(() => { if (item.parentNode) item.remove(); }, 3100);
+    };
+
+    const spawnInterval = setInterval(spawnItem, 400);
+    runGameTimer(15, spawnInterval, () => endGame('balloons', '🎈', 'balloons popped'));
+}
+
+// ── Shell Collecting Game ──
+function showShellGame() {
+    const card = document.getElementById('card');
+    card.innerHTML = `
+        <div class="minigame-unlock">
+            <h3>🐚 Shell Collecting!</h3>
+            <p style="color:#5c4a32">Grab shells before the waves take them!</p>
+            <button class="minigame-btn" onclick="startShellGame()">Start Collecting!</button>
+        </div>
+        <button class="back-btn" onclick="showGamesMenu()">Back to Games</button>
+    `;
+}
+
+function startShellGame() {
+    const card = document.getElementById('card');
+    gameScore = 0;
+
+    card.innerHTML = `
+        <div style="text-align:center;margin-bottom:0.5rem">
+            <span id="game-timer" style="font-weight:800;font-size:1.2rem;color:#3d7c47">15</span>s
+            <span style="margin-left:1rem">Shells: <span id="game-score" style="font-weight:800;color:#c0732a">0</span></span>
+        </div>
+        <div class="bug-game" id="game-area" style="background:linear-gradient(180deg, #87ceeb 20%, #1e90ff 40%, #f4a460 60%, #deb887 100%)"></div>
+    `;
+
+    const gameArea = document.getElementById('game-area');
+    const shells = ['🐚', '🦪', '🐚', '🌊', '🐚'];
+
+    const spawnItem = () => {
+        const item = document.createElement('div');
+        item.className = 'bug';
+        item.textContent = pickRandom(shells);
+        item.style.left = Math.random() * 80 + 10 + '%';
+        item.style.top = Math.random() * 30 + 60 + '%'; // Beach area (bottom)
+        item.onclick = () => {
+            gameScore++;
+            document.getElementById('game-score').textContent = gameScore;
+            item.textContent = '✨';
+            setTimeout(() => item.remove(), 150);
+            playSound('correct');
+        };
+        gameArea.appendChild(item);
+        setTimeout(() => { if (item.parentNode) item.remove(); }, 1200);
+    };
+
+    const spawnInterval = setInterval(spawnItem, 350);
+    runGameTimer(15, spawnInterval, () => endGame('shells', '🐚', 'shells collected'));
+}
+
+// ── Fossil Dig Game ──
+function showFossilGame() {
+    const card = document.getElementById('card');
+    card.innerHTML = `
+        <div class="minigame-unlock">
+            <h3>🦴 Fossil Dig!</h3>
+            <p style="color:#5c4a32">Tap the X marks to dig up fossils!</p>
+            <button class="minigame-btn" onclick="startFossilGame()">Start Digging!</button>
+        </div>
+        <button class="back-btn" onclick="showGamesMenu()">Back to Games</button>
+    `;
+}
+
+function startFossilGame() {
+    const card = document.getElementById('card');
+    gameScore = 0;
+
+    card.innerHTML = `
+        <div style="text-align:center;margin-bottom:0.5rem">
+            <span id="game-timer" style="font-weight:800;font-size:1.2rem;color:#3d7c47">15</span>s
+            <span style="margin-left:1rem">Fossils: <span id="game-score" style="font-weight:800;color:#c0732a">0</span></span>
+        </div>
+        <div class="bug-game" id="game-area" style="background:linear-gradient(180deg, #8b4513 0%, #a0522d 30%, #d2691e 60%, #deb887 100%)"></div>
+    `;
+
+    const gameArea = document.getElementById('game-area');
+    const fossils = ['🦴', '🦷', '💀', '🦴', '🐚'];
+
+    const spawnItem = () => {
+        const item = document.createElement('div');
+        item.className = 'bug';
+        item.textContent = '❌';
+        item.style.left = Math.random() * 80 + 10 + '%';
+        item.style.top = Math.random() * 80 + 10 + '%';
+        item.style.fontSize = '1.5rem';
+        item.onclick = () => {
+            gameScore++;
+            document.getElementById('game-score').textContent = gameScore;
+            item.textContent = pickRandom(fossils);
+            item.style.fontSize = '2rem';
+            playSound('correct');
+            setTimeout(() => item.remove(), 500);
+        };
+        gameArea.appendChild(item);
+        setTimeout(() => { if (item.parentNode) item.remove(); }, 2000);
+    };
+
+    const spawnInterval = setInterval(spawnItem, 600);
+    runGameTimer(15, spawnInterval, () => endGame('fossils', '🦴', 'fossils found'));
+}
+
+// ── Star Catching Game ──
+function showStarGame() {
+    const card = document.getElementById('card');
+    card.innerHTML = `
+        <div class="minigame-unlock">
+            <h3>🌟 Star Catching!</h3>
+            <p style="color:#5c4a32">Catch shooting stars and make wishes!</p>
+            <button class="minigame-btn" onclick="startStarGame()">Start Wishing!</button>
+        </div>
+        <button class="back-btn" onclick="showGamesMenu()">Back to Games</button>
+    `;
+}
+
+function startStarGame() {
+    const card = document.getElementById('card');
+    gameScore = 0;
+
+    card.innerHTML = `
+        <div style="text-align:center;margin-bottom:0.5rem">
+            <span id="game-timer" style="font-weight:800;font-size:1.2rem;color:#ffd700">15</span>s
+            <span style="margin-left:1rem">Wishes: <span id="game-score" style="font-weight:800;color:#ffd700">0</span></span>
+        </div>
+        <div class="bug-game" id="game-area" style="background:linear-gradient(180deg, #0a0a2e 0%, #1a1a4e 50%, #2a2a6e 100%)"></div>
+    `;
+
+    const gameArea = document.getElementById('game-area');
+    const stars = ['⭐', '🌟', '✨', '💫', '⭐'];
+
+    // Add some static stars for ambiance
+    for (let i = 0; i < 20; i++) {
+        const star = document.createElement('div');
+        star.style.position = 'absolute';
+        star.style.left = Math.random() * 100 + '%';
+        star.style.top = Math.random() * 100 + '%';
+        star.style.fontSize = '0.5rem';
+        star.style.opacity = Math.random() * 0.5 + 0.3;
+        star.textContent = '·';
+        star.style.color = 'white';
+        star.style.pointerEvents = 'none';
+        gameArea.appendChild(star);
+    }
+
+    const spawnItem = () => {
+        const item = document.createElement('div');
+        item.className = 'bug';
+        item.textContent = pickRandom(stars);
+        item.style.right = '-10%';
+        item.style.left = 'auto';
+        item.style.top = Math.random() * 50 + '%';
+        item.style.transition = 'right 1.5s linear, top 1.5s linear';
+        item.style.fontSize = '2rem';
+        item.onclick = () => {
+            gameScore++;
+            document.getElementById('game-score').textContent = gameScore;
+            item.textContent = '🌠';
+            item.style.fontSize = '2.5rem';
+            playSound('correct');
+            setTimeout(() => item.remove(), 300);
+        };
+        gameArea.appendChild(item);
+        const endTop = parseFloat(item.style.top) + 40;
+        setTimeout(() => {
+            item.style.right = '110%';
+            item.style.top = endTop + '%';
+        }, 50);
+        setTimeout(() => { if (item.parentNode) item.remove(); }, 1600);
+    };
+
+    const spawnInterval = setInterval(spawnItem, 400);
+    runGameTimer(15, spawnInterval, () => endGame('stars', '🌟', 'wishes made'));
+}
+
+// ── Shared Game Functions ──
+function runGameTimer(seconds, spawnInterval, endCallback) {
+    let timeLeft = seconds;
+    const timerEl = document.getElementById('game-timer');
+
     const countdown = setInterval(() => {
         timeLeft--;
         timerEl.textContent = timeLeft;
@@ -3847,31 +4162,50 @@ function startBugGame() {
         if (timeLeft <= 0) {
             clearInterval(countdown);
             clearInterval(spawnInterval);
-            endBugGame();
+            endCallback();
         }
     }, 1000);
 }
 
-function endBugGame() {
+function endGame(collectibleType, icon, message) {
     const card = document.getElementById('card');
 
-    // Add bugs to collectibles
-    collectibles.bugs += bugGameScore;
+    // Add to collectibles
+    if (collectibleType === 'bugs') collectibles.bugs += gameScore;
+    else if (collectibleType === 'fish') collectibles.fish += gameScore;
+    else if (collectibleType === 'shells') collectibles.shells += gameScore;
+    // Stars and fossils don't add to collectibles but are still fun!
+
     renderCollectiblesBar();
     saveCollectibles();
 
-    if (bugGameScore >= 10) launchConfetti();
+    if (gameScore >= 10) launchConfetti();
+
+    const trophy = gameScore >= 15 ? '🏆' : gameScore >= 10 ? '🌟' : gameScore >= 5 ? '⭐' : '👏';
 
     card.innerHTML = `
         <div style="text-align:center;padding:2rem">
-            <h2 style="color:#3d7c47">🦋 Game Over!</h2>
-            <div style="font-size:3rem;margin:1rem 0">${bugGameScore >= 10 ? '🏆' : bugGameScore >= 5 ? '⭐' : '👏'}</div>
-            <div style="font-size:2rem;font-weight:800;color:#c0732a">${bugGameScore} bugs caught!</div>
-            <p style="color:#7a9a5a;margin-top:0.5rem">+${bugGameScore} added to your collection!</p>
-            <button class="play-again-btn" onclick="showBugGame()" style="margin-top:1rem">Play Again</button>
-            <button class="back-btn" onclick="setMode('times', document.getElementById('btn-times'))">Back to Times Tables</button>
+            <h2 style="color:#3d7c47">${icon} Game Over!</h2>
+            <div style="font-size:3rem;margin:1rem 0">${trophy}</div>
+            <div style="font-size:2rem;font-weight:800;color:#c0732a">${gameScore} ${message}!</div>
+            ${collectibleType === 'bugs' || collectibleType === 'fish' || collectibleType === 'shells' ?
+                `<p style="color:#7a9a5a;margin-top:0.5rem">+${gameScore} added to your collection!</p>` : ''}
+            <button class="play-again-btn" onclick="start${collectibleType.charAt(0).toUpperCase() + collectibleType.slice(1)}Game ? start${collectibleType.charAt(0).toUpperCase() + collectibleType.slice(1)}Game() : showGamesMenu()" style="margin-top:1rem">Play Again</button>
+            <button class="back-btn" onclick="showGamesMenu()">Back to Games</button>
         </div>
     `;
+
+    // Fix the play again button
+    const playAgainBtn = card.querySelector('.play-again-btn');
+    const gameMap = {
+        bugs: startBugGame,
+        fish: startFishingGame,
+        shells: startShellGame,
+        fossils: startFossilGame,
+        stars: startStarGame,
+        balloons: startBalloonGame
+    };
+    playAgainBtn.onclick = gameMap[collectibleType] || showGamesMenu;
 }
 
 // Add mini-game button
@@ -3882,7 +4216,7 @@ function addMinigameButton() {
         btn.id = 'btn-minigame';
         btn.className = 'mode-btn';
         btn.innerHTML = '<span class="mode-icon">🎮</span>Games';
-        btn.onclick = showBugGame;
+        btn.onclick = showGamesMenu;
         modeSelect.appendChild(btn);
     }
 }
