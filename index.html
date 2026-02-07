@@ -1523,24 +1523,86 @@ function showPracticeView() {
         `;
     }
 
+    // Store problems for practice mode
+    window.practiceProblems = needsPractice.map(p => p.key);
+
     card.innerHTML = `
         <div class="practice-view">
             <h3>These ones are almost there!</h3>
             <div class="practice-subtitle">Keep going — you're getting closer!</div>
             ${itemsHTML}
+            <button class="play-again-btn" onclick="startPracticeRound()" style="margin-top: 1rem;">Practice These Now</button>
             <button class="back-btn" onclick="setMode('times', document.getElementById('btn-times'))">Back to Times Tables</button>
         </div>
     `;
+}
+
+// Practice mode - drill specific problems
+let isPracticeMode = false;
+let practiceQueue = [];
+
+function startPracticeRound() {
+    isPracticeMode = true;
+    practiceViewActive = false;
+    practiceQueue = [...window.practiceProblems];
+
+    // Shuffle the practice queue
+    for (let i = practiceQueue.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [practiceQueue[i], practiceQueue[j]] = [practiceQueue[j], practiceQueue[i]];
+    }
+
+    score = 0;
+    total = 0;
+    streak = 0;
+    bestStreak = 0;
+    roundProblems = [];
+    roundLength = Math.min(practiceQueue.length, 10);
+
+    document.getElementById('qtotal').textContent = roundLength;
+    document.querySelector('.score-bar').style.display = '';
+    document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
+    document.getElementById('btn-practice').classList.add('active');
+
+    updateScoreboard();
+    nextPracticeQuestion();
+}
+
+function nextPracticeQuestion() {
+    if (total >= roundLength) {
+        isPracticeMode = false;
+        showRoundEnd();
+        return;
+    }
+
+    rebuildCard();
+    answered = false;
+
+    const problemKey = practiceQueue[total];
+    const [a, b] = problemKey.split('x').map(Number);
+    currentProblemA = a;
+    currentProblemB = b;
+    const answer = a * b;
+
+    document.getElementById('q-label').textContent = 'Practice Mode 🎯';
+    document.getElementById('q-text').innerHTML = `<span class="highlight">${a}</span> &times; <span class="highlight">${b}</span> = ?`;
+    document.getElementById('answer-input').dataset.answer = answer;
+
+    updateScoreboard();
+    focusInput();
 }
 
 // ── Shared Logic ──
 
 function nextQuestion() {
     if (total >= roundLength) {
+        isPracticeMode = false;
         showRoundEnd();
         return;
     }
-    if (currentMode === 'times') {
+    if (isPracticeMode) {
+        nextPracticeQuestion();
+    } else if (currentMode === 'times') {
         nextTimesQuestion();
     } else {
         nextBreakdownQuestion();
