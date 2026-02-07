@@ -1359,6 +1359,357 @@
             50% { opacity: 0.7; }
         }
 
+        /* Leaderboard */
+        .leaderboard-view h3 {
+            color: #3d7c47;
+            text-align: center;
+            margin-bottom: 1rem;
+        }
+
+        .leaderboard-item {
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            padding: 0.6rem;
+            background: rgba(255,255,255,0.5);
+            border-radius: 10px;
+            margin-bottom: 0.5rem;
+        }
+
+        .leaderboard-item.mine {
+            background: rgba(61,124,71,0.15);
+            border: 2px solid #3d7c47;
+        }
+
+        .leaderboard-rank {
+            font-size: 1.2rem;
+            font-weight: 800;
+            min-width: 30px;
+        }
+
+        .leaderboard-name {
+            flex: 1;
+            font-weight: 600;
+        }
+
+        .leaderboard-score {
+            font-weight: 800;
+            color: #c0732a;
+        }
+
+        /* Avatar Creator */
+        .avatar-creator {
+            text-align: center;
+            padding: 1rem;
+        }
+
+        .avatar-preview {
+            width: 80px;
+            height: 120px;
+            margin: 0 auto 1rem;
+        }
+
+        .avatar-options {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            justify-content: center;
+            margin-bottom: 0.5rem;
+        }
+
+        .avatar-option {
+            width: 36px;
+            height: 36px;
+            border: 2px solid #e5e7eb;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .avatar-option:hover, .avatar-option.selected {
+            border-color: #3d7c47;
+            transform: scale(1.1);
+        }
+
+        .avatar-label {
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: #7a9a5a;
+            margin: 0.8rem 0 0.3rem;
+        }
+
+        /* Bonus Question */
+        .bonus-question .question-card {
+            background: linear-gradient(135deg, #ffd700 0%, #ffec8b 50%, #ffd700 100%);
+            border: 3px solid #daa520;
+            animation: bonusGlow 1s ease-in-out infinite alternate;
+        }
+
+        @keyframes bonusGlow {
+            from { box-shadow: 0 0 10px rgba(255,215,0,0.5); }
+            to { box-shadow: 0 0 25px rgba(255,215,0,0.8); }
+        }
+
+        .bonus-badge {
+            background: linear-gradient(135deg, #daa520, #ffd700);
+            color: #5c4a32;
+            font-weight: 800;
+            padding: 0.3rem 1rem;
+            border-radius: 20px;
+            display: inline-block;
+            margin-bottom: 0.8rem;
+            animation: pulseBadge 0.5s ease-in-out infinite;
+        }
+
+        /* Difficulty Selector */
+        .difficulty-select {
+            display: flex;
+            gap: 0.3rem;
+            justify-content: center;
+            margin-bottom: 0.8rem;
+        }
+
+        .difficulty-btn {
+            padding: 0.3rem 0.8rem;
+            border: 2px solid #e5e7eb;
+            border-radius: 15px;
+            background: white;
+            font-family: inherit;
+            font-weight: 600;
+            font-size: 0.7rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .difficulty-btn:hover {
+            border-color: #3d7c47;
+        }
+
+        .difficulty-btn.active {
+            background: #3d7c47;
+            color: white;
+            border-color: #3d7c47;
+        }
+
+        .difficulty-btn.easy { color: #22c55e; }
+        .difficulty-btn.easy.active { background: #22c55e; color: white; border-color: #22c55e; }
+        .difficulty-btn.hard { color: #ef4444; }
+        .difficulty-btn.hard.active { background: #ef4444; color: white; border-color: #ef4444; }
+
+        /* Power-ups */
+        .powerups-bar {
+            display: flex;
+            gap: 0.5rem;
+            justify-content: center;
+            margin-bottom: 0.8rem;
+        }
+
+        .powerup-btn {
+            display: flex;
+            align-items: center;
+            gap: 0.3rem;
+            padding: 0.3rem 0.6rem;
+            border: 2px solid #e5e7eb;
+            border-radius: 20px;
+            background: white;
+            font-family: inherit;
+            font-weight: 600;
+            font-size: 0.75rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .powerup-btn:hover:not(:disabled) {
+            border-color: #3d7c47;
+            transform: scale(1.05);
+        }
+
+        .powerup-btn:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+        }
+
+        .powerup-count {
+            background: #3d7c47;
+            color: white;
+            padding: 0.1rem 0.4rem;
+            border-radius: 10px;
+            font-size: 0.7rem;
+        }
+
+        /* Seasonal Themes */
+        body.theme-halloween {
+            background: linear-gradient(180deg, #1a0a2e 0%, #2d1b4e 30%, #4a2c6a 60%, #ff6b35 100%);
+        }
+
+        body.theme-christmas {
+            background: linear-gradient(180deg, #1e3a5f 0%, #2e5a7e 30%, #c41e3a 60%, #228b22 100%);
+        }
+
+        body.theme-summer {
+            background: linear-gradient(180deg, #87ceeb 0%, #98d8c8 30%, #f7dc6f 60%, #f39c12 100%);
+        }
+
+        /* Collectibles */
+        .collectibles-bar {
+            display: flex;
+            gap: 0.8rem;
+            justify-content: center;
+            padding: 0.5rem;
+            background: rgba(255,255,255,0.7);
+            border-radius: 20px;
+            margin-bottom: 0.8rem;
+            font-size: 0.85rem;
+        }
+
+        .collectible-item {
+            display: flex;
+            align-items: center;
+            gap: 0.2rem;
+        }
+
+        .collectible-popup {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 3rem;
+            animation: collectiblePop 1s ease-out forwards;
+            z-index: 1000;
+            pointer-events: none;
+        }
+
+        @keyframes collectiblePop {
+            0% { transform: translate(-50%, -50%) scale(0); opacity: 1; }
+            50% { transform: translate(-50%, -50%) scale(1.5); opacity: 1; }
+            100% { transform: translate(-50%, -100%) scale(1); opacity: 0; }
+        }
+
+        /* Mini-games */
+        .minigame-unlock {
+            text-align: center;
+            padding: 1rem;
+            background: linear-gradient(135deg, #a8e6cf 0%, #dcedc1 100%);
+            border-radius: 12px;
+            margin: 1rem 0;
+        }
+
+        .minigame-btn {
+            background: #3d7c47;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            padding: 0.6rem 1.2rem;
+            font-family: inherit;
+            font-weight: 700;
+            cursor: pointer;
+            margin-top: 0.5rem;
+        }
+
+        .bug-game {
+            position: relative;
+            height: 200px;
+            background: linear-gradient(180deg, #87ceeb 0%, #90ee90 100%);
+            border-radius: 12px;
+            overflow: hidden;
+            margin: 1rem 0;
+        }
+
+        .bug {
+            position: absolute;
+            font-size: 2rem;
+            cursor: pointer;
+            transition: transform 0.1s;
+            user-select: none;
+        }
+
+        .bug:hover {
+            transform: scale(1.2);
+        }
+
+        /* Progress Map */
+        .progress-map {
+            position: relative;
+            width: 100%;
+            height: 300px;
+            background: linear-gradient(180deg, #87ceeb 0%, #90ee90 50%, #f4a460 100%);
+            border-radius: 16px;
+            overflow: hidden;
+            margin: 1rem 0;
+        }
+
+        .map-place {
+            position: absolute;
+            text-align: center;
+            transition: all 0.3s;
+        }
+
+        .map-place.locked {
+            filter: grayscale(1);
+            opacity: 0.4;
+        }
+
+        .map-place .place-icon {
+            font-size: 2rem;
+            display: block;
+        }
+
+        .map-place .place-label {
+            font-size: 0.6rem;
+            font-weight: 700;
+            color: #5c4a32;
+            background: rgba(255,255,255,0.8);
+            padding: 0.1rem 0.3rem;
+            border-radius: 4px;
+        }
+
+        /* Theme selector */
+        .theme-select {
+            display: flex;
+            gap: 0.5rem;
+            justify-content: center;
+            margin: 0.5rem 0;
+        }
+
+        .theme-btn {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            border: 2px solid #e5e7eb;
+            cursor: pointer;
+            font-size: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .theme-btn:hover, .theme-btn.active {
+            border-color: #3d7c47;
+            transform: scale(1.1);
+        }
+
+        /* Music toggle */
+        .music-toggle {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.9);
+            border: 2px solid #3d7c47;
+            font-size: 1.2rem;
+            cursor: pointer;
+            z-index: 100;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .music-toggle.muted {
+            opacity: 0.5;
+        }
+
         @media (max-width: 400px) {
             .header h1 { font-size: 1.3rem; }
             .question-text { font-size: 1.4rem; }
@@ -2874,9 +3225,806 @@ function checkPrizeEarned() {
     return newlyEarned;
 }
 
+// ══════════════════════════════════════════════════════════════════════════
+// NEW FEATURES
+// ══════════════════════════════════════════════════════════════════════════
+
+// ── Difficulty Modes ──
+let currentDifficulty = 'normal'; // easy, normal, hard
+
+function setDifficulty(mode) {
+    currentDifficulty = mode;
+    document.querySelectorAll('.difficulty-btn').forEach(b => b.classList.remove('active'));
+    document.querySelector(`.difficulty-btn.${mode}`)?.classList.add('active');
+
+    // Adjust round length based on difficulty
+    if (mode === 'easy') {
+        roundLength = 10;
+    } else if (mode === 'hard') {
+        roundLength = 30;
+    } else {
+        roundLength = currentMode === 'times' ? TIMES_ROUND : BREAKDOWN_ROUND;
+    }
+    document.getElementById('qtotal').textContent = roundLength;
+}
+
+function renderDifficultySelect() {
+    let container = document.getElementById('difficulty-select');
+    if (!container) {
+        container = document.createElement('div');
+        container.id = 'difficulty-select';
+        container.className = 'difficulty-select';
+        const scoreBar = document.querySelector('.score-bar');
+        scoreBar.parentNode.insertBefore(container, scoreBar.nextSibling);
+    }
+    container.innerHTML = `
+        <button class="difficulty-btn easy ${currentDifficulty === 'easy' ? 'active' : ''}" onclick="setDifficulty('easy')">🌱 Easy</button>
+        <button class="difficulty-btn ${currentDifficulty === 'normal' ? 'active' : ''}" onclick="setDifficulty('normal')">🌿 Normal</button>
+        <button class="difficulty-btn hard ${currentDifficulty === 'hard' ? 'active' : ''}" onclick="setDifficulty('hard')">🌋 Hard</button>
+    `;
+}
+
+// ── Power-ups ──
+let powerups = { skip: 3, hint: 3 };
+
+function usePowerup(type) {
+    if (powerups[type] <= 0 || answered) return;
+
+    powerups[type]--;
+    renderPowerupsBar();
+
+    if (type === 'skip') {
+        // Skip this question (no penalty)
+        total++;
+        if (total >= roundLength) {
+            showRoundEnd();
+        } else {
+            nextQuestion();
+        }
+    } else if (type === 'hint') {
+        // Show a hint
+        const inp = document.getElementById('answer-input');
+        const answer = parseInt(inp.dataset.answer);
+        const hint = Math.floor(answer / 10) * 10;
+        const feedback = document.getElementById('feedback');
+        feedback.className = 'feedback correct';
+        feedback.style.display = 'block';
+        feedback.textContent = `Hint: The answer is between ${hint} and ${hint + 10}!`;
+    }
+}
+
+function renderPowerupsBar() {
+    let container = document.getElementById('powerups-bar');
+    if (!container) {
+        container = document.createElement('div');
+        container.id = 'powerups-bar';
+        container.className = 'powerups-bar';
+        const card = document.getElementById('card');
+        card.parentNode.insertBefore(container, card);
+    }
+    container.innerHTML = `
+        <button class="powerup-btn" onclick="usePowerup('skip')" ${powerups.skip <= 0 ? 'disabled' : ''}>
+            ⏭️ Skip <span class="powerup-count">${powerups.skip}</span>
+        </button>
+        <button class="powerup-btn" onclick="usePowerup('hint')" ${powerups.hint <= 0 ? 'disabled' : ''}>
+            💡 Hint <span class="powerup-count">${powerups.hint}</span>
+        </button>
+    `;
+}
+
+// ── Collectibles ──
+let collectibles = { shells: 0, bugs: 0, fish: 0 };
+const COLLECTIBLE_TYPES = [
+    { type: 'shells', icon: '🐚', name: 'Shell' },
+    { type: 'bugs', icon: '🦋', name: 'Bug' },
+    { type: 'fish', icon: '🐟', name: 'Fish' }
+];
+
+function maybeCollectItem() {
+    // 20% chance to find a collectible on correct answer
+    if (Math.random() < 0.2) {
+        const item = pickRandom(COLLECTIBLE_TYPES);
+        collectibles[item.type]++;
+        showCollectiblePopup(item);
+        renderCollectiblesBar();
+        saveCollectibles();
+    }
+}
+
+function showCollectiblePopup(item) {
+    const popup = document.createElement('div');
+    popup.className = 'collectible-popup';
+    popup.textContent = item.icon;
+    document.body.appendChild(popup);
+
+    setTimeout(() => popup.remove(), 1000);
+}
+
+function renderCollectiblesBar() {
+    let container = document.getElementById('collectibles-bar');
+    if (!container) {
+        container = document.createElement('div');
+        container.id = 'collectibles-bar';
+        container.className = 'collectibles-bar';
+        const header = document.querySelector('.header');
+        header.parentNode.insertBefore(container, header.nextSibling);
+    }
+    container.innerHTML = `
+        <div class="collectible-item">🐚 ${collectibles.shells}</div>
+        <div class="collectible-item">🦋 ${collectibles.bugs}</div>
+        <div class="collectible-item">🐟 ${collectibles.fish}</div>
+    `;
+}
+
+function saveCollectibles() {
+    if (!multData.collectibles) multData.collectibles = {};
+    multData.collectibles = collectibles;
+    saveMultiplicationData();
+}
+
+function loadCollectibles() {
+    if (multData.collectibles) {
+        collectibles = { ...collectibles, ...multData.collectibles };
+    }
+    renderCollectiblesBar();
+}
+
+// ── Seasonal Themes ──
+let currentTheme = 'default';
+
+function setTheme(theme) {
+    document.body.classList.remove('theme-halloween', 'theme-christmas', 'theme-summer');
+    if (theme !== 'default') {
+        document.body.classList.add('theme-' + theme);
+    }
+    currentTheme = theme;
+    renderThemeSelect();
+
+    // Save preference
+    if (multData.preferences) {
+        multData.preferences.theme = theme;
+    } else {
+        multData.preferences = { theme };
+    }
+    saveMultiplicationData();
+}
+
+function renderThemeSelect() {
+    let container = document.getElementById('theme-select');
+    if (!container) {
+        container = document.createElement('div');
+        container.id = 'theme-select';
+        container.className = 'theme-select';
+        const header = document.querySelector('.header');
+        header.appendChild(container);
+    }
+    container.innerHTML = `
+        <button class="theme-btn ${currentTheme === 'default' ? 'active' : ''}" onclick="setTheme('default')" title="Default">🌅</button>
+        <button class="theme-btn ${currentTheme === 'summer' ? 'active' : ''}" onclick="setTheme('summer')" title="Summer">☀️</button>
+        <button class="theme-btn ${currentTheme === 'halloween' ? 'active' : ''}" onclick="setTheme('halloween')" title="Halloween">🎃</button>
+        <button class="theme-btn ${currentTheme === 'christmas' ? 'active' : ''}" onclick="setTheme('christmas')" title="Christmas">🎄</button>
+    `;
+}
+
+// ── Background Music ──
+let musicPlaying = false;
+let musicOscillator = null;
+let musicGain = null;
+
+function toggleMusic() {
+    const btn = document.getElementById('music-toggle');
+
+    if (musicPlaying) {
+        stopMusic();
+        btn.classList.add('muted');
+        btn.textContent = '🔇';
+    } else {
+        playBackgroundMusic();
+        btn.classList.remove('muted');
+        btn.textContent = '🎵';
+    }
+    musicPlaying = !musicPlaying;
+}
+
+function playBackgroundMusic() {
+    try {
+        // Create a simple pleasant melody loop
+        const playNote = (freq, startTime, duration) => {
+            const osc = audioContext.createOscillator();
+            const gain = audioContext.createGain();
+            osc.connect(gain);
+            gain.connect(audioContext.destination);
+            osc.frequency.setValueAtTime(freq, audioContext.currentTime + startTime);
+            osc.type = 'sine';
+            gain.gain.setValueAtTime(0.08, audioContext.currentTime + startTime);
+            gain.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + startTime + duration);
+            osc.start(audioContext.currentTime + startTime);
+            osc.stop(audioContext.currentTime + startTime + duration);
+        };
+
+        // Simple repeating melody
+        const melody = [262, 294, 330, 349, 392, 349, 330, 294];
+        let time = 0;
+        melody.forEach(freq => {
+            playNote(freq, time, 0.4);
+            time += 0.5;
+        });
+
+        // Loop it
+        if (musicPlaying) {
+            setTimeout(() => {
+                if (musicPlaying) playBackgroundMusic();
+            }, time * 1000);
+        }
+    } catch(e) {
+        // Audio not supported
+    }
+}
+
+function stopMusic() {
+    musicPlaying = false;
+}
+
+function createMusicToggle() {
+    if (document.getElementById('music-toggle')) return;
+    const btn = document.createElement('button');
+    btn.id = 'music-toggle';
+    btn.className = 'music-toggle muted';
+    btn.textContent = '🔇';
+    btn.onclick = toggleMusic;
+    document.body.appendChild(btn);
+}
+
+// ── Bonus Questions ──
+let isBonusQuestion = false;
+const BONUS_CHANCE = 0.1; // 10% chance
+
+function checkBonusQuestion() {
+    isBonusQuestion = Math.random() < BONUS_CHANCE;
+    return isBonusQuestion;
+}
+
+function getBonusMultiplier() {
+    return isBonusQuestion ? 3 : 1;
+}
+
+// Update rebuildCard to show bonus badge
+const originalRebuildCard = rebuildCard;
+rebuildCard = function() {
+    const card = document.getElementById('card');
+    const doublePointsBadge = isDoublePoints ? '<div class="double-points-badge">⭐ Double Points Round! ⭐</div>' : '';
+    const bonusBadge = isBonusQuestion ? '<div class="bonus-badge">🌟 BONUS QUESTION - 3x Points! 🌟</div>' : '';
+
+    card.innerHTML = `
+        ${doublePointsBadge}
+        ${bonusBadge}
+        <div class="question-label" id="q-label"></div>
+        <div class="question-text" id="q-text"></div>
+        <div id="extra"></div>
+        <div class="answer-area" id="answer-area">
+            <input type="number" class="answer-input" id="answer-input" autocomplete="off">
+            <button class="submit-btn" id="submit-btn" onclick="submitAnswer()">Go!</button>
+        </div>
+        <div class="feedback" id="feedback"></div>
+        <button class="next-btn" id="next-btn" onclick="nextQuestion()">Next Question</button>
+    `;
+
+    if (isBonusQuestion) {
+        card.parentNode.classList.add('bonus-question');
+    } else {
+        card.parentNode.classList.remove('bonus-question');
+    }
+};
+
+// ── Leaderboard ──
+let leaderboard = [];
+
+function updateLeaderboard(name, score) {
+    leaderboard.push({ name, score, date: new Date().toISOString() });
+    leaderboard.sort((a, b) => b.score - a.score);
+    leaderboard = leaderboard.slice(0, 10); // Keep top 10
+
+    // Save to Firebase
+    if (currentUser) {
+        multData.leaderboard = leaderboard;
+        saveMultiplicationData();
+    }
+}
+
+function showLeaderboard() {
+    practiceViewActive = true;
+    document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
+    document.querySelector('.score-bar').style.display = 'none';
+
+    const card = document.getElementById('card');
+
+    let itemsHTML = '';
+    if (leaderboard.length === 0) {
+        itemsHTML = '<p style="text-align:center;color:#7a9a5a;">No scores yet! Play a round to get on the board!</p>';
+    } else {
+        leaderboard.forEach((entry, i) => {
+            const rank = i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : (i + 1);
+            itemsHTML += `
+                <div class="leaderboard-item">
+                    <div class="leaderboard-rank">${rank}</div>
+                    <div class="leaderboard-name">${entry.name || 'Islander'}</div>
+                    <div class="leaderboard-score">${entry.score}</div>
+                </div>
+            `;
+        });
+    }
+
+    card.innerHTML = `
+        <div class="leaderboard-view">
+            <h3>🏆 Leaderboard</h3>
+            ${itemsHTML}
+            <button class="back-btn" onclick="setMode('times', document.getElementById('btn-times'))">Back to Times Tables</button>
+        </div>
+    `;
+}
+
+// Add leaderboard button to mode select
+function addLeaderboardButton() {
+    const modeSelect = document.querySelector('.mode-select');
+    if (!modeSelect.querySelector('#btn-leaderboard')) {
+        const btn = document.createElement('button');
+        btn.id = 'btn-leaderboard';
+        btn.className = 'mode-btn';
+        btn.innerHTML = '<span class="mode-icon">🏆</span>Leaderboard';
+        btn.onclick = showLeaderboard;
+        modeSelect.appendChild(btn);
+    }
+}
+
+// ── Avatar Creator ──
+let avatar = {
+    hairColor: '#8d6e63',
+    shirtColor: '#4fc3f7',
+    pantsColor: '#7986cb'
+};
+
+const AVATAR_COLORS = {
+    hair: ['#8d6e63', '#5d4037', '#ffeb3b', '#ff5722', '#212121', '#e91e63'],
+    shirt: ['#4fc3f7', '#81c784', '#ff8a65', '#ba68c8', '#fff176', '#90a4ae'],
+    pants: ['#7986cb', '#4db6ac', '#f06292', '#a1887f', '#64b5f6', '#aed581']
+};
+
+function showAvatarCreator() {
+    practiceViewActive = true;
+    document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
+    document.querySelector('.score-bar').style.display = 'none';
+
+    const card = document.getElementById('card');
+
+    const colorOptions = (type) => AVATAR_COLORS[type].map(color =>
+        `<div class="avatar-option ${avatar[type + 'Color'] === color ? 'selected' : ''}"
+              style="background:${color}"
+              onclick="setAvatarColor('${type}', '${color}')"></div>`
+    ).join('');
+
+    card.innerHTML = `
+        <div class="avatar-creator">
+            <h3>🎨 Create Your Character</h3>
+            <div class="avatar-preview" id="avatar-preview"></div>
+
+            <div class="avatar-label">Hair Color</div>
+            <div class="avatar-options">${colorOptions('hair')}</div>
+
+            <div class="avatar-label">Shirt Color</div>
+            <div class="avatar-options">${colorOptions('shirt')}</div>
+
+            <div class="avatar-label">Pants Color</div>
+            <div class="avatar-options">${colorOptions('pants')}</div>
+
+            <button class="play-again-btn" onclick="saveAvatar()" style="margin-top:1rem">Save Character</button>
+            <button class="back-btn" onclick="setMode('times', document.getElementById('btn-times'))">Cancel</button>
+        </div>
+    `;
+
+    updateAvatarPreview();
+}
+
+function setAvatarColor(type, color) {
+    avatar[type + 'Color'] = color;
+    showAvatarCreator(); // Refresh view
+}
+
+function updateAvatarPreview() {
+    const preview = document.getElementById('avatar-preview');
+    if (!preview) return;
+
+    preview.innerHTML = `
+        <svg viewBox="0 0 40 60" xmlns="http://www.w3.org/2000/svg">
+            <ellipse fill="${avatar.hairColor}" cx="20" cy="8" rx="10" ry="8"/>
+            <circle fill="#ffcc80" cx="20" cy="12" r="9"/>
+            <circle fill="#5d4037" cx="16" cy="11" r="2"/>
+            <circle fill="#5d4037" cx="24" cy="11" r="2"/>
+            <path d="M 16 16 Q 20 20 24 16" fill="none" stroke="#e65100" stroke-width="1.5" stroke-linecap="round"/>
+            <rect fill="${avatar.shirtColor}" x="12" y="21" width="16" height="14" rx="3"/>
+            <rect fill="${avatar.shirtColor}" x="4" y="22" width="8" height="4" rx="2"/>
+            <rect fill="${avatar.shirtColor}" x="28" y="22" width="8" height="4" rx="2"/>
+            <rect fill="${avatar.pantsColor}" x="12" y="35" width="7" height="12" rx="2"/>
+            <rect fill="${avatar.pantsColor}" x="21" y="35" width="7" height="12" rx="2"/>
+            <ellipse fill="#f44336" cx="15" cy="50" rx="5" ry="3"/>
+            <ellipse fill="#f44336" cx="25" cy="50" rx="5" ry="3"/>
+        </svg>
+    `;
+}
+
+function saveAvatar() {
+    // Update the runner SVG colors
+    const runner = document.getElementById('runner');
+    runner.querySelector('.hair').style.fill = avatar.hairColor;
+    runner.querySelectorAll('.shirt').forEach(el => el.style.fill = avatar.shirtColor);
+    runner.querySelectorAll('.pants').forEach(el => el.style.fill = avatar.pantsColor);
+
+    // Save to Firebase
+    if (multData.avatar) {
+        multData.avatar = avatar;
+    } else {
+        multData.avatar = { ...avatar };
+    }
+    saveMultiplicationData();
+
+    // Go back to game
+    setMode('times', document.getElementById('btn-times'));
+}
+
+function loadAvatar() {
+    if (multData.avatar) {
+        avatar = { ...avatar, ...multData.avatar };
+        const runner = document.getElementById('runner');
+        if (runner) {
+            runner.querySelector('.hair').style.fill = avatar.hairColor;
+            runner.querySelectorAll('.shirt').forEach(el => el.style.fill = avatar.shirtColor);
+            runner.querySelectorAll('.pants').forEach(el => el.style.fill = avatar.pantsColor);
+        }
+    }
+}
+
+// Add avatar button
+function addAvatarButton() {
+    const modeSelect = document.querySelector('.mode-select');
+    if (!modeSelect.querySelector('#btn-avatar')) {
+        const btn = document.createElement('button');
+        btn.id = 'btn-avatar';
+        btn.className = 'mode-btn';
+        btn.innerHTML = '<span class="mode-icon">🎨</span>Character';
+        btn.onclick = showAvatarCreator;
+        modeSelect.appendChild(btn);
+    }
+}
+
+// ── Progress Map ──
+function showProgressMap() {
+    practiceViewActive = true;
+    document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
+    document.querySelector('.score-bar').style.display = 'none';
+
+    const card = document.getElementById('card');
+    const unlockedCount = getUnlockedPlaces();
+
+    // Create a visual grid of places
+    let placesHTML = '';
+    const positions = [
+        { left: '10%', top: '10%' }, { left: '50%', top: '5%' }, { left: '85%', top: '15%' },
+        { left: '20%', top: '25%' }, { left: '70%', top: '30%' },
+        { left: '5%', top: '45%' }, { left: '40%', top: '40%' }, { left: '80%', top: '50%' },
+        { left: '25%', top: '55%' }, { left: '60%', top: '60%' },
+        { left: '10%', top: '70%' }, { left: '45%', top: '75%' }, { left: '75%', top: '70%' },
+        { left: '30%', top: '85%' }, { left: '55%', top: '90%' }, { left: '85%', top: '85%' },
+        { left: '15%', top: '95%' }, { left: '40%', top: '98%' }, { left: '65%', top: '95%' }, { left: '90%', top: '98%' }
+    ];
+
+    ISLAND_PLACES.forEach((place, i) => {
+        const isLocked = i >= unlockedCount;
+        const pos = positions[i] || { left: '50%', top: '50%' };
+        placesHTML += `
+            <div class="map-place ${isLocked ? 'locked' : ''}" style="left:${pos.left}; top:${pos.top}">
+                <span class="place-icon">${isLocked ? '🔒' : place.icon}</span>
+                <span class="place-label">${isLocked ? '???' : place.name}</span>
+            </div>
+        `;
+    });
+
+    card.innerHTML = `
+        <div style="text-align:center">
+            <h3>🗺️ Island Map</h3>
+            <p style="color:#7a9a5a;font-size:0.9rem;margin-bottom:0.5rem">
+                ${unlockedCount}/${ISLAND_PLACES.length} places discovered!
+            </p>
+        </div>
+        <div class="progress-map">
+            ${placesHTML}
+        </div>
+        <button class="back-btn" onclick="setMode('times', document.getElementById('btn-times'))">Back to Times Tables</button>
+    `;
+}
+
+// Add map button
+function addMapButton() {
+    const modeSelect = document.querySelector('.mode-select');
+    if (!modeSelect.querySelector('#btn-map')) {
+        const btn = document.createElement('button');
+        btn.id = 'btn-map';
+        btn.className = 'mode-btn';
+        btn.innerHTML = '<span class="mode-icon">🗺️</span>Map';
+        btn.onclick = showProgressMap;
+        modeSelect.appendChild(btn);
+    }
+}
+
+// ── Mini-game: Bug Catching ──
+let bugGameScore = 0;
+let bugGameTimer = null;
+
+function showBugGame() {
+    practiceViewActive = true;
+    document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
+    document.querySelector('.score-bar').style.display = 'none';
+
+    const card = document.getElementById('card');
+    bugGameScore = 0;
+
+    card.innerHTML = `
+        <div class="minigame-unlock">
+            <h3>🦋 Bug Catching Game!</h3>
+            <p style="color:#5c4a32">Catch as many bugs as you can in 15 seconds!</p>
+            <button class="minigame-btn" onclick="startBugGame()">Start Game!</button>
+        </div>
+        <button class="back-btn" onclick="setMode('times', document.getElementById('btn-times'))">Back to Times Tables</button>
+    `;
+}
+
+function startBugGame() {
+    const card = document.getElementById('card');
+    bugGameScore = 0;
+
+    card.innerHTML = `
+        <div style="text-align:center;margin-bottom:0.5rem">
+            <span id="bug-timer" style="font-weight:800;font-size:1.2rem;color:#3d7c47">15</span>s
+            <span style="margin-left:1rem">Score: <span id="bug-score" style="font-weight:800;color:#c0732a">0</span></span>
+        </div>
+        <div class="bug-game" id="bug-area"></div>
+    `;
+
+    // Start spawning bugs
+    const bugArea = document.getElementById('bug-area');
+    const bugs = ['🦋', '🐛', '🐞', '🦗', '🐝', '🪲'];
+
+    const spawnBug = () => {
+        const bug = document.createElement('div');
+        bug.className = 'bug';
+        bug.textContent = pickRandom(bugs);
+        bug.style.left = Math.random() * 80 + 10 + '%';
+        bug.style.top = Math.random() * 80 + 10 + '%';
+        bug.onclick = () => {
+            bugGameScore++;
+            document.getElementById('bug-score').textContent = bugGameScore;
+            bug.style.transform = 'scale(0)';
+            setTimeout(() => bug.remove(), 100);
+            playSound('correct');
+        };
+        bugArea.appendChild(bug);
+
+        // Bug flies away after 1.5s
+        setTimeout(() => {
+            if (bug.parentNode) bug.remove();
+        }, 1500);
+    };
+
+    // Spawn bugs every 400ms
+    const spawnInterval = setInterval(spawnBug, 400);
+
+    // Countdown timer
+    let timeLeft = 15;
+    const timerEl = document.getElementById('bug-timer');
+    const countdown = setInterval(() => {
+        timeLeft--;
+        timerEl.textContent = timeLeft;
+
+        if (timeLeft <= 0) {
+            clearInterval(countdown);
+            clearInterval(spawnInterval);
+            endBugGame();
+        }
+    }, 1000);
+}
+
+function endBugGame() {
+    const card = document.getElementById('card');
+
+    // Add bugs to collectibles
+    collectibles.bugs += bugGameScore;
+    renderCollectiblesBar();
+    saveCollectibles();
+
+    if (bugGameScore >= 10) launchConfetti();
+
+    card.innerHTML = `
+        <div style="text-align:center;padding:2rem">
+            <h2 style="color:#3d7c47">🦋 Game Over!</h2>
+            <div style="font-size:3rem;margin:1rem 0">${bugGameScore >= 10 ? '🏆' : bugGameScore >= 5 ? '⭐' : '👏'}</div>
+            <div style="font-size:2rem;font-weight:800;color:#c0732a">${bugGameScore} bugs caught!</div>
+            <p style="color:#7a9a5a;margin-top:0.5rem">+${bugGameScore} added to your collection!</p>
+            <button class="play-again-btn" onclick="showBugGame()" style="margin-top:1rem">Play Again</button>
+            <button class="back-btn" onclick="setMode('times', document.getElementById('btn-times'))">Back to Times Tables</button>
+        </div>
+    `;
+}
+
+// Add mini-game button
+function addMinigameButton() {
+    const modeSelect = document.querySelector('.mode-select');
+    if (!modeSelect.querySelector('#btn-minigame')) {
+        const btn = document.createElement('button');
+        btn.id = 'btn-minigame';
+        btn.className = 'mode-btn';
+        btn.innerHTML = '<span class="mode-icon">🎮</span>Games';
+        btn.onclick = showBugGame;
+        modeSelect.appendChild(btn);
+    }
+}
+
+// ── Update submitAnswer to include collectibles and bonus ──
+const originalSubmitAnswer = submitAnswer;
+submitAnswer = function() {
+    if (answered) return;
+    const inp = document.getElementById('answer-input');
+    const userAnswer = inp.value.trim();
+    if (userAnswer === '') return;
+
+    const correct = parseInt(inp.dataset.answer);
+    const isCorrect = parseInt(userAnswer) === correct;
+
+    // In breakdown mode, handle steps
+    if (currentMode === 'breakdown' && bdStep < 2) {
+        if (isCorrect) {
+            inp.classList.add('correct');
+            bdStep++;
+            setTimeout(() => {
+                inp.value = '';
+                inp.className = 'answer-input';
+                showBreakdownStep();
+                inp.focus();
+            }, 600);
+        } else {
+            inp.classList.add('wrong');
+            const feedback = document.getElementById('feedback');
+            feedback.className = 'feedback wrong';
+            feedback.textContent = `The answer is ${correct}. Let's keep going!`;
+            bdStep++;
+            setTimeout(() => {
+                feedback.className = 'feedback';
+                feedback.style.display = 'none';
+                inp.value = '';
+                inp.className = 'answer-input';
+                showBreakdownStep();
+                inp.focus();
+            }, 1500);
+        }
+        return;
+    }
+
+    // Final answer (times tables or breakdown final step)
+    answered = true;
+    total++;
+    inp.disabled = true;
+
+    const feedback = document.getElementById('feedback');
+
+    if (isCorrect) {
+        const comboBonus = getComboBonus();
+        const bonusMultiplier = getBonusMultiplier();
+        score += ((isDoublePoints ? 2 : 1) + comboBonus) * bonusMultiplier;
+        streak++;
+        if (streak > bestStreak) bestStreak = streak;
+        inp.classList.add('correct');
+        feedback.className = 'feedback correct';
+        playSound('correct');
+        mascotReact(true);
+        runCharacter();
+        updateCombo(true);
+        maybeCollectItem(); // Chance to find collectible!
+        feedback.innerHTML = pickRandom(correctMessages);
+    } else {
+        streak = 0;
+        inp.classList.add('wrong');
+        feedback.className = 'feedback wrong';
+        feedback.innerHTML = `${pickRandom(wrongMessages)} The answer was <strong>${correct}</strong>.`;
+        playSound('wrong');
+        mascotReact(false);
+        updateCombo(false);
+    }
+
+    // Record problem for this round
+    const key = problemKey(currentProblemA, currentProblemB);
+    roundProblems.push({ key, correct: isCorrect });
+
+    updateScoreboard();
+
+    const nextBtn = document.getElementById('next-btn');
+    nextBtn.style.display = 'block';
+    nextBtn.textContent = total >= roundLength ? 'See Results 🎉' : 'Next Question';
+
+    if (streak >= 5) {
+        document.getElementById('streak-msg').textContent = `🔥 ${streak} in a row! ${pickRandom(streakMessages)}`;
+    } else if (streak >= 3) {
+        document.getElementById('streak-msg').textContent = `✨ ${streak} in a row! Nice!`;
+    } else {
+        document.getElementById('streak-msg').textContent = '';
+    }
+
+    // Reset bonus question for next
+    isBonusQuestion = false;
+};
+
+// ── Update nextQuestion to check for bonus ──
+const originalNextQuestion = nextQuestion;
+nextQuestion = function() {
+    if (total >= roundLength) {
+        isPracticeMode = false;
+        showRoundEnd();
+        return;
+    }
+
+    // Check for bonus question
+    checkBonusQuestion();
+
+    if (isPracticeMode) {
+        nextPracticeQuestion();
+    } else if (currentMode === 'times') {
+        nextTimesQuestion();
+    } else {
+        nextBreakdownQuestion();
+    }
+};
+
+// ── Update showRoundEnd to add to leaderboard ──
+const originalShowRoundEnd = showRoundEnd;
+showRoundEnd = function() {
+    // Add score to leaderboard
+    const name = multData.islandName || 'Islander';
+    updateLeaderboard(name, score);
+
+    // Reset powerups for next round
+    powerups = { skip: 3, hint: 3 };
+    renderPowerupsBar();
+
+    // Call original
+    originalShowRoundEnd();
+};
+
+// ── Initialize all new features ──
+function initNewFeatures() {
+    addLeaderboardButton();
+    addAvatarButton();
+    addMapButton();
+    addMinigameButton();
+    renderDifficultySelect();
+    renderPowerupsBar();
+    renderCollectiblesBar();
+    renderThemeSelect();
+    createMusicToggle();
+
+    // Load saved data
+    if (multData.leaderboard) leaderboard = multData.leaderboard;
+    if (multData.preferences?.theme) setTheme(multData.preferences.theme);
+    loadAvatar();
+    loadCollectibles();
+}
+
+// Hook into data loading
+const originalLoadMultiplicationData = loadMultiplicationData;
+loadMultiplicationData = async function() {
+    await originalLoadMultiplicationData();
+    initNewFeatures();
+};
+
 // Start
 renderLevelSelect();
 renderPrizeButton();
+initNewFeatures();
 startRound();
     </script>
 </body>
