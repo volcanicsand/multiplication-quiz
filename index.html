@@ -3960,6 +3960,234 @@ function addMapButton() {
 let gameScore = 0;
 
 // Games Menu
+// ══════════════════════════════════════════════════════════════════════════
+// ACNH TRIVIA & PERSONALITY QUIZ
+// ══════════════════════════════════════════════════════════════════════════
+
+const ACNH_PERSONALITIES = {
+    normal: { name: "Normal", icon: "🌸", emoji: "😊", desc: "You're sweet, kind, and caring! You love helping others and always see the best in everyone.", villagers: "Fauna, Molly, Merengue, Marina, Lolly" },
+    peppy: { name: "Peppy", icon: "🎀", emoji: "🤩", desc: "You're super energetic and cheerful! You love making friends and spreading happiness!", villagers: "Rosie, Chrissy, Audie, Tangy, Cookie" },
+    lazy: { name: "Lazy", icon: "😴", emoji: "😌", desc: "You're laid-back and easygoing! You love food, naps, and bugs.", villagers: "Stitches, Zucker, Sherb, Beau, Lucky" },
+    jock: { name: "Jock", icon: "💪", emoji: "🏃", desc: "You're athletic and full of energy! You love sports and staying active!", villagers: "Roald, Dom, Bam, Poncho, Buck" },
+    cranky: { name: "Cranky", icon: "😤", emoji: "😠", desc: "You might seem grumpy, but you're actually really caring deep down!", villagers: "Kabuki, Apollo, Fang, Dobie, Octavian" },
+    snooty: { name: "Snooty", icon: "💅", emoji: "💁", desc: "You're elegant and sophisticated! You love fashion and the finer things!", villagers: "Judy, Diana, Ankha, Whitney, Francine" },
+    sisterly: { name: "Sisterly", icon: "💜", emoji: "😎", desc: "You're tough but caring, like a protective big sister!", villagers: "Cherry, Reneigh, Muffy, Agnes, Fuchsia" },
+    smug: { name: "Smug", icon: "😏", emoji: "✨", desc: "You're confident and charming! You know you're great!", villagers: "Marshal, Raymond, Julian, Shep, Kyle" }
+};
+
+const PERSONALITY_QUESTIONS = [
+    { q: "It's a beautiful morning! What do you do first?", answers: [
+        { text: "Water my flowers 🌸", scores: { normal: 2, peppy: 1 } },
+        { text: "Go for a jog! 💪", scores: { jock: 2, peppy: 1 } },
+        { text: "Sleep more... 😴", scores: { lazy: 2, cranky: 1 } },
+        { text: "Check my outfit! 💅", scores: { snooty: 2, smug: 1 } }
+    ]},
+    { q: "A new villager moved in! How do you greet them?", answers: [
+        { text: "Bring a welcome gift 🎁", scores: { normal: 2, sisterly: 1 } },
+        { text: "OMG NEW FRIEND!!! 🤩", scores: { peppy: 2, jock: 1 } },
+        { text: "Tell them where the snacks are", scores: { lazy: 2, sisterly: 1 } },
+        { text: "Introduce myself with style 😏", scores: { smug: 2, snooty: 1 } }
+    ]},
+    { q: "What's your favorite island activity?", answers: [
+        { text: "Catching bugs and fish! 🦋", scores: { lazy: 2, normal: 1 } },
+        { text: "Working out! 💪", scores: { jock: 2, peppy: 1 } },
+        { text: "Shopping for outfits! 👗", scores: { snooty: 2, peppy: 1 } },
+        { text: "Helping friends 💕", scores: { sisterly: 2, normal: 1 } }
+    ]},
+    { q: "Someone stepped on your flowers! 😱", answers: [
+        { text: "It's okay! Accidents happen 😊", scores: { normal: 2, lazy: 1 } },
+        { text: "HEY! Watch it! 😤", scores: { cranky: 2, sisterly: 1 } },
+        { text: "Let me teach you about flowers 💅", scores: { snooty: 2, smug: 1 } },
+        { text: "Race me as punishment! 🏃", scores: { jock: 2, peppy: 1 } }
+    ]},
+    { q: "Pick a catchphrase!", answers: [
+        { text: "~sweetie~", scores: { normal: 2, peppy: 1 } },
+        { text: "YEAH BUDDY!", scores: { jock: 2, peppy: 1 } },
+        { text: "darling~", scores: { snooty: 2, smug: 1 } },
+        { text: "...whatever", scores: { cranky: 2, lazy: 1 } }
+    ]}
+];
+
+const ACNH_TRIVIA = [
+    { q: "What animal is Tom Nook?", a: "Raccoon", wrong: ["Fox", "Bear", "Cat"] },
+    { q: "What does Blathers hate?", a: "Bugs", wrong: ["Fish", "Fossils", "Art"] },
+    { q: "Who runs the museum?", a: "Blathers", wrong: ["Tom Nook", "Isabelle", "Celeste"] },
+    { q: "What instrument does K.K. Slider play?", a: "Guitar", wrong: ["Piano", "Drums", "Violin"] },
+    { q: "What animal is Raymond?", a: "Cat", wrong: ["Dog", "Squirrel", "Wolf"] },
+    { q: "What is the rarest fish?", a: "Coelacanth", wrong: ["Sea Bass", "Goldfish", "Carp"] },
+    { q: "How many fossils can you dig per day?", a: "4", wrong: ["2", "6", "10"] },
+    { q: "Who gives you star fragments?", a: "Celeste", wrong: ["Blathers", "Tom Nook", "Isabelle"] },
+    { q: "What does Pascal collect?", a: "Scallops", wrong: ["Shells", "Fish", "Bugs"] },
+    { q: "Who is Isabelle?", a: "Island Secretary", wrong: ["Shop Owner", "Museum Curator", "Musician"] }
+];
+
+let personalityScores = {};
+let personalityQuestion = 0;
+let triviaScore = 0;
+let triviaQuestion = 0;
+let shuffledTrivia = [];
+
+function showACNHMenu() {
+    practiceViewActive = true;
+    document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
+    document.querySelector('.score-bar').style.display = 'none';
+
+    const card = document.getElementById('card');
+    card.innerHTML = `
+        <div style="text-align: center;">
+            <h3 style="color: #ff69b4;">🏝️ Animal Crossing Corner!</h3>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.8rem; margin: 1rem 0;">
+                <button class="minigame-btn" onclick="startPersonalityQuiz()" style="padding: 1rem; background: linear-gradient(135deg, #ff69b4, #ff1493); color: white;">
+                    <div style="font-size: 2rem;">🎭</div>
+                    <div>Which Villager Are You?</div>
+                </button>
+                <button class="minigame-btn" onclick="startACNHTrivia()" style="padding: 1rem; background: linear-gradient(135deg, #ff69b4, #ff1493); color: white;">
+                    <div style="font-size: 2rem;">❓</div>
+                    <div>ACNH Trivia!</div>
+                </button>
+            </div>
+            <button class="back-btn" onclick="setMode('times', document.getElementById('btn-times'))">Back to Math</button>
+        </div>
+    `;
+}
+
+function startPersonalityQuiz() {
+    personalityScores = { normal: 0, peppy: 0, lazy: 0, jock: 0, cranky: 0, snooty: 0, sisterly: 0, smug: 0 };
+    personalityQuestion = 0;
+    showPersonalityQ();
+}
+
+function showPersonalityQ() {
+    if (personalityQuestion >= PERSONALITY_QUESTIONS.length) {
+        showPersonalityResult();
+        return;
+    }
+
+    const q = PERSONALITY_QUESTIONS[personalityQuestion];
+    const card = document.getElementById('card');
+
+    card.innerHTML = `
+        <div style="text-align: center;">
+            <div style="color: #ff69b4; font-weight: 700; margin-bottom: 0.5rem;">Question ${personalityQuestion + 1}/${PERSONALITY_QUESTIONS.length}</div>
+            <h3 style="color: #d63384; margin-bottom: 1rem;">${q.q}</h3>
+            <div style="display: grid; gap: 0.5rem;">
+                ${q.answers.map((a, i) => `
+                    <button onclick="answerPersonality(${i})" style="background: linear-gradient(135deg, #fff0f5, #ffe4ec); border: 2px solid #ffb6c1; border-radius: 10px; padding: 0.8rem; font-family: inherit; font-weight: 600; cursor: pointer; text-align: left;">
+                        ${a.text}
+                    </button>
+                `).join('')}
+            </div>
+        </div>
+    `;
+}
+
+function answerPersonality(index) {
+    const q = PERSONALITY_QUESTIONS[personalityQuestion];
+    for (const [type, pts] of Object.entries(q.answers[index].scores)) {
+        personalityScores[type] += pts;
+    }
+    personalityQuestion++;
+    showPersonalityQ();
+}
+
+function showPersonalityResult() {
+    let maxType = 'normal', maxScore = 0;
+    for (const [type, score] of Object.entries(personalityScores)) {
+        if (score > maxScore) { maxScore = score; maxType = type; }
+    }
+
+    const p = ACNH_PERSONALITIES[maxType];
+    launchConfetti();
+    playSound('fanfare');
+
+    const card = document.getElementById('card');
+    card.innerHTML = `
+        <div style="text-align: center;">
+            <div style="font-size: 4rem;">${p.emoji}</div>
+            <div style="color: #ff69b4; font-size: 0.9rem;">You are a...</div>
+            <h2 style="color: #d63384;">${p.icon} ${p.name} ${p.icon}</h2>
+            <p style="color: #5c4a32; margin: 1rem 0;">${p.desc}</p>
+            <div style="background: #fff0f5; border-radius: 10px; padding: 1rem; margin: 1rem 0;">
+                <div style="color: #ff69b4; font-weight: 700;">Villagers like you:</div>
+                <div style="color: #5c4a32;">${p.villagers}</div>
+            </div>
+            <button class="play-again-btn" onclick="showACNHMenu()">Play Again!</button>
+        </div>
+    `;
+}
+
+function startACNHTrivia() {
+    triviaScore = 0;
+    triviaQuestion = 0;
+    shuffledTrivia = [...ACNH_TRIVIA].sort(() => Math.random() - 0.5);
+    showTriviaQ();
+}
+
+function showTriviaQ() {
+    if (triviaQuestion >= shuffledTrivia.length) {
+        showTriviaResult();
+        return;
+    }
+
+    const q = shuffledTrivia[triviaQuestion];
+    const answers = [q.a, ...q.wrong].sort(() => Math.random() - 0.5);
+    const card = document.getElementById('card');
+
+    card.innerHTML = `
+        <div style="text-align: center;">
+            <div style="color: #ff69b4; font-weight: 700;">Question ${triviaQuestion + 1}/${shuffledTrivia.length} | Score: ${triviaScore}</div>
+            <h3 style="color: #d63384; margin: 1rem 0;">${q.q}</h3>
+            <div style="display: grid; gap: 0.5rem;" id="trivia-btns">
+                ${answers.map(a => `
+                    <button onclick="answerTrivia('${a.replace(/'/g, "\\'")}', this)" style="background: linear-gradient(135deg, #fff0f5, #ffe4ec); border: 2px solid #ffb6c1; border-radius: 10px; padding: 0.8rem; font-family: inherit; font-weight: 600; cursor: pointer;">
+                        ${a}
+                    </button>
+                `).join('')}
+            </div>
+            <div id="trivia-feedback" style="margin-top: 1rem;"></div>
+        </div>
+    `;
+}
+
+function answerTrivia(answer, btn) {
+    const q = shuffledTrivia[triviaQuestion];
+    const correct = answer === q.a;
+
+    document.querySelectorAll('#trivia-btns button').forEach(b => {
+        b.disabled = true;
+        if (b.textContent.trim() === q.a) b.style.background = 'linear-gradient(135deg, #90ee90, #32cd32)';
+    });
+
+    if (correct) {
+        triviaScore++;
+        btn.style.background = 'linear-gradient(135deg, #90ee90, #32cd32)';
+        document.getElementById('trivia-feedback').innerHTML = '<div style="color: green; font-weight: 700;">✅ Correct!</div>';
+        playSound('correct');
+    } else {
+        btn.style.background = 'linear-gradient(135deg, #ff6b6b, #ff4444)';
+        document.getElementById('trivia-feedback').innerHTML = `<div style="color: red; font-weight: 700;">❌ The answer was: ${q.a}</div>`;
+        playSound('wrong');
+    }
+
+    setTimeout(() => { triviaQuestion++; showTriviaQ(); }, 1500);
+}
+
+function showTriviaResult() {
+    const pct = Math.round((triviaScore / shuffledTrivia.length) * 100);
+    if (pct >= 80) launchConfetti();
+
+    const card = document.getElementById('card');
+    card.innerHTML = `
+        <div style="text-align: center;">
+            <div style="font-size: 4rem;">${pct >= 80 ? '🏆' : pct >= 50 ? '⭐' : '🏝️'}</div>
+            <h2 style="color: #d63384;">Quiz Complete!</h2>
+            <div style="font-size: 2.5rem; font-weight: 800; color: #ff69b4;">${triviaScore}/${shuffledTrivia.length}</div>
+            <div style="color: #5c4a32;">${pct}% correct!</div>
+            <button class="play-again-btn" onclick="showACNHMenu()" style="margin-top: 1rem;">Play Again!</button>
+        </div>
+    `;
+}
+
 function showGamesMenu() {
     practiceViewActive = true;
     document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
