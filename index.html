@@ -1064,7 +1064,10 @@ const LEVELS = [
     { num: 2, name: "Meadow", icon: "🌻", factors: [2, 4, 11] },
     { num: 3, name: "Forest", icon: "🌲", factors: [3, 6, 9] },
     { num: 4, name: "Volcano", icon: "🌋", factors: [7, 8, 12] },
-    { num: 5, name: "Champion Island", icon: "🏆", factors: [2,3,4,5,6,7,8,9,10,11,12] },
+    { num: 5, name: "Orchard", icon: "🍎", factors: [2, 3, 4, 5] },
+    { num: 6, name: "Campsite", icon: "🏕️", factors: [6, 7, 8] },
+    { num: 7, name: "Snowfield", icon: "❄️", factors: [9, 11, 12] },
+    { num: 8, name: "Champion Island", icon: "🏆", factors: [2,3,4,5,6,7,8,9,10,11,12] },
 ];
 const UNLOCK_THRESHOLD = 0.8; // 80% to unlock next level
 
@@ -1289,7 +1292,7 @@ function showRoundEnd() {
     if (currentMode === 'times'
         && score / roundLength >= UNLOCK_THRESHOLD
         && currentLevel === unlockedLevel
-        && unlockedLevel < 5) {
+        && unlockedLevel < LEVELS.length) {
         unlockedLevel++;
         multData.stats.unlockedLevel = unlockedLevel;
         const newLevel = LEVELS[unlockedLevel - 1];
