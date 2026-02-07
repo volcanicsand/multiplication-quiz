@@ -3059,6 +3059,13 @@ function submitAnswer() {
         runCharacter();
         updateCombo(true);
         feedback.innerHTML = pickRandom(correctMessages);
+
+        // Trigger new features on correct answers
+        if (typeof maybeShowVillagerVisitor === 'function') maybeShowVillagerVisitor();
+        if (typeof checkStickers === 'function') checkStickers();
+        if (typeof maybeGetLuckyItem === 'function') maybeGetLuckyItem();
+        if (typeof maybeGetPuzzlePiece === 'function') maybeGetPuzzlePiece();
+        if (typeof maybeShowBottleMessage === 'function') maybeShowBottleMessage();
     } else {
         streak = 0;
         inp.classList.add('wrong');
@@ -4217,6 +4224,18 @@ function showGamesMenu() {
                 <button class="minigame-btn" onclick="showStarGame()" style="padding:1rem">
                     <div style="font-size:2rem">🌟</div>
                     <div>Star Catching</div>
+                </button>
+                <button class="minigame-btn" onclick="showMemoryGame()" style="padding:1rem">
+                    <div style="font-size:2rem">🃏</div>
+                    <div>Memory Match</div>
+                </button>
+                <button class="minigame-btn" onclick="showTargetGame()" style="padding:1rem">
+                    <div style="font-size:2rem">🎯</div>
+                    <div>Target Practice</div>
+                </button>
+                <button class="minigame-btn" onclick="visitMysteryIsland()" style="padding:1rem">
+                    <div style="font-size:2rem">🏝️</div>
+                    <div>Mystery Island</div>
                 </button>
             </div>
             <button class="back-btn" onclick="setMode('times', document.getElementById('btn-times'))">Back to Times Tables</button>
@@ -5377,6 +5396,726 @@ function saveGarden() {
     saveMultiplicationData();
 }
 
+// ══════════════════════════════════════════════════════════════════════════
+// ALL THE REMAINING AWESOME FEATURES!
+// ══════════════════════════════════════════════════════════════════════════
+
+// ── Villager Visitors ──
+const VISITING_VILLAGERS = [
+    { name: "Tom Nook", emoji: "🦝", message: "Yes yes! Keep up the great work!" },
+    { name: "Isabelle", emoji: "🐕", message: "You're doing amazing today!" },
+    { name: "Celeste", emoji: "🦉", message: "The stars are aligned for you!" },
+    { name: "K.K. Slider", emoji: "🐕", message: "This next song is for you..." },
+    { name: "Blathers", emoji: "🦉", message: "Hoo! Splendid progress!" },
+    { name: "Kicks", emoji: "🦨", message: "Looking good, friend!" },
+    { name: "Flick", emoji: "🦎", message: "You're as cool as a rare bug!" },
+    { name: "CJ", emoji: "🦫", message: "That answer was a big catch!" },
+    { name: "Pascal", emoji: "🦦", message: "Like, math is groovy, maaan..." },
+    { name: "Mabel", emoji: "🦔", message: "You're sew talented!" }
+];
+
+function maybeShowVillagerVisitor() {
+    if (Math.random() < 0.1) { // 10% chance
+        const villager = pickRandom(VISITING_VILLAGERS);
+        showVillagerPopup(villager);
+    }
+}
+
+function showVillagerPopup(villager) {
+    const popup = document.createElement('div');
+    popup.style.cssText = `
+        position: fixed; bottom: 100px; left: 50%; transform: translateX(-50%);
+        background: linear-gradient(135deg, #ffecd2, #fcb69f); border-radius: 20px;
+        padding: 1rem 1.5rem; z-index: 2000; text-align: center;
+        animation: badgePop 0.5s ease-out; box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+    `;
+    popup.innerHTML = `
+        <div style="font-size: 2.5rem;">${villager.emoji}</div>
+        <div style="font-weight: 700; color: #3d7c47;">${villager.name}</div>
+        <div style="color: #5c4a32; font-style: italic;">"${villager.message}"</div>
+    `;
+    document.body.appendChild(popup);
+    setTimeout(() => popup.remove(), 3000);
+}
+
+// ── Custom Catchphrase ──
+let customCatchphrase = "";
+
+function showCatchphraseEditor() {
+    const phrase = prompt("Enter your custom catchphrase! (like ~sweetie~ or yeah buddy!)", customCatchphrase || "~island life~");
+    if (phrase !== null && phrase.trim()) {
+        customCatchphrase = phrase.trim();
+        multData.catchphrase = customCatchphrase;
+        saveMultiplicationData();
+    }
+}
+
+function getCatchphrase() {
+    return customCatchphrase || pickRandom(["~island life~", "yeah buddy!", "groovy~", "wahoo!"]);
+}
+
+// ── Real Seasons ──
+function getCurrentSeason() {
+    const month = new Date().getMonth();
+    if (month >= 2 && month <= 4) return { name: "Spring", emoji: "🌸", colors: ["#ffb7c5", "#98fb98"] };
+    if (month >= 5 && month <= 7) return { name: "Summer", emoji: "☀️", colors: ["#87ceeb", "#ffd700"] };
+    if (month >= 8 && month <= 10) return { name: "Fall", emoji: "🍂", colors: ["#ff8c00", "#8b4513"] };
+    return { name: "Winter", emoji: "❄️", colors: ["#e0ffff", "#b0c4de"] };
+}
+
+// ── Island Decorations ──
+let islandDecorations = [];
+const DECORATION_ITEMS = ["🌳", "🌲", "🌴", "🌺", "🌻", "🏠", "⛲", "🗿", "🎪", "🎡", "🏕️", "🌉"];
+
+function showDecorationShop() {
+    practiceViewActive = true;
+    document.querySelector('.score-bar').style.display = 'none';
+
+    const card = document.getElementById('card');
+    const cost = 10; // shells per decoration
+
+    card.innerHTML = `
+        <div style="text-align: center;">
+            <h3 style="color: #3d7c47;">🏠 Decoration Shop</h3>
+            <p style="color: #5c4a32;">Buy decorations with shells! (${cost} 🐚 each)</p>
+            <p style="color: #7a9a5a;">You have: ${collectibles.shells} 🐚</p>
+            <div style="display: flex; flex-wrap: wrap; gap: 0.5rem; justify-content: center; margin: 1rem 0;">
+                ${DECORATION_ITEMS.map(d => `
+                    <button onclick="buyDecoration('${d}')" style="font-size: 2rem; padding: 0.5rem; border: 2px solid #3d7c47; border-radius: 10px; background: white; cursor: pointer;">${d}</button>
+                `).join('')}
+            </div>
+            <p style="color: #7a9a5a; font-size: 0.9rem;">Your decorations: ${islandDecorations.join(' ') || 'None yet!'}</p>
+            <button class="back-btn" onclick="setMode('times', document.getElementById('btn-times'))">Back</button>
+        </div>
+    `;
+}
+
+function buyDecoration(item) {
+    if (collectibles.shells >= 10) {
+        collectibles.shells -= 10;
+        islandDecorations.push(item);
+        multData.decorations = islandDecorations;
+        saveMultiplicationData();
+        renderCollectiblesBar();
+        showDecorationShop();
+        playSound('correct');
+    } else {
+        alert("Not enough shells! Keep playing to collect more!");
+    }
+}
+
+// ── Sticker Collection ──
+let stickers = [];
+const ALL_STICKERS = [
+    { id: "first_win", name: "First Win", emoji: "⭐", condition: () => multData.stats.totalCorrect >= 1 },
+    { id: "streak_3", name: "Hot Start", emoji: "🔥", condition: () => multData.stats.bestStreak >= 3 },
+    { id: "streak_10", name: "On Fire", emoji: "💥", condition: () => multData.stats.bestStreak >= 10 },
+    { id: "hundred", name: "Century", emoji: "💯", condition: () => multData.stats.totalCorrect >= 100 },
+    { id: "collector", name: "Collector", emoji: "🎁", condition: () => (collectibles.shells + collectibles.bugs + collectibles.fish) >= 20 },
+    { id: "gardener", name: "Gardener", emoji: "🌺", condition: () => garden.flowers.length >= 5 },
+    { id: "explorer", name: "Explorer", emoji: "🗺️", condition: () => getUnlockedPlaces() >= 5 },
+    { id: "musician", name: "Music Fan", emoji: "🎵", condition: () => collectedSongs.length >= 3 },
+    { id: "dedicated", name: "Dedicated", emoji: "📅", condition: () => (multData.stats.dailyStreak || 0) >= 3 },
+    { id: "champion", name: "Champion", emoji: "🏆", condition: () => unlockedLevel >= LEVELS.length }
+];
+
+function checkStickers() {
+    for (const s of ALL_STICKERS) {
+        if (!stickers.includes(s.id) && s.condition()) {
+            stickers.push(s.id);
+            showStickerUnlock(s);
+            multData.stickers = stickers;
+            saveMultiplicationData();
+        }
+    }
+}
+
+function showStickerUnlock(sticker) {
+    const popup = document.createElement('div');
+    popup.style.cssText = `
+        position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
+        background: linear-gradient(135deg, #ffd700, #ffec8b); border-radius: 20px;
+        padding: 1.5rem; z-index: 2000; text-align: center; animation: badgePop 0.5s ease-out;
+    `;
+    popup.innerHTML = `
+        <div style="font-size: 4rem;">${sticker.emoji}</div>
+        <div style="font-weight: 800; color: #5c4a32;">New Sticker!</div>
+        <div style="color: #8b7355;">${sticker.name}</div>
+    `;
+    document.body.appendChild(popup);
+    playSound('fanfare');
+    setTimeout(() => popup.remove(), 2500);
+}
+
+function showStickerBook() {
+    practiceViewActive = true;
+    document.querySelector('.score-bar').style.display = 'none';
+
+    const card = document.getElementById('card');
+    card.innerHTML = `
+        <div style="text-align: center;">
+            <h3 style="color: #3d7c47;">🎟️ Sticker Book</h3>
+            <p style="color: #7a9a5a;">${stickers.length}/${ALL_STICKERS.length} stickers collected!</p>
+            <div style="display: flex; flex-wrap: wrap; gap: 0.8rem; justify-content: center; margin: 1rem 0;">
+                ${ALL_STICKERS.map(s => `
+                    <div style="font-size: 2rem; opacity: ${stickers.includes(s.id) ? 1 : 0.2}; filter: ${stickers.includes(s.id) ? 'none' : 'grayscale(1)'};"
+                         title="${s.name}">${s.emoji}</div>
+                `).join('')}
+            </div>
+            <button class="back-btn" onclick="setMode('times', document.getElementById('btn-times'))">Back</button>
+        </div>
+    `;
+}
+
+// ── Lucky Items ──
+let luckyItemActive = false;
+const LUCKY_ITEMS = ["🍀", "⭐", "🌈", "💎"];
+
+function maybeGetLuckyItem() {
+    if (Math.random() < 0.05) { // 5% chance
+        luckyItemActive = true;
+        const item = pickRandom(LUCKY_ITEMS);
+        showLuckyItemPopup(item);
+    }
+}
+
+function showLuckyItemPopup(item) {
+    const popup = document.createElement('div');
+    popup.style.cssText = `
+        position: fixed; top: 20%; left: 50%; transform: translateX(-50%);
+        background: linear-gradient(135deg, #ffd700, #98fb98); border-radius: 20px;
+        padding: 1rem 2rem; z-index: 2000; text-align: center; animation: badgePop 0.5s ease-out;
+    `;
+    popup.innerHTML = `
+        <div style="font-size: 3rem;">${item}</div>
+        <div style="font-weight: 700; color: #3d7c47;">Lucky Item Found!</div>
+        <div style="color: #5c4a32;">+2 bonus points this round!</div>
+    `;
+    document.body.appendChild(popup);
+    playSound('fanfare');
+    setTimeout(() => popup.remove(), 2000);
+}
+
+// ── Birthday Mode ──
+function checkBirthday() {
+    const today = new Date();
+    const savedBirthday = multData.birthday;
+    if (savedBirthday) {
+        const [month, day] = savedBirthday.split('-').map(Number);
+        if (today.getMonth() + 1 === month && today.getDate() === day) {
+            return true;
+        }
+    }
+    return false;
+}
+
+function showBirthdaySetup() {
+    const date = prompt("When is your birthday? (MM-DD format, like 03-15 for March 15)");
+    if (date && date.match(/^\d{2}-\d{2}$/)) {
+        multData.birthday = date;
+        saveMultiplicationData();
+        alert("Birthday saved! 🎂");
+    }
+}
+
+function showBirthdayCelebration() {
+    launchConfetti();
+    const popup = document.createElement('div');
+    popup.style.cssText = `
+        position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+        background: rgba(0,0,0,0.8); display: flex; align-items: center;
+        justify-content: center; z-index: 3000;
+    `;
+    popup.innerHTML = `
+        <div style="background: linear-gradient(135deg, #ff69b4, #ffd700); border-radius: 20px;
+            padding: 2rem; text-align: center; animation: levelUpPop 0.6s ease-out;">
+            <div style="font-size: 5rem;">🎂</div>
+            <h2 style="color: white;">Happy Birthday!</h2>
+            <p style="color: white;">All the villagers are celebrating with you today!</p>
+            <p style="color: #ffe4e1;">🎁 You get TRIPLE points today! 🎁</p>
+            <button onclick="this.parentElement.parentElement.remove()" class="minigame-btn" style="margin-top: 1rem;">Thank you! 🎉</button>
+        </div>
+    `;
+    document.body.appendChild(popup);
+    playSound('fanfare');
+}
+
+// ── Message in a Bottle ──
+const BOTTLE_MESSAGES = [
+    "Keep going! You're doing great! - A friendly islander",
+    "Math is like fishing - patience pays off! 🐟",
+    "Every problem solved is a step forward! ✨",
+    "The ocean brought you good luck today! 🌊",
+    "Believe in yourself! - Found on a distant shore",
+    "You're making waves of progress! 🏝️",
+    "This bottle traveled far to find YOU! 🍾"
+];
+
+function maybeShowBottleMessage() {
+    if (Math.random() < 0.05) {
+        const message = pickRandom(BOTTLE_MESSAGES);
+        showBottlePopup(message);
+    }
+}
+
+function showBottlePopup(message) {
+    const popup = document.createElement('div');
+    popup.style.cssText = `
+        position: fixed; bottom: 80px; left: 50%; transform: translateX(-50%);
+        background: #f5deb3; border: 3px solid #8b4513; border-radius: 10px;
+        padding: 1rem 1.5rem; z-index: 2000; max-width: 280px;
+        font-family: 'Comic Sans MS', cursive; animation: badgePop 0.5s ease-out;
+    `;
+    popup.innerHTML = `
+        <div style="font-size: 1.5rem; text-align: center;">🍾📜</div>
+        <div style="color: #5c4a32; font-style: italic; text-align: center;">"${message}"</div>
+    `;
+    document.body.appendChild(popup);
+    setTimeout(() => popup.remove(), 4000);
+}
+
+// ── Memory Match Mini-Game ──
+let memoryCards = [];
+let flippedCards = [];
+let memoryMatches = 0;
+
+function showMemoryGame() {
+    practiceViewActive = true;
+    document.querySelector('.score-bar').style.display = 'none';
+
+    const card = document.getElementById('card');
+    card.innerHTML = `
+        <div style="text-align: center;">
+            <h3 style="color: #3d7c47;">🃏 Memory Match!</h3>
+            <p style="color: #5c4a32;">Match the multiplication pairs!</p>
+            <button class="minigame-btn" onclick="startMemoryGame()">Start Game!</button>
+            <button class="back-btn" onclick="showGamesMenu()">Back to Games</button>
+        </div>
+    `;
+}
+
+function startMemoryGame() {
+    // Create pairs of multiplication problems and answers
+    const pairs = [
+        { q: "2×3", a: "6" }, { q: "4×5", a: "20" },
+        { q: "3×4", a: "12" }, { q: "6×7", a: "42" }
+    ];
+
+    memoryCards = [];
+    pairs.forEach((p, i) => {
+        memoryCards.push({ id: i, type: 'q', value: p.q, pairId: i });
+        memoryCards.push({ id: i + 10, type: 'a', value: p.a, pairId: i });
+    });
+
+    // Shuffle
+    memoryCards.sort(() => Math.random() - 0.5);
+    flippedCards = [];
+    memoryMatches = 0;
+
+    renderMemoryBoard();
+}
+
+function renderMemoryBoard() {
+    const card = document.getElementById('card');
+    card.innerHTML = `
+        <div style="text-align: center;">
+            <h3 style="color: #3d7c47;">🃏 Memory Match!</h3>
+            <p style="color: #7a9a5a;">Matches: ${memoryMatches}/4</p>
+            <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.5rem; margin: 1rem 0;">
+                ${memoryCards.map((c, i) => `
+                    <button onclick="flipMemoryCard(${i})" id="mem-${i}"
+                        style="height: 60px; font-size: 1rem; font-weight: 700; border-radius: 10px;
+                        border: 2px solid #3d7c47; background: ${c.flipped || c.matched ? '#90ee90' : '#3d7c47'};
+                        color: ${c.flipped || c.matched ? '#3d7c47' : 'white'}; cursor: pointer;"
+                        ${c.matched ? 'disabled' : ''}>
+                        ${c.flipped || c.matched ? c.value : '?'}
+                    </button>
+                `).join('')}
+            </div>
+            <button class="back-btn" onclick="showGamesMenu()">Back to Games</button>
+        </div>
+    `;
+}
+
+function flipMemoryCard(index) {
+    if (memoryCards[index].flipped || memoryCards[index].matched || flippedCards.length >= 2) return;
+
+    memoryCards[index].flipped = true;
+    flippedCards.push(index);
+    renderMemoryBoard();
+
+    if (flippedCards.length === 2) {
+        const [first, second] = flippedCards;
+        if (memoryCards[first].pairId === memoryCards[second].pairId) {
+            memoryCards[first].matched = true;
+            memoryCards[second].matched = true;
+            memoryMatches++;
+            flippedCards = [];
+            playSound('correct');
+
+            if (memoryMatches === 4) {
+                setTimeout(() => {
+                    launchConfetti();
+                    alert("You won! 🎉");
+                    showGamesMenu();
+                }, 500);
+            } else {
+                renderMemoryBoard();
+            }
+        } else {
+            setTimeout(() => {
+                memoryCards[first].flipped = false;
+                memoryCards[second].flipped = false;
+                flippedCards = [];
+                renderMemoryBoard();
+            }, 1000);
+        }
+    }
+}
+
+// ── Target Practice Game ──
+function showTargetGame() {
+    practiceViewActive = true;
+    document.querySelector('.score-bar').style.display = 'none';
+
+    const card = document.getElementById('card');
+    card.innerHTML = `
+        <div style="text-align: center;">
+            <h3 style="color: #3d7c47;">🎯 Target Practice!</h3>
+            <p style="color: #5c4a32;">Hit the correct answer!</p>
+            <button class="minigame-btn" onclick="startTargetGame()">Start!</button>
+            <button class="back-btn" onclick="showGamesMenu()">Back to Games</button>
+        </div>
+    `;
+}
+
+let targetScore = 0;
+let targetRound = 0;
+
+function startTargetGame() {
+    targetScore = 0;
+    targetRound = 0;
+    nextTargetRound();
+}
+
+function nextTargetRound() {
+    if (targetRound >= 5) {
+        endTargetGame();
+        return;
+    }
+
+    const a = randInt(2, 9);
+    const b = randInt(2, 9);
+    const correct = a * b;
+    const wrong1 = correct + randInt(1, 5);
+    const wrong2 = correct - randInt(1, 5);
+    const wrong3 = correct + randInt(6, 10);
+
+    const answers = [correct, wrong1, wrong2, wrong3].sort(() => Math.random() - 0.5);
+
+    const card = document.getElementById('card');
+    card.innerHTML = `
+        <div style="text-align: center;">
+            <h3 style="color: #3d7c47;">🎯 ${a} × ${b} = ?</h3>
+            <p style="color: #7a9a5a;">Score: ${targetScore} | Round ${targetRound + 1}/5</p>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin: 1rem 0;">
+                ${answers.map(ans => `
+                    <button onclick="hitTarget(${ans}, ${correct})" style="
+                        width: 80px; height: 80px; border-radius: 50%; font-size: 1.5rem; font-weight: 800;
+                        background: radial-gradient(circle, #ff6b6b, #ff0000, #8b0000);
+                        color: white; border: 4px solid #ffd700; cursor: pointer; margin: 0 auto;
+                    ">${ans}</button>
+                `).join('')}
+            </div>
+        </div>
+    `;
+}
+
+function hitTarget(answer, correct) {
+    if (answer === correct) {
+        targetScore += 10;
+        playSound('correct');
+    } else {
+        playSound('wrong');
+    }
+    targetRound++;
+    nextTargetRound();
+}
+
+function endTargetGame() {
+    if (targetScore >= 40) launchConfetti();
+    const card = document.getElementById('card');
+    card.innerHTML = `
+        <div style="text-align: center;">
+            <h3 style="color: #3d7c47;">🎯 Game Over!</h3>
+            <div style="font-size: 3rem;">${targetScore >= 40 ? '🏆' : targetScore >= 20 ? '⭐' : '🎯'}</div>
+            <div style="font-size: 2rem; font-weight: 800; color: #c0732a;">${targetScore} points!</div>
+            <button class="play-again-btn" onclick="startTargetGame()">Play Again</button>
+            <button class="back-btn" onclick="showGamesMenu()">Back to Games</button>
+        </div>
+    `;
+}
+
+// ── Puzzle Pieces ──
+let puzzlePieces = 0;
+const PUZZLE_GOAL = 20;
+
+function maybeGetPuzzlePiece() {
+    if (Math.random() < 0.15) {
+        puzzlePieces++;
+        showPuzzlePiecePopup();
+        if (puzzlePieces >= PUZZLE_GOAL) {
+            setTimeout(() => showPuzzleComplete(), 1500);
+        }
+    }
+}
+
+function showPuzzlePiecePopup() {
+    const popup = document.createElement('div');
+    popup.style.cssText = `
+        position: fixed; top: 30%; left: 50%; transform: translateX(-50%);
+        font-size: 2rem; z-index: 1000; animation: floatUp 1s ease-out forwards;
+    `;
+    popup.textContent = '🧩 +1';
+    document.body.appendChild(popup);
+    setTimeout(() => popup.remove(), 1000);
+}
+
+function showPuzzleComplete() {
+    launchConfetti();
+    puzzlePieces = 0;
+    const popup = document.createElement('div');
+    popup.style.cssText = `
+        position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
+        background: linear-gradient(135deg, #ffd700, #ff69b4); border-radius: 20px;
+        padding: 2rem; text-align: center; z-index: 2000; animation: badgePop 0.5s ease-out;
+    `;
+    popup.innerHTML = `
+        <div style="font-size: 4rem;">🖼️</div>
+        <div style="font-weight: 800; color: white;">Puzzle Complete!</div>
+        <div style="color: #ffe4e1;">You revealed a beautiful island picture!</div>
+        <button onclick="this.parentElement.remove()" class="minigame-btn" style="margin-top:1rem;">Awesome!</button>
+    `;
+    document.body.appendChild(popup);
+    playSound('fanfare');
+}
+
+// ── Guestbook ──
+const GUESTBOOK_ENTRIES = [
+    { name: "Tom Nook", message: "Great progress! Keep it up, yes yes!" },
+    { name: "Isabelle", message: "You're the best islander ever!" },
+    { name: "K.K. Slider", message: "Your math skills rock!" },
+    { name: "Celeste", message: "Wishing upon stars for you!" },
+    { name: "Blathers", message: "Such impressive knowledge, hoo!" }
+];
+
+function showGuestbook() {
+    practiceViewActive = true;
+    document.querySelector('.score-bar').style.display = 'none';
+
+    const card = document.getElementById('card');
+    card.innerHTML = `
+        <div style="text-align: center;">
+            <h3 style="color: #3d7c47;">📝 Island Guestbook</h3>
+            <div style="text-align: left; margin: 1rem 0;">
+                ${GUESTBOOK_ENTRIES.map(e => `
+                    <div style="background: #fff8dc; border-radius: 10px; padding: 0.8rem; margin-bottom: 0.5rem; border-left: 4px solid #3d7c47;">
+                        <div style="font-weight: 700; color: #3d7c47;">${e.name}</div>
+                        <div style="color: #5c4a32; font-style: italic;">"${e.message}"</div>
+                    </div>
+                `).join('')}
+            </div>
+            <button class="back-btn" onclick="setMode('times', document.getElementById('btn-times'))">Back</button>
+        </div>
+    `;
+}
+
+// ── Plant Trees ──
+let trees = [];
+
+function plantTree() {
+    if (collectibles.shells >= 5) {
+        collectibles.shells -= 5;
+        trees.push(pickRandom(["🌳", "🌲", "🌴", "🎄"]));
+        multData.trees = trees;
+        saveMultiplicationData();
+        renderCollectiblesBar();
+        playSound('correct');
+    }
+}
+
+// ── Build Bridges ──
+let bridges = 0;
+
+function buildBridge() {
+    if (collectibles.shells >= 20) {
+        collectibles.shells -= 20;
+        bridges++;
+        multData.bridges = bridges;
+        saveMultiplicationData();
+        renderCollectiblesBar();
+        launchConfetti();
+    }
+}
+
+// ── Character Emotions ──
+const EMOTIONS = ["😊", "😄", "🥳", "😎", "🤩", "😇", "🥰", "😋"];
+
+function showEmotion() {
+    const emotion = pickRandom(EMOTIONS);
+    const popup = document.createElement('div');
+    popup.style.cssText = `
+        position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
+        font-size: 5rem; z-index: 1000; animation: badgePop 0.5s ease-out;
+        pointer-events: none;
+    `;
+    popup.textContent = emotion;
+    document.body.appendChild(popup);
+    setTimeout(() => popup.remove(), 1000);
+}
+
+// ── Rainy Day Bonus ──
+function isRainyDay() {
+    // Simulate based on random chance per session
+    if (window.todayIsRainy === undefined) {
+        window.todayIsRainy = Math.random() < 0.2; // 20% chance
+    }
+    return window.todayIsRainy;
+}
+
+function getRainyBonus() {
+    return isRainyDay() ? 1.5 : 1;
+}
+
+// ── Rare Spawns in Games ──
+const RARE_CREATURES = ["🦋", "🦚", "🦩", "🦄", "🐉", "🦖"];
+
+function maybeSpawnRare() {
+    if (Math.random() < 0.02) { // 2% chance
+        const rare = pickRandom(RARE_CREATURES);
+        showRareSpawn(rare);
+        return rare;
+    }
+    return null;
+}
+
+function showRareSpawn(creature) {
+    const popup = document.createElement('div');
+    popup.style.cssText = `
+        position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
+        background: linear-gradient(135deg, #ffd700, #ff69b4); border-radius: 20px;
+        padding: 1.5rem; text-align: center; z-index: 2000; animation: badgePop 0.5s ease-out;
+    `;
+    popup.innerHTML = `
+        <div style="font-size: 4rem;">${creature}</div>
+        <div style="font-weight: 800; color: white;">RARE SPAWN!</div>
+    `;
+    document.body.appendChild(popup);
+    playSound('fanfare');
+    setTimeout(() => popup.remove(), 2000);
+}
+
+// ── Weekly Challenges ──
+const WEEKLY_CHALLENGES = [
+    { name: "Answer 50 questions", goal: 50, type: "answers" },
+    { name: "Get a 10 streak", goal: 10, type: "streak" },
+    { name: "Collect 20 items", goal: 20, type: "collect" },
+    { name: "Play 5 mini-games", goal: 5, type: "games" }
+];
+
+function getWeeklyChallenge() {
+    const weekNum = Math.floor(Date.now() / (7 * 24 * 60 * 60 * 1000));
+    return WEEKLY_CHALLENGES[weekNum % WEEKLY_CHALLENGES.length];
+}
+
+// ── Space Mode ──
+function triggerSpaceMode() {
+    document.body.style.background = 'linear-gradient(180deg, #0a0a2e, #1a1a4e, #2a2a6e)';
+
+    // Add stars
+    for (let i = 0; i < 50; i++) {
+        const star = document.createElement('div');
+        star.style.cssText = `
+            position: fixed; background: white; border-radius: 50%;
+            width: ${Math.random() * 3}px; height: ${Math.random() * 3}px;
+            left: ${Math.random() * 100}%; top: ${Math.random() * 100}%;
+            z-index: -1; animation: twinkle 1s ease-in-out infinite;
+        `;
+        star.className = 'space-star';
+        document.body.appendChild(star);
+    }
+
+    // Show rocket
+    const popup = document.createElement('div');
+    popup.style.cssText = `
+        position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
+        font-size: 5rem; z-index: 1000; animation: levelUpPop 0.6s ease-out;
+    `;
+    popup.innerHTML = '🚀✨';
+    document.body.appendChild(popup);
+    playSound('fanfare');
+
+    setTimeout(() => {
+        popup.remove();
+        document.querySelectorAll('.space-star').forEach(s => s.remove());
+        document.body.style.background = '';
+    }, 5000);
+}
+
+// ── Mystery Islands ──
+const MYSTERY_ISLANDS = [
+    { name: "Tarantula Island", emoji: "🕷️", reward: { bugs: 10 } },
+    { name: "Money Rock Island", emoji: "💰", reward: { shells: 15 } },
+    { name: "Bamboo Island", emoji: "🎋", reward: { shells: 5 } },
+    { name: "Scorpion Island", emoji: "🦂", reward: { bugs: 10 } },
+    { name: "Rare Flower Island", emoji: "🌺", reward: { flowers: 5 } },
+    { name: "Big Fish Island", emoji: "🐟", reward: { fish: 10 } }
+];
+
+function visitMysteryIsland() {
+    if (collectibles.shells < 10) {
+        alert("You need 10 shells for a Mystery Island ticket!");
+        return;
+    }
+
+    collectibles.shells -= 10;
+    renderCollectiblesBar();
+
+    const island = pickRandom(MYSTERY_ISLANDS);
+
+    // Apply rewards
+    if (island.reward.bugs) collectibles.bugs += island.reward.bugs;
+    if (island.reward.fish) collectibles.fish += island.reward.fish;
+    if (island.reward.shells) collectibles.shells += island.reward.shells;
+    if (island.reward.flowers) {
+        for (let i = 0; i < island.reward.flowers; i++) {
+            garden.flowers.push(pickRandom(FLOWER_TYPES));
+        }
+    }
+
+    saveCollectibles();
+    saveGarden();
+    launchConfetti();
+
+    const popup = document.createElement('div');
+    popup.style.cssText = `
+        position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+        background: rgba(0,0,0,0.8); display: flex; align-items: center;
+        justify-content: center; z-index: 3000;
+    `;
+    popup.innerHTML = `
+        <div style="background: linear-gradient(135deg, #87ceeb, #90ee90); border-radius: 20px;
+            padding: 2rem; text-align: center; animation: levelUpPop 0.6s ease-out;">
+            <div style="font-size: 5rem;">${island.emoji}</div>
+            <h2 style="color: #3d7c47;">${island.name}!</h2>
+            <p style="color: #5c4a32;">You found amazing treasures!</p>
+            <button onclick="this.parentElement.parentElement.remove()" class="minigame-btn" style="margin-top: 1rem;">Return Home</button>
+        </div>
+    `;
+    document.body.appendChild(popup);
+    playSound('fanfare');
+}
+
 // ── Night Owl / Rainy Day Bonuses ──
 function getTimeBonus() {
     const hour = new Date().getHours();
@@ -5671,6 +6410,36 @@ function addMoreButtons() {
         btn.className = 'mode-btn';
         btn.innerHTML = '<span class="mode-icon">🌺</span>Garden';
         btn.onclick = showGarden;
+        modeSelect.appendChild(btn);
+    }
+
+    // Sticker Book button
+    if (!modeSelect.querySelector('#btn-stickers')) {
+        const btn = document.createElement('button');
+        btn.id = 'btn-stickers';
+        btn.className = 'mode-btn';
+        btn.innerHTML = '<span class="mode-icon">⭐</span>Stickers';
+        btn.onclick = showStickerBook;
+        modeSelect.appendChild(btn);
+    }
+
+    // Decoration Shop button
+    if (!modeSelect.querySelector('#btn-decorations')) {
+        const btn = document.createElement('button');
+        btn.id = 'btn-decorations';
+        btn.className = 'mode-btn';
+        btn.innerHTML = '<span class="mode-icon">🏠</span>Decor Shop';
+        btn.onclick = showDecorationShop;
+        modeSelect.appendChild(btn);
+    }
+
+    // Guestbook button
+    if (!modeSelect.querySelector('#btn-guestbook')) {
+        const btn = document.createElement('button');
+        btn.id = 'btn-guestbook';
+        btn.className = 'mode-btn';
+        btn.innerHTML = '<span class="mode-icon">📕</span>Guestbook';
+        btn.onclick = showGuestbook;
         modeSelect.appendChild(btn);
     }
 }
