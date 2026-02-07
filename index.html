@@ -4408,6 +4408,12 @@ submitAnswer = function() {
         runCharacter();
         updateCombo(true);
         maybeCollectItem(); // Chance to find collectible!
+        petBuddyReact(true); // Pet reacts!
+        growFlower(); // Chance to grow a flower!
+        discoverCreature('bugs'); // Chance to discover for encyclopedia
+        maybeUnlockSong(); // Chance to unlock a K.K. song
+        createShootingStar(); // Maybe a shooting star appears!
+        if (streak >= 10) showAnimalParade(); // Animal parade on big streak!
         feedback.innerHTML = pickRandom(correctMessages);
     } else {
         streak = 0;
@@ -4473,27 +4479,732 @@ showRoundEnd = function() {
     powerups = { skip: 3, hint: 3 };
     renderPowerupsBar();
 
+    // Maybe get a letter from Mom!
+    maybeShowLetter();
+
     // Call original
     originalShowRoundEnd();
 };
 
 // ── Initialize all new features ──
+// ══════════════════════════════════════════════════════════════════════════
+// EVEN MORE AWESOME FEATURES!
+// ══════════════════════════════════════════════════════════════════════════
+
+// ── Pet Buddy System ──
+let petBuddy = { type: '🐕', name: 'Buddy', level: 1, happiness: 100 };
+const PET_TYPES = ['🐕', '🐈', '🐹', '🐰', '🦊', '🐻', '🐼', '🦁', '🐸', '🦉'];
+
+function createPetBuddy() {
+    let pet = document.getElementById('pet-buddy');
+    if (!pet) {
+        pet = document.createElement('div');
+        pet.id = 'pet-buddy';
+        pet.style.cssText = `
+            position: fixed;
+            bottom: 70px;
+            right: 70px;
+            font-size: 2.5rem;
+            z-index: 100;
+            cursor: pointer;
+            transition: transform 0.3s;
+            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));
+        `;
+        pet.onclick = petBuddyClick;
+        document.body.appendChild(pet);
+    }
+    pet.textContent = petBuddy.type;
+    pet.title = `${petBuddy.name} (Level ${petBuddy.level})`;
+}
+
+function petBuddyClick() {
+    const pet = document.getElementById('pet-buddy');
+    pet.style.transform = 'scale(1.3) rotate(10deg)';
+    setTimeout(() => pet.style.transform = '', 300);
+
+    // Show pet menu
+    showPetMenu();
+}
+
+function petBuddyReact(isHappy) {
+    const pet = document.getElementById('pet-buddy');
+    if (!pet) return;
+
+    if (isHappy) {
+        pet.style.animation = 'mascotHappy 0.5s ease-out';
+        petBuddy.happiness = Math.min(100, petBuddy.happiness + 5);
+    } else {
+        pet.style.animation = 'mascotSad 0.5s ease-out';
+    }
+    setTimeout(() => pet.style.animation = '', 500);
+}
+
+function showPetMenu() {
+    const popup = document.createElement('div');
+    popup.className = 'pet-popup';
+    popup.style.cssText = `
+        position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+        background: rgba(0,0,0,0.8); display: flex; align-items: center;
+        justify-content: center; z-index: 3000;
+    `;
+
+    const petOptions = PET_TYPES.map(p =>
+        `<span style="font-size:2rem;cursor:pointer;padding:0.3rem;" onclick="changePet('${p}')">${p}</span>`
+    ).join('');
+
+    popup.innerHTML = `
+        <div style="background: linear-gradient(135deg, #ffecd2, #fcb69f); border-radius: 20px; padding: 1.5rem; text-align: center; max-width: 300px;">
+            <div style="font-size: 4rem; margin-bottom: 0.5rem;">${petBuddy.type}</div>
+            <h3 style="color: #3d7c47;">${petBuddy.name}</h3>
+            <p style="color: #5c4a32;">Level ${petBuddy.level} • Happiness: ${petBuddy.happiness}%</p>
+            <div style="margin: 1rem 0;">
+                <input type="text" id="pet-name-input" value="${petBuddy.name}"
+                    style="padding: 0.5rem; border-radius: 8px; border: 2px solid #3d7c47; text-align: center; font-family: inherit;">
+            </div>
+            <p style="color: #7a9a5a; font-size: 0.85rem; margin-bottom: 0.5rem;">Choose your pet:</p>
+            <div style="display: flex; flex-wrap: wrap; justify-content: center; gap: 0.3rem; margin-bottom: 1rem;">
+                ${petOptions}
+            </div>
+            <button class="minigame-btn" onclick="savePetSettings()">Save</button>
+            <button class="back-btn" onclick="this.parentElement.parentElement.remove()">Close</button>
+        </div>
+    `;
+    document.body.appendChild(popup);
+}
+
+function changePet(type) {
+    petBuddy.type = type;
+    document.getElementById('pet-buddy').textContent = type;
+}
+
+function savePetSettings() {
+    const nameInput = document.getElementById('pet-name-input');
+    if (nameInput) petBuddy.name = nameInput.value || 'Buddy';
+    multData.petBuddy = petBuddy;
+    saveMultiplicationData();
+    document.querySelector('.pet-popup')?.remove();
+    createPetBuddy();
+}
+
+// ── Daily Spin Wheel ──
+let lastSpinDate = null;
+
+function canSpinToday() {
+    const today = new Date().toISOString().split('T')[0];
+    return lastSpinDate !== today;
+}
+
+function showSpinWheel() {
+    practiceViewActive = true;
+    document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
+    document.querySelector('.score-bar').style.display = 'none';
+
+    const card = document.getElementById('card');
+    const canSpin = canSpinToday();
+
+    card.innerHTML = `
+        <div style="text-align: center;">
+            <h3 style="color: #3d7c47;">🎰 Daily Prize Wheel!</h3>
+            <div id="wheel-container" style="position: relative; width: 200px; height: 200px; margin: 1rem auto;">
+                <div id="wheel" style="width: 100%; height: 100%; border-radius: 50%;
+                    background: conic-gradient(#ff6b6b 0deg 45deg, #feca57 45deg 90deg, #48dbfb 90deg 135deg,
+                    #ff9ff3 135deg 180deg, #54a0ff 180deg 225deg, #5f27cd 225deg 270deg,
+                    #00d2d3 270deg 315deg, #1dd1a1 315deg 360deg);
+                    display: flex; align-items: center; justify-content: center;
+                    font-size: 2rem; transition: transform 3s cubic-bezier(0.17, 0.67, 0.12, 0.99);">
+                    🎁
+                </div>
+                <div style="position: absolute; top: -10px; left: 50%; transform: translateX(-50%); font-size: 1.5rem;">▼</div>
+            </div>
+            ${canSpin ?
+                `<button class="minigame-btn" onclick="spinWheel()">🎰 Spin the Wheel!</button>` :
+                `<p style="color: #7a9a5a;">Come back tomorrow for another spin!</p>`
+            }
+            <div id="spin-result" style="margin-top: 1rem; font-size: 1.2rem; font-weight: 700;"></div>
+            <button class="back-btn" onclick="setMode('times', document.getElementById('btn-times'))">Back to Times Tables</button>
+        </div>
+    `;
+}
+
+function spinWheel() {
+    if (!canSpinToday()) return;
+
+    const wheel = document.getElementById('wheel');
+    const prizes = [
+        { name: '10 Shells', icon: '🐚', action: () => { collectibles.shells += 10; } },
+        { name: '5 Bugs', icon: '🦋', action: () => { collectibles.bugs += 5; } },
+        { name: '5 Fish', icon: '🐟', action: () => { collectibles.fish += 5; } },
+        { name: 'Power-up Refill', icon: '⚡', action: () => { powerups = { skip: 5, hint: 5 }; } },
+        { name: 'Double Points Next Round', icon: '⭐', action: () => { isDoublePoints = true; } },
+        { name: 'Pet Level Up!', icon: '🐕', action: () => { petBuddy.level++; } },
+        { name: 'Lucky Star', icon: '🌟', action: () => {} },
+        { name: 'Rainbow Gift', icon: '🌈', action: () => { collectibles.shells += 3; collectibles.bugs += 3; collectibles.fish += 3; } }
+    ];
+
+    const randomPrize = Math.floor(Math.random() * prizes.length);
+    const rotation = 1800 + (randomPrize * 45) + Math.random() * 40;
+
+    wheel.style.transform = `rotate(${rotation}deg)`;
+
+    setTimeout(() => {
+        const prize = prizes[randomPrize];
+        prize.action();
+        renderCollectiblesBar();
+        renderPowerupsBar();
+        saveCollectibles();
+
+        document.getElementById('spin-result').innerHTML = `
+            <div style="font-size: 3rem;">${prize.icon}</div>
+            <div style="color: #3d7c47;">You won: ${prize.name}!</div>
+        `;
+
+        lastSpinDate = new Date().toISOString().split('T')[0];
+        if (multData.preferences) multData.preferences.lastSpinDate = lastSpinDate;
+        else multData.preferences = { lastSpinDate };
+        saveMultiplicationData();
+
+        launchConfetti();
+        playSound('fanfare');
+    }, 3000);
+}
+
+// ── Encyclopedia ──
+let encyclopedia = { bugs: [], fish: [], fossils: [] };
+const ALL_BUGS = ['🦋', '🐛', '🐞', '🦗', '🐝', '🪲', '🐜', '🦟', '🪳', '🦠'];
+const ALL_FISH = ['🐟', '🐠', '🐡', '🦈', '🐙', '🦑', '🦐', '🦀', '🐳', '🐋'];
+const ALL_FOSSILS = ['🦴', '🦷', '💀', '🦕', '🦖'];
+
+function showEncyclopedia() {
+    practiceViewActive = true;
+    document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
+    document.querySelector('.score-bar').style.display = 'none';
+
+    const card = document.getElementById('card');
+
+    const renderCollection = (title, icon, collected, all) => {
+        const items = all.map(item => {
+            const found = collected.includes(item);
+            return `<span style="font-size: 1.8rem; opacity: ${found ? 1 : 0.2}; filter: ${found ? 'none' : 'grayscale(1)'};">${item}</span>`;
+        }).join(' ');
+        return `
+            <div style="margin-bottom: 1rem;">
+                <h4 style="color: #3d7c47;">${icon} ${title} (${collected.length}/${all.length})</h4>
+                <div style="background: rgba(255,255,255,0.5); padding: 0.5rem; border-radius: 10px;">${items}</div>
+            </div>
+        `;
+    };
+
+    card.innerHTML = `
+        <div style="text-align: center;">
+            <h3 style="color: #3d7c47;">📖 Encyclopedia</h3>
+            <p style="color: #7a9a5a; margin-bottom: 1rem;">Collect them all!</p>
+            ${renderCollection('Bugs', '🦋', encyclopedia.bugs, ALL_BUGS)}
+            ${renderCollection('Fish', '🐟', encyclopedia.fish, ALL_FISH)}
+            ${renderCollection('Fossils', '🦴', encyclopedia.fossils, ALL_FOSSILS)}
+            <button class="back-btn" onclick="setMode('times', document.getElementById('btn-times'))">Back to Times Tables</button>
+        </div>
+    `;
+}
+
+function discoverCreature(type) {
+    const lists = { bugs: ALL_BUGS, fish: ALL_FISH, fossils: ALL_FOSSILS };
+    const all = lists[type];
+    const undiscovered = all.filter(c => !encyclopedia[type].includes(c));
+
+    if (undiscovered.length > 0 && Math.random() < 0.3) {
+        const newCreature = pickRandom(undiscovered);
+        encyclopedia[type].push(newCreature);
+        showDiscoveryPopup(newCreature, type);
+        saveEncyclopedia();
+    }
+}
+
+function showDiscoveryPopup(creature, type) {
+    const popup = document.createElement('div');
+    popup.style.cssText = `
+        position: fixed; top: 20%; left: 50%; transform: translateX(-50%);
+        background: linear-gradient(135deg, #667eea, #764ba2); color: white;
+        padding: 1rem 2rem; border-radius: 20px; z-index: 2000;
+        text-align: center; animation: badgePop 0.5s ease-out;
+        box-shadow: 0 10px 40px rgba(102,126,234,0.5);
+    `;
+    popup.innerHTML = `
+        <div style="font-size: 3rem;">${creature}</div>
+        <div style="font-weight: 700;">New ${type.slice(0, -1)} discovered!</div>
+    `;
+    document.body.appendChild(popup);
+    playSound('fanfare');
+    setTimeout(() => popup.remove(), 2000);
+}
+
+function saveEncyclopedia() {
+    multData.encyclopedia = encyclopedia;
+    saveMultiplicationData();
+}
+
+// ── Backpack / Inventory ──
+function showBackpack() {
+    practiceViewActive = true;
+    document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
+    document.querySelector('.score-bar').style.display = 'none';
+
+    const card = document.getElementById('card');
+
+    card.innerHTML = `
+        <div style="text-align: center;">
+            <h3 style="color: #3d7c47;">🎒 Your Backpack</h3>
+
+            <div style="background: rgba(255,255,255,0.7); border-radius: 15px; padding: 1rem; margin: 1rem 0;">
+                <h4 style="color: #5c4a32; margin-bottom: 0.5rem;">Collectibles</h4>
+                <div style="display: flex; justify-content: center; gap: 1.5rem; font-size: 1.3rem;">
+                    <div>🐚 <strong>${collectibles.shells}</strong></div>
+                    <div>🦋 <strong>${collectibles.bugs}</strong></div>
+                    <div>🐟 <strong>${collectibles.fish}</strong></div>
+                </div>
+            </div>
+
+            <div style="background: rgba(255,255,255,0.7); border-radius: 15px; padding: 1rem; margin: 1rem 0;">
+                <h4 style="color: #5c4a32; margin-bottom: 0.5rem;">Power-ups</h4>
+                <div style="display: flex; justify-content: center; gap: 1.5rem; font-size: 1.1rem;">
+                    <div>⏭️ Skips: <strong>${powerups.skip}</strong></div>
+                    <div>💡 Hints: <strong>${powerups.hint}</strong></div>
+                </div>
+            </div>
+
+            <div style="background: rgba(255,255,255,0.7); border-radius: 15px; padding: 1rem; margin: 1rem 0;">
+                <h4 style="color: #5c4a32; margin-bottom: 0.5rem;">Stats</h4>
+                <div style="font-size: 0.9rem; color: #5c4a32;">
+                    <div>Total Questions: <strong>${multData.stats.totalAnswered}</strong></div>
+                    <div>Correct Answers: <strong>${multData.stats.totalCorrect}</strong></div>
+                    <div>Best Streak: <strong>${multData.stats.bestStreak}</strong></div>
+                    <div>Daily Streak: <strong>${multData.stats.dailyStreak || 0}</strong> days</div>
+                </div>
+            </div>
+
+            <button class="back-btn" onclick="setMode('times', document.getElementById('btn-times'))">Back to Times Tables</button>
+        </div>
+    `;
+}
+
+// ── Trophies Room ──
+const TROPHIES = [
+    { id: 'first_game', name: 'First Steps', desc: 'Play your first round', icon: '🎮', check: () => multData.stats.roundsPlayed >= 1 },
+    { id: 'ten_rounds', name: 'Getting Started', desc: 'Play 10 rounds', icon: '🌟', check: () => multData.stats.roundsPlayed >= 10 },
+    { id: 'fifty_rounds', name: 'Dedicated', desc: 'Play 50 rounds', icon: '💪', check: () => multData.stats.roundsPlayed >= 50 },
+    { id: 'hundred_correct', name: 'Century', desc: '100 correct answers', icon: '💯', check: () => multData.stats.totalCorrect >= 100 },
+    { id: 'five_hundred_correct', name: 'Math Whiz', desc: '500 correct answers', icon: '🧙', check: () => multData.stats.totalCorrect >= 500 },
+    { id: 'streak_5', name: 'Hot Streak', desc: '5 in a row', icon: '🔥', check: () => multData.stats.bestStreak >= 5 },
+    { id: 'streak_10', name: 'On Fire', desc: '10 in a row', icon: '🌋', check: () => multData.stats.bestStreak >= 10 },
+    { id: 'streak_20', name: 'Unstoppable', desc: '20 in a row', icon: '⚡', check: () => multData.stats.bestStreak >= 20 },
+    { id: 'all_levels', name: 'Island Master', desc: 'Unlock all levels', icon: '🏆', check: () => unlockedLevel >= LEVELS.length },
+    { id: 'collector', name: 'Collector', desc: '50 total collectibles', icon: '🎁', check: () => (collectibles.shells + collectibles.bugs + collectibles.fish) >= 50 },
+    { id: 'daily_7', name: 'Week Warrior', desc: '7 day streak', icon: '📅', check: () => (multData.stats.dailyStreak || 0) >= 7 },
+    { id: 'pet_lover', name: 'Pet Lover', desc: 'Level up your pet', icon: '🐕', check: () => petBuddy.level >= 2 }
+];
+
+function showTrophies() {
+    practiceViewActive = true;
+    document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
+    document.querySelector('.score-bar').style.display = 'none';
+
+    const card = document.getElementById('card');
+
+    const trophiesHTML = TROPHIES.map(t => {
+        const earned = t.check();
+        return `
+            <div style="display: flex; align-items: center; gap: 0.8rem; padding: 0.5rem;
+                background: ${earned ? 'rgba(61,124,71,0.1)' : 'rgba(0,0,0,0.05)'};
+                border-radius: 10px; margin-bottom: 0.4rem; opacity: ${earned ? 1 : 0.5};">
+                <span style="font-size: 1.5rem;">${earned ? t.icon : '🔒'}</span>
+                <div>
+                    <div style="font-weight: 700; color: ${earned ? '#3d7c47' : '#999'};">${t.name}</div>
+                    <div style="font-size: 0.8rem; color: #7a9a5a;">${t.desc}</div>
+                </div>
+            </div>
+        `;
+    }).join('');
+
+    const earnedCount = TROPHIES.filter(t => t.check()).length;
+
+    card.innerHTML = `
+        <div>
+            <h3 style="color: #3d7c47; text-align: center;">🏆 Trophy Room</h3>
+            <p style="color: #7a9a5a; text-align: center; margin-bottom: 1rem;">${earnedCount}/${TROPHIES.length} trophies earned</p>
+            <div style="max-height: 300px; overflow-y: auto;">
+                ${trophiesHTML}
+            </div>
+            <button class="back-btn" onclick="setMode('times', document.getElementById('btn-times'))">Back to Times Tables</button>
+        </div>
+    `;
+}
+
+// ── Jukebox (K.K. Songs) ──
+let collectedSongs = ['K.K. Island'];
+const ALL_SONGS = ['K.K. Island', 'K.K. Bossa', 'K.K. Jazz', 'Bubblegum K.K.', 'K.K. Disco',
+    'K.K. Rock', 'K.K. Soul', 'K.K. Reggae', 'K.K. Country', 'K.K. Lullaby'];
+
+function showJukebox() {
+    practiceViewActive = true;
+    document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
+    document.querySelector('.score-bar').style.display = 'none';
+
+    const card = document.getElementById('card');
+
+    const songsHTML = ALL_SONGS.map(song => {
+        const owned = collectedSongs.includes(song);
+        return `
+            <div style="display: flex; align-items: center; justify-content: space-between;
+                padding: 0.6rem; background: rgba(255,255,255,0.6); border-radius: 10px;
+                margin-bottom: 0.4rem; opacity: ${owned ? 1 : 0.4};">
+                <span>🎵 ${owned ? song : '???'}</span>
+                ${owned ? `<button onclick="playSongMelody('${song}')" style="background: #3d7c47; color: white; border: none; border-radius: 8px; padding: 0.3rem 0.8rem; cursor: pointer;">▶️</button>` : '🔒'}
+            </div>
+        `;
+    }).join('');
+
+    card.innerHTML = `
+        <div style="text-align: center;">
+            <h3 style="color: #3d7c47;">📻 K.K. Jukebox</h3>
+            <p style="color: #7a9a5a; margin-bottom: 1rem;">${collectedSongs.length}/${ALL_SONGS.length} songs collected</p>
+            <div style="text-align: left;">
+                ${songsHTML}
+            </div>
+            <button class="back-btn" onclick="setMode('times', document.getElementById('btn-times'))">Back to Times Tables</button>
+        </div>
+    `;
+}
+
+function playSongMelody(songName) {
+    // Play a little melody based on song name
+    const melodies = {
+        'K.K. Island': [523, 587, 659, 784, 659, 523],
+        'K.K. Bossa': [392, 440, 523, 587, 523, 440],
+        'K.K. Jazz': [440, 523, 587, 659, 698, 659],
+        'Bubblegum K.K.': [784, 880, 784, 659, 784, 880],
+        'K.K. Disco': [523, 659, 784, 880, 784, 659],
+        'K.K. Rock': [330, 392, 440, 523, 440, 392],
+        'K.K. Soul': [440, 523, 587, 523, 440, 392],
+        'K.K. Reggae': [392, 440, 392, 330, 392, 440],
+        'K.K. Country': [523, 587, 659, 587, 523, 440],
+        'K.K. Lullaby': [659, 587, 523, 494, 523, 587]
+    };
+
+    const melody = melodies[songName] || melodies['K.K. Island'];
+    melody.forEach((freq, i) => {
+        setTimeout(() => {
+            const osc = audioContext.createOscillator();
+            const gain = audioContext.createGain();
+            osc.connect(gain);
+            gain.connect(audioContext.destination);
+            osc.frequency.setValueAtTime(freq, audioContext.currentTime);
+            gain.gain.setValueAtTime(0.1, audioContext.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.3);
+            osc.start();
+            osc.stop(audioContext.currentTime + 0.3);
+        }, i * 200);
+    });
+}
+
+function maybeUnlockSong() {
+    if (Math.random() < 0.05) { // 5% chance
+        const locked = ALL_SONGS.filter(s => !collectedSongs.includes(s));
+        if (locked.length > 0) {
+            const newSong = pickRandom(locked);
+            collectedSongs.push(newSong);
+            showSongUnlock(newSong);
+            saveSongs();
+        }
+    }
+}
+
+function showSongUnlock(song) {
+    const popup = document.createElement('div');
+    popup.style.cssText = `
+        position: fixed; top: 20%; left: 50%; transform: translateX(-50%);
+        background: linear-gradient(135deg, #667eea, #764ba2); color: white;
+        padding: 1rem 2rem; border-radius: 20px; z-index: 2000;
+        text-align: center; animation: badgePop 0.5s ease-out;
+    `;
+    popup.innerHTML = `
+        <div style="font-size: 2rem;">🎵</div>
+        <div style="font-weight: 700;">New song unlocked!</div>
+        <div>${song}</div>
+    `;
+    document.body.appendChild(popup);
+    playSound('fanfare');
+    setTimeout(() => popup.remove(), 2500);
+}
+
+function saveSongs() {
+    multData.collectedSongs = collectedSongs;
+    saveMultiplicationData();
+}
+
+// ── Letters from Mom ──
+const MOM_LETTERS = [
+    "Hi sweetie! I'm so proud of how hard you're working on your math! Keep it up! Love, Mom 💕",
+    "Dear child, I baked some cookies for you! Well, virtual ones. 🍪 Keep practicing! - Mom",
+    "Hello! The weather here is lovely. I hope your island is doing well! Keep learning! Love, Mom 🌸",
+    "My dear, I heard you're becoming a math champion! That's wonderful! - Mom 💝",
+    "Hi there! Remember, every expert was once a beginner. You're doing great! Love, Mom ⭐",
+    "Dear one, I found this shell and thought of you! 🐚 Keep up the amazing work! - Mom",
+    "Hello sweetie! Math is like a garden - the more you practice, the more it grows! 🌺 - Mom",
+    "My child, I'm sending you good luck vibes! You've got this! Love, Mom 🍀"
+];
+
+function maybeShowLetter() {
+    if (Math.random() < 0.08) { // 8% chance after a round
+        setTimeout(() => showLetterFromMom(), 1500);
+    }
+}
+
+function showLetterFromMom() {
+    const letter = pickRandom(MOM_LETTERS);
+
+    const popup = document.createElement('div');
+    popup.style.cssText = `
+        position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+        background: rgba(0,0,0,0.7); display: flex; align-items: center;
+        justify-content: center; z-index: 3000;
+    `;
+    popup.innerHTML = `
+        <div style="background: #fffef0; border-radius: 5px; padding: 2rem; max-width: 300px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.3); font-family: 'Comic Sans MS', cursive, sans-serif;
+            border: 3px solid #d4a574; transform: rotate(-2deg);">
+            <div style="font-size: 1.5rem; margin-bottom: 0.5rem;">💌 Letter from Mom</div>
+            <p style="color: #5c4a32; line-height: 1.6; margin-bottom: 1rem;">${letter}</p>
+            <button onclick="this.parentElement.parentElement.remove()"
+                style="background: #3d7c47; color: white; border: none; border-radius: 8px;
+                padding: 0.5rem 1rem; cursor: pointer; font-family: inherit;">Thanks Mom! 💕</button>
+        </div>
+    `;
+    document.body.appendChild(popup);
+}
+
+// ── Shooting Stars ──
+function createShootingStar() {
+    if (Math.random() > 0.3) return; // 30% chance
+
+    const star = document.createElement('div');
+    star.style.cssText = `
+        position: fixed;
+        top: ${Math.random() * 30}%;
+        right: -50px;
+        font-size: 1.5rem;
+        z-index: 50;
+        cursor: pointer;
+        transition: all 2s linear;
+        pointer-events: auto;
+    `;
+    star.textContent = '🌠';
+    star.onclick = () => {
+        star.textContent = '✨';
+        score += 2;
+        updateScoreboard();
+        playSound('correct');
+        setTimeout(() => star.remove(), 300);
+    };
+    document.body.appendChild(star);
+
+    setTimeout(() => {
+        star.style.right = '110%';
+        star.style.top = (parseFloat(star.style.top) + 30) + '%';
+    }, 50);
+
+    setTimeout(() => { if (star.parentNode) star.remove(); }, 2500);
+}
+
+// ── Animal Parade ──
+function showAnimalParade() {
+    const animals = ['🐕', '🐈', '🐰', '🐻', '🦊', '🐸', '🦉', '🐧', '🐿️', '🦆'];
+    const container = document.createElement('div');
+    container.style.cssText = `
+        position: fixed; bottom: 20px; left: -100%; width: 200%;
+        display: flex; gap: 20px; z-index: 50; pointer-events: none;
+        animation: paradeWalk 4s linear forwards;
+    `;
+
+    animals.forEach((animal, i) => {
+        const a = document.createElement('span');
+        a.textContent = animal;
+        a.style.cssText = `font-size: 2rem; animation: bounce 0.5s ease-in-out infinite; animation-delay: ${i * 0.1}s;`;
+        container.appendChild(a);
+    });
+
+    // Add parade animation
+    const style = document.createElement('style');
+    style.textContent = `
+        @keyframes paradeWalk { from { left: -100%; } to { left: 100%; } }
+        @keyframes bounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
+    `;
+    document.head.appendChild(style);
+    document.body.appendChild(container);
+
+    setTimeout(() => { container.remove(); style.remove(); }, 4000);
+}
+
+// ── Flower Garden ──
+let garden = { flowers: [], waterLevel: 100 };
+const FLOWER_TYPES = ['🌸', '🌺', '🌻', '🌹', '🌷', '💐', '🌼', '🏵️'];
+
+function showGarden() {
+    practiceViewActive = true;
+    document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
+    document.querySelector('.score-bar').style.display = 'none';
+
+    const card = document.getElementById('card');
+
+    const flowersHTML = garden.flowers.length > 0
+        ? garden.flowers.map(f => `<span style="font-size: 2rem;">${f}</span>`).join(' ')
+        : '<p style="color: #7a9a5a;">No flowers yet! Answer questions correctly to grow flowers!</p>';
+
+    card.innerHTML = `
+        <div style="text-align: center;">
+            <h3 style="color: #3d7c47;">🌺 Your Garden</h3>
+            <p style="color: #7a9a5a;">Water Level: ${garden.waterLevel}% 💧</p>
+            <div style="background: linear-gradient(180deg, #87ceeb 0%, #90ee90 50%, #8b4513 100%);
+                border-radius: 15px; padding: 2rem; min-height: 150px; margin: 1rem 0;
+                display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 0.5rem;">
+                ${flowersHTML}
+            </div>
+            <p style="color: #7a9a5a; font-size: 0.85rem;">${garden.flowers.length} flowers growing</p>
+            <button class="back-btn" onclick="setMode('times', document.getElementById('btn-times'))">Back to Times Tables</button>
+        </div>
+    `;
+}
+
+function growFlower() {
+    if (Math.random() < 0.15 && garden.flowers.length < 30) { // 15% chance, max 30 flowers
+        const newFlower = pickRandom(FLOWER_TYPES);
+        garden.flowers.push(newFlower);
+        showFlowerGrowPopup(newFlower);
+        saveGarden();
+    }
+}
+
+function showFlowerGrowPopup(flower) {
+    const popup = document.createElement('div');
+    popup.style.cssText = `
+        position: fixed; bottom: 100px; left: 50%; transform: translateX(-50%);
+        font-size: 2rem; z-index: 1000; animation: floatUp 1.5s ease-out forwards;
+    `;
+    popup.textContent = flower + ' +1';
+
+    const style = document.createElement('style');
+    style.textContent = `@keyframes floatUp { to { transform: translateX(-50%) translateY(-50px); opacity: 0; } }`;
+    document.head.appendChild(style);
+    document.body.appendChild(popup);
+
+    setTimeout(() => { popup.remove(); style.remove(); }, 1500);
+}
+
+function saveGarden() {
+    multData.garden = garden;
+    saveMultiplicationData();
+}
+
+// ── Night Owl / Rainy Day Bonuses ──
+function getTimeBonus() {
+    const hour = new Date().getHours();
+    if (hour >= 21 || hour < 6) {
+        return { active: true, name: '🌙 Night Owl Bonus!', multiplier: 1.5 };
+    }
+    return { active: false, name: '', multiplier: 1 };
+}
+
+// ── Add buttons for new features ──
+function addMoreButtons() {
+    const modeSelect = document.querySelector('.mode-select');
+
+    // Wheel button
+    if (!modeSelect.querySelector('#btn-wheel')) {
+        const btn = document.createElement('button');
+        btn.id = 'btn-wheel';
+        btn.className = 'mode-btn';
+        btn.innerHTML = '<span class="mode-icon">🎰</span>Wheel';
+        btn.onclick = showSpinWheel;
+        modeSelect.appendChild(btn);
+    }
+
+    // Backpack button
+    if (!modeSelect.querySelector('#btn-backpack')) {
+        const btn = document.createElement('button');
+        btn.id = 'btn-backpack';
+        btn.className = 'mode-btn';
+        btn.innerHTML = '<span class="mode-icon">🎒</span>Backpack';
+        btn.onclick = showBackpack;
+        modeSelect.appendChild(btn);
+    }
+
+    // Encyclopedia button
+    if (!modeSelect.querySelector('#btn-encyclopedia')) {
+        const btn = document.createElement('button');
+        btn.id = 'btn-encyclopedia';
+        btn.className = 'mode-btn';
+        btn.innerHTML = '<span class="mode-icon">📖</span>Encyclopedia';
+        btn.onclick = showEncyclopedia;
+        modeSelect.appendChild(btn);
+    }
+
+    // Trophies button
+    if (!modeSelect.querySelector('#btn-trophies')) {
+        const btn = document.createElement('button');
+        btn.id = 'btn-trophies';
+        btn.className = 'mode-btn';
+        btn.innerHTML = '<span class="mode-icon">🏆</span>Trophies';
+        btn.onclick = showTrophies;
+        modeSelect.appendChild(btn);
+    }
+
+    // Jukebox button
+    if (!modeSelect.querySelector('#btn-jukebox')) {
+        const btn = document.createElement('button');
+        btn.id = 'btn-jukebox';
+        btn.className = 'mode-btn';
+        btn.innerHTML = '<span class="mode-icon">📻</span>Jukebox';
+        btn.onclick = showJukebox;
+        modeSelect.appendChild(btn);
+    }
+
+    // Garden button
+    if (!modeSelect.querySelector('#btn-garden')) {
+        const btn = document.createElement('button');
+        btn.id = 'btn-garden';
+        btn.className = 'mode-btn';
+        btn.innerHTML = '<span class="mode-icon">🌺</span>Garden';
+        btn.onclick = showGarden;
+        modeSelect.appendChild(btn);
+    }
+}
+
+// ── Load all new data ──
+function loadNewFeatures() {
+    if (multData.petBuddy) petBuddy = { ...petBuddy, ...multData.petBuddy };
+    if (multData.encyclopedia) encyclopedia = { ...encyclopedia, ...multData.encyclopedia };
+    if (multData.collectedSongs) collectedSongs = multData.collectedSongs;
+    if (multData.garden) garden = { ...garden, ...multData.garden };
+    if (multData.preferences?.lastSpinDate) lastSpinDate = multData.preferences.lastSpinDate;
+}
+
 function initNewFeatures() {
     addLeaderboardButton();
     addAvatarButton();
     addMapButton();
     addMinigameButton();
+    addMoreButtons();
     renderDifficultySelect();
     renderPowerupsBar();
     renderCollectiblesBar();
     renderThemeSelect();
     createMusicToggle();
+    createPetBuddy();
 
     // Load saved data
     if (multData.leaderboard) leaderboard = multData.leaderboard;
     if (multData.preferences?.theme) setTheme(multData.preferences.theme);
     loadAvatar();
     loadCollectibles();
+    loadNewFeatures();
 }
 
 // Hook into data loading
