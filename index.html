@@ -4259,37 +4259,49 @@ function showBugGame() {
 function startBugGame() {
     const card = document.getElementById('card');
     gameScore = 0;
+    window.tappedBadItem = false;
 
     card.innerHTML = `
         <div style="text-align:center;margin-bottom:0.5rem">
             <span id="game-timer" style="font-weight:800;font-size:1.2rem;color:#3d7c47">15</span>s
             <span style="margin-left:1rem">Score: <span id="game-score" style="font-weight:800;color:#c0732a">0</span></span>
         </div>
+        <p style="text-align:center;font-size:0.8rem;color:#c0392b;margin-bottom:0.5rem">⚠️ Don't tap the wasps! 🐝</p>
         <div class="bug-game" id="game-area"></div>
     `;
 
     const gameArea = document.getElementById('game-area');
-    const bugs = ['🦋', '🐛', '🐞', '🦗', '🐝', '🪲'];
+    const goodBugs = ['🦋', '🐛', '🐞', '🦗', '🪲'];
+    const badBug = '🐝';
 
     const spawnItem = () => {
         const item = document.createElement('div');
         item.className = 'bug';
-        item.textContent = pickRandom(bugs);
+        const isBad = Math.random() < 0.2; // 20% chance of wasp
+        item.textContent = isBad ? badBug : pickRandom(goodBugs);
         item.style.left = Math.random() * 80 + 10 + '%';
         item.style.top = Math.random() * 80 + 10 + '%';
         item.onclick = () => {
-            gameScore++;
-            document.getElementById('game-score').textContent = gameScore;
-            item.style.transform = 'scale(0)';
-            setTimeout(() => item.remove(), 100);
-            playSound('correct');
+            if (isBad) {
+                window.tappedBadItem = true;
+                item.textContent = '💥';
+                item.style.background = '#ff6b6b';
+                playSound('wrong');
+                setTimeout(() => item.remove(), 300);
+            } else {
+                gameScore++;
+                document.getElementById('game-score').textContent = gameScore;
+                item.style.transform = 'scale(0)';
+                setTimeout(() => item.remove(), 100);
+                playSound('correct');
+            }
         };
         gameArea.appendChild(item);
         setTimeout(() => { if (item.parentNode) item.remove(); }, 1500);
     };
 
     const spawnInterval = setInterval(spawnItem, 400);
-    runGameTimer(15, spawnInterval, () => endGame('bugs', '🦋', 'bugs caught'));
+    runGameTimer(15, spawnInterval, () => endGameWithBonus('bugs', '🦋', 'bugs caught', 'wasps'));
 }
 
 // ── Fishing Game ──
@@ -4308,31 +4320,43 @@ function showFishingGame() {
 function startFishingGame() {
     const card = document.getElementById('card');
     gameScore = 0;
+    window.tappedBadItem = false;
 
     card.innerHTML = `
         <div style="text-align:center;margin-bottom:0.5rem">
             <span id="game-timer" style="font-weight:800;font-size:1.2rem;color:#3d7c47">15</span>s
             <span style="margin-left:1rem">Fish: <span id="game-score" style="font-weight:800;color:#c0732a">0</span></span>
         </div>
+        <p style="text-align:center;font-size:0.8rem;color:#c0392b;margin-bottom:0.5rem">⚠️ Don't catch the trash! 🥾</p>
         <div class="bug-game" id="game-area" style="background:linear-gradient(180deg, #87ceeb 0%, #1e90ff 50%, #000080 100%)"></div>
     `;
 
     const gameArea = document.getElementById('game-area');
-    const fish = ['🐟', '🐠', '🐡', '🦈', '🐙', '🦑', '🦐', '🦀'];
+    const goodFish = ['🐟', '🐠', '🐡', '🦈', '🐙', '🦑', '🦐', '🦀'];
+    const badItems = ['🥾', '🗑️', '👢'];
 
     const spawnItem = () => {
         const item = document.createElement('div');
         item.className = 'bug';
-        item.textContent = pickRandom(fish);
+        const isBad = Math.random() < 0.2;
+        item.textContent = isBad ? pickRandom(badItems) : pickRandom(goodFish);
         item.style.left = '-10%';
         item.style.top = Math.random() * 70 + 15 + '%';
         item.style.transition = 'left 2s linear';
         item.onclick = () => {
-            gameScore++;
-            document.getElementById('game-score').textContent = gameScore;
-            item.textContent = '💥';
-            setTimeout(() => item.remove(), 200);
-            playSound('correct');
+            if (isBad) {
+                window.tappedBadItem = true;
+                item.textContent = '💥';
+                item.style.background = '#ff6b6b';
+                playSound('wrong');
+                setTimeout(() => item.remove(), 300);
+            } else {
+                gameScore++;
+                document.getElementById('game-score').textContent = gameScore;
+                item.textContent = '💥';
+                setTimeout(() => item.remove(), 200);
+                playSound('correct');
+            }
         };
         gameArea.appendChild(item);
         setTimeout(() => { item.style.left = '110%'; }, 50);
@@ -4340,7 +4364,7 @@ function startFishingGame() {
     };
 
     const spawnInterval = setInterval(spawnItem, 500);
-    runGameTimer(15, spawnInterval, () => endGame('fish', '🎣', 'fish caught'));
+    runGameTimer(15, spawnInterval, () => endGameWithBonus('fish', '🎣', 'fish caught', 'trash'));
 }
 
 // ── Balloon Pop Game ──
@@ -4359,35 +4383,44 @@ function showBalloonGame() {
 function startBalloonGame() {
     const card = document.getElementById('card');
     gameScore = 0;
+    window.tappedBadItem = false;
 
     card.innerHTML = `
         <div style="text-align:center;margin-bottom:0.5rem">
             <span id="game-timer" style="font-weight:800;font-size:1.2rem;color:#3d7c47">15</span>s
             <span style="margin-left:1rem">Popped: <span id="game-score" style="font-weight:800;color:#c0732a">0</span></span>
         </div>
+        <p style="text-align:center;font-size:0.8rem;color:#c0392b;margin-bottom:0.5rem">⚠️ Don't pop the black balloons! 🖤</p>
         <div class="bug-game" id="game-area" style="background:linear-gradient(180deg, #87ceeb 0%, #b0e0e6 50%, #98fb98 100%)"></div>
     `;
 
     const gameArea = document.getElementById('game-area');
-    const balloons = ['🎈', '🟡', '🔴', '🟢', '🟣', '🔵'];
-    const colors = ['#ff6b6b', '#feca57', '#48dbfb', '#ff9ff3', '#54a0ff', '#5f27cd'];
+    const goodColors = ['#ff6b6b', '#feca57', '#48dbfb', '#ff9ff3', '#54a0ff', '#5f27cd'];
 
     const spawnItem = () => {
         const item = document.createElement('div');
         item.className = 'bug';
         item.textContent = '🎈';
-        item.style.color = pickRandom(colors);
+        const isBad = Math.random() < 0.15;
+        item.style.color = isBad ? '#222' : pickRandom(goodColors);
         item.style.left = Math.random() * 80 + 10 + '%';
         item.style.bottom = '-10%';
         item.style.top = 'auto';
         item.style.transition = 'bottom 3s linear';
         item.style.fontSize = '2.5rem';
         item.onclick = () => {
-            gameScore++;
-            document.getElementById('game-score').textContent = gameScore;
-            item.textContent = '💥';
-            setTimeout(() => item.remove(), 150);
-            playSound('correct');
+            if (isBad) {
+                window.tappedBadItem = true;
+                item.textContent = '💀';
+                playSound('wrong');
+                setTimeout(() => item.remove(), 300);
+            } else {
+                gameScore++;
+                document.getElementById('game-score').textContent = gameScore;
+                item.textContent = '💥';
+                setTimeout(() => item.remove(), 150);
+                playSound('correct');
+            }
         };
         gameArea.appendChild(item);
         setTimeout(() => { item.style.bottom = '110%'; }, 50);
@@ -4395,7 +4428,7 @@ function startBalloonGame() {
     };
 
     const spawnInterval = setInterval(spawnItem, 400);
-    runGameTimer(15, spawnInterval, () => endGame('balloons', '🎈', 'balloons popped'));
+    runGameTimer(15, spawnInterval, () => endGameWithBonus('balloons', '🎈', 'balloons popped', 'black balloons'));
 }
 
 // ── Shell Collecting Game ──
@@ -4414,37 +4447,48 @@ function showShellGame() {
 function startShellGame() {
     const card = document.getElementById('card');
     gameScore = 0;
+    window.tappedBadItem = false;
 
     card.innerHTML = `
         <div style="text-align:center;margin-bottom:0.5rem">
             <span id="game-timer" style="font-weight:800;font-size:1.2rem;color:#3d7c47">15</span>s
             <span style="margin-left:1rem">Shells: <span id="game-score" style="font-weight:800;color:#c0732a">0</span></span>
         </div>
+        <p style="text-align:center;font-size:0.8rem;color:#c0392b;margin-bottom:0.5rem">⚠️ Don't touch the crabs! 🦀</p>
         <div class="bug-game" id="game-area" style="background:linear-gradient(180deg, #87ceeb 20%, #1e90ff 40%, #f4a460 60%, #deb887 100%)"></div>
     `;
 
     const gameArea = document.getElementById('game-area');
-    const shells = ['🐚', '🦪', '🐚', '🌊', '🐚'];
+    const goodShells = ['🐚', '🦪', '🐚'];
+    const badItem = '🦀';
 
     const spawnItem = () => {
         const item = document.createElement('div');
         item.className = 'bug';
-        item.textContent = pickRandom(shells);
+        const isBad = Math.random() < 0.2;
+        item.textContent = isBad ? badItem : pickRandom(goodShells);
         item.style.left = Math.random() * 80 + 10 + '%';
-        item.style.top = Math.random() * 30 + 60 + '%'; // Beach area (bottom)
+        item.style.top = Math.random() * 30 + 60 + '%';
         item.onclick = () => {
-            gameScore++;
-            document.getElementById('game-score').textContent = gameScore;
-            item.textContent = '✨';
-            setTimeout(() => item.remove(), 150);
-            playSound('correct');
+            if (isBad) {
+                window.tappedBadItem = true;
+                item.textContent = '😵';
+                playSound('wrong');
+                setTimeout(() => item.remove(), 300);
+            } else {
+                gameScore++;
+                document.getElementById('game-score').textContent = gameScore;
+                item.textContent = '✨';
+                setTimeout(() => item.remove(), 150);
+                playSound('correct');
+            }
         };
         gameArea.appendChild(item);
         setTimeout(() => { if (item.parentNode) item.remove(); }, 1200);
     };
 
     const spawnInterval = setInterval(spawnItem, 350);
-    runGameTimer(15, spawnInterval, () => endGame('shells', '🐚', 'shells collected'));
+    runGameTimer(15, spawnInterval, () => endGameWithBonus('shells', '🐚', 'shells collected', 'crabs'));
 }
 
 // ── Fossil Dig Game ──
@@ -4626,6 +4670,117 @@ function endGame(collectibleType, icon, message) {
         balloons: startBalloonGame
     };
     playAgainBtn.onclick = gameMap[collectibleType] || showGamesMenu;
+}
+
+// End game with bonus question if avoided bad items!
+function endGameWithBonus(collectibleType, icon, message, avoidedWhat) {
+    const card = document.getElementById('card');
+
+    // Add to collectibles first
+    if (collectibleType === 'bugs') collectibles.bugs += gameScore;
+    else if (collectibleType === 'fish') collectibles.fish += gameScore;
+    else if (collectibleType === 'shells') collectibles.shells += gameScore;
+
+    renderCollectiblesBar();
+    saveCollectibles();
+
+    // Check if player avoided all bad items
+    if (!window.tappedBadItem && gameScore > 0) {
+        // BONUS QUESTION TIME!
+        const a = Math.floor(Math.random() * 10) + 2;
+        const b = Math.floor(Math.random() * 10) + 2;
+        const correctAnswer = a * b;
+
+        card.innerHTML = `
+            <div style="text-align:center;padding:1.5rem">
+                <h2 style="color:#f39c12">🌟 BONUS QUESTION! 🌟</h2>
+                <p style="color:#3d7c47;font-weight:700">You avoided all the ${avoidedWhat}!</p>
+                <p style="color:#5c4a32;margin:1rem 0">Answer correctly for +10 bonus points!</p>
+                <div style="font-size:2rem;font-weight:800;color:#3d7c47;margin:1rem 0">
+                    ${a} × ${b} = ?
+                </div>
+                <input type="number" id="bonus-answer" class="answer-input" style="font-size:1.5rem;width:120px;text-align:center" autocomplete="off">
+                <button class="submit-btn" onclick="checkBonusAnswer(${correctAnswer}, '${collectibleType}', '${icon}', '${message}')" style="margin-top:1rem;font-size:1.2rem">Submit!</button>
+            </div>
+        `;
+
+        document.getElementById('bonus-answer').focus();
+
+        // Allow Enter key
+        document.getElementById('bonus-answer').onkeydown = (e) => {
+            if (e.key === 'Enter') {
+                checkBonusAnswer(correctAnswer, collectibleType, icon, message);
+            }
+        };
+    } else {
+        // Normal end (tapped bad item or no score)
+        if (gameScore >= 10) launchConfetti();
+        const trophy = gameScore >= 15 ? '🏆' : gameScore >= 10 ? '🌟' : gameScore >= 5 ? '⭐' : '👏';
+
+        card.innerHTML = `
+            <div style="text-align:center;padding:2rem">
+                <h2 style="color:#3d7c47">${icon} Game Over!</h2>
+                ${window.tappedBadItem ? '<p style="color:#c0392b">Oops! You tapped a bad item - no bonus this time!</p>' : ''}
+                <div style="font-size:3rem;margin:1rem 0">${trophy}</div>
+                <div style="font-size:2rem;font-weight:800;color:#c0732a">${gameScore} ${message}!</div>
+                ${collectibleType === 'bugs' || collectibleType === 'fish' || collectibleType === 'shells' ?
+                    `<p style="color:#7a9a5a;margin-top:0.5rem">+${gameScore} added to your collection!</p>` : ''}
+                <button class="play-again-btn" style="margin-top:1rem">Play Again</button>
+                <button class="back-btn" onclick="showGamesMenu()">Back to Games</button>
+            </div>
+        `;
+
+        const gameMap = { bugs: startBugGame, fish: startFishingGame, shells: startShellGame, fossils: startFossilGame, stars: startStarGame, balloons: startBalloonGame };
+        card.querySelector('.play-again-btn').onclick = gameMap[collectibleType] || showGamesMenu;
+    }
+}
+
+function checkBonusAnswer(correctAnswer, collectibleType, icon, message) {
+    const input = document.getElementById('bonus-answer');
+    const userAnswer = parseInt(input.value);
+    const card = document.getElementById('card');
+
+    if (userAnswer === correctAnswer) {
+        // CORRECT! +10 bonus!
+        gameScore += 10;
+        if (collectibleType === 'bugs') collectibles.bugs += 10;
+        else if (collectibleType === 'fish') collectibles.fish += 10;
+        else if (collectibleType === 'shells') collectibles.shells += 10;
+
+        renderCollectiblesBar();
+        saveCollectibles();
+        launchConfetti();
+        playSound('fanfare');
+
+        card.innerHTML = `
+            <div style="text-align:center;padding:2rem">
+                <h2 style="color:#27ae60">🎉 BONUS EARNED! 🎉</h2>
+                <div style="font-size:4rem;margin:1rem 0">🏆</div>
+                <div style="font-size:2rem;font-weight:800;color:#f39c12">+10 BONUS POINTS!</div>
+                <div style="font-size:1.5rem;font-weight:700;color:#c0732a;margin-top:0.5rem">Total: ${gameScore} ${message}!</div>
+                <button class="play-again-btn" style="margin-top:1rem">Play Again</button>
+                <button class="back-btn" onclick="showGamesMenu()">Back to Games</button>
+            </div>
+        `;
+    } else {
+        // Wrong answer
+        playSound('wrong');
+
+        card.innerHTML = `
+            <div style="text-align:center;padding:2rem">
+                <h2 style="color:#e74c3c">Not quite!</h2>
+                <p style="color:#5c4a32">The answer was ${correctAnswer}</p>
+                <div style="font-size:3rem;margin:1rem 0">😅</div>
+                <div style="font-size:1.5rem;font-weight:700;color:#c0732a">${gameScore} ${message}!</div>
+                <p style="color:#7a9a5a">Try again next time for the bonus!</p>
+                <button class="play-again-btn" style="margin-top:1rem">Play Again</button>
+                <button class="back-btn" onclick="showGamesMenu()">Back to Games</button>
+            </div>
+        `;
+    }
+
+    const gameMap = { bugs: startBugGame, fish: startFishingGame, shells: startShellGame, fossils: startFossilGame, stars: startStarGame, balloons: startBalloonGame };
+    card.querySelector('.play-again-btn').onclick = gameMap[collectibleType] || showGamesMenu;
 }
 
 // Add mini-game button
