@@ -2283,26 +2283,26 @@ async function saveMultiplicationData() {
 
 // ── Island Places (unlock every 20 correct) ──
 const ISLAND_PLACES = [
-    { name: "Nook's Cranny", icon: "🏪", desc: "Tom Nook's shop is open for business!" },
-    { name: "The Museum", icon: "🏛️", desc: "Blathers can't wait to see your collection!" },
-    { name: "Able Sisters", icon: "🧵", desc: "Mabel and Sable have clothes for you!" },
-    { name: "Resident Services", icon: "🏢", desc: "Isabelle is ready to help!" },
-    { name: "The Campsite", icon: "⛺", desc: "Visitors are coming to your island!" },
-    { name: "Starfall Cliff", icon: "🌠", desc: "A magical place where stars fall!" },
-    { name: "Rainbow Falls", icon: "🌈", desc: "The most colorful waterfall on the island!" },
-    { name: "Mushroom Grove", icon: "🍄", desc: "Giant mushrooms grow here year-round!" },
-    { name: "Fossil Canyon", icon: "🦴", desc: "Ancient treasures hide in these rocks!" },
-    { name: "Butterfly Garden", icon: "🦋", desc: "Flick's favorite place to visit!" },
-    { name: "Crystal Cave", icon: "💎", desc: "Glittering gems light up the darkness!" },
-    { name: "Cloud Overlook", icon: "☁️", desc: "Touch the clouds from up here!" },
-    { name: "Honeybee Meadow", icon: "🐝", desc: "Sweet honey flows from golden hives!" },
-    { name: "Firefly Lake", icon: "✨", desc: "Glowing fireflies dance at night!" },
-    { name: "K.K. Concert Hall", icon: "🎸", desc: "K.K. Slider plays here every night!" },
-    { name: "Treasure Cove", icon: "🏴‍☠️", desc: "Gulliver found pirate gold here!" },
-    { name: "Northern Lights Peak", icon: "🌌", desc: "The aurora shines above the mountain!" },
-    { name: "Sakura Springs", icon: "🌸", desc: "Cherry blossoms bloom forever here!" },
-    { name: "Mermaid Lagoon", icon: "🧜‍♀️", desc: "Pascal shares secrets in these waters!" },
-    { name: "Golden Palace", icon: "👑", desc: "The ultimate island achievement!" }
+    { name: "Nook's Cranny", icon: "🏪", desc: "Tom Nook's shop is open for business!", character: "🦝", charName: "Tom Nook", quote: "Yes, yes! Welcome to my shop!", gift: "bells" },
+    { name: "The Museum", icon: "🏛️", desc: "Blathers can't wait to see your collection!", character: "🦉", charName: "Blathers", quote: "Hoo! What a magnificent specimen!", gift: "fossil" },
+    { name: "Able Sisters", icon: "🧵", desc: "Mabel and Sable have clothes for you!", character: "🦔", charName: "Mabel", quote: "Looking for something cute to wear?", gift: "clothes" },
+    { name: "Resident Services", icon: "🏢", desc: "Isabelle is ready to help!", character: "🐕", charName: "Isabelle", quote: "Good morning! Let's make today great!", gift: "star" },
+    { name: "The Campsite", icon: "⛺", desc: "Visitors are coming to your island!", character: "🐱", charName: "Visitor", quote: "This island is amazing!", gift: "snack" },
+    { name: "Starfall Cliff", icon: "🌠", desc: "A magical place where stars fall!", character: "🦊", charName: "Celeste", quote: "Make a wish on the falling stars!", gift: "star" },
+    { name: "Rainbow Falls", icon: "🌈", desc: "The most colorful waterfall on the island!", character: "🦆", charName: "Molly", quote: "The rainbow is so beautiful, quack!", gift: "shell" },
+    { name: "Mushroom Grove", icon: "🍄", desc: "Giant mushrooms grow here year-round!", character: "🐿️", charName: "Marshal", quote: "These mushrooms are so aesthetic, sulky!", gift: "mushroom" },
+    { name: "Fossil Canyon", icon: "🦴", desc: "Ancient treasures hide in these rocks!", character: "🦉", charName: "Blathers", quote: "HOO! More fossils to examine!", gift: "fossil" },
+    { name: "Butterfly Garden", icon: "🦋", desc: "Flick's favorite place to visit!", character: "🦎", charName: "Flick", quote: "BUGS! I love bugs so much!", gift: "bug" },
+    { name: "Crystal Cave", icon: "💎", desc: "Glittering gems light up the darkness!", character: "🦨", charName: "Kicks", quote: "Shiny! Like my freshest kicks!", gift: "gem" },
+    { name: "Cloud Overlook", icon: "☁️", desc: "Touch the clouds from up here!", character: "🐦", charName: "Gulliver", quote: "I can see my ship from here... maybe!", gift: "treasure" },
+    { name: "Honeybee Meadow", icon: "🐝", desc: "Sweet honey flows from golden hives!", character: "🐻", charName: "Stitches", quote: "Honey is my favorite, stuffin'!", gift: "honey" },
+    { name: "Firefly Lake", icon: "✨", desc: "Glowing fireflies dance at night!", character: "🐸", charName: "Lily", quote: "The fireflies are magical, toady!", gift: "bug" },
+    { name: "K.K. Concert Hall", icon: "🎸", desc: "K.K. Slider plays here every night!", character: "🐕", charName: "K.K. Slider", quote: "This next song goes out to you...", gift: "music" },
+    { name: "Treasure Cove", icon: "🏴‍☠️", desc: "Gulliver found pirate gold here!", character: "🐦", charName: "Gullivarrr", quote: "Ahoy! There be treasure here, matey!", gift: "treasure" },
+    { name: "Northern Lights Peak", icon: "🌌", desc: "The aurora shines above the mountain!", character: "🐧", charName: "Aurora", quote: "The lights dance just for us, b-b-baby!", gift: "star" },
+    { name: "Sakura Springs", icon: "🌸", desc: "Cherry blossoms bloom forever here!", character: "🐰", charName: "Chrissy", quote: "So pretty and pink, sparkles!", gift: "flower" },
+    { name: "Mermaid Lagoon", icon: "🧜‍♀️", desc: "Pascal shares secrets in these waters!", character: "🦦", charName: "Pascal", quote: "Life is like the ocean, maaan...", gift: "pearl" },
+    { name: "Golden Palace", icon: "👑", desc: "The ultimate island achievement!", character: "🦁", charName: "King", quote: "You've truly mastered the island!", gift: "crown" }
 ];
 
 function getUnlockedPlaces() {
@@ -3741,7 +3741,8 @@ function showProgressMap() {
         const isLocked = i >= unlockedCount;
         const pos = positions[i] || { left: '50%', top: '50%' };
         placesHTML += `
-            <div class="map-place ${isLocked ? 'locked' : ''}" style="left:${pos.left}; top:${pos.top}">
+            <div class="map-place ${isLocked ? 'locked' : ''}" style="left:${pos.left}; top:${pos.top}"
+                 onclick="${isLocked ? '' : `visitPlace(${i})`}" ${!isLocked ? 'style="cursor:pointer"' : ''}>
                 <span class="place-icon">${isLocked ? '🔒' : place.icon}</span>
                 <span class="place-label">${isLocked ? '???' : place.name}</span>
             </div>
@@ -3752,14 +3753,140 @@ function showProgressMap() {
         <div style="text-align:center">
             <h3>🗺️ Island Map</h3>
             <p style="color:#7a9a5a;font-size:0.9rem;margin-bottom:0.5rem">
-                ${unlockedCount}/${ISLAND_PLACES.length} places discovered!
+                ${unlockedCount}/${ISLAND_PLACES.length} places discovered! Tap a place to visit!
             </p>
         </div>
-        <div class="progress-map">
+        <div class="progress-map" id="island-map">
             ${placesHTML}
         </div>
         <button class="back-btn" onclick="setMode('times', document.getElementById('btn-times'))">Back to Times Tables</button>
     `;
+}
+
+// Visit a place on the map
+function visitPlace(placeIndex) {
+    const place = ISLAND_PLACES[placeIndex];
+    playSound('correct');
+
+    // Create popup overlay
+    const popup = document.createElement('div');
+    popup.className = 'place-visit-popup';
+    popup.innerHTML = `
+        <div class="place-visit-content">
+            <div class="place-visit-icon">${place.icon}</div>
+            <h3 class="place-visit-name">${place.name}</h3>
+            <p class="place-visit-desc">${place.desc}</p>
+
+            <div class="place-visit-character">
+                <span class="character-icon">${place.character}</span>
+                <div class="character-info">
+                    <div class="character-name">${place.charName}</div>
+                    <div class="character-quote">"${place.quote}"</div>
+                </div>
+            </div>
+
+            <div class="place-visit-gift" id="place-gift">
+                <button class="minigame-btn" onclick="claimPlaceGift(${placeIndex})">
+                    🎁 Claim Gift!
+                </button>
+            </div>
+
+            <button class="back-btn" onclick="closePlacePopup()">Back to Map</button>
+        </div>
+    `;
+
+    // Add styles for the popup
+    popup.style.cssText = `
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0,0,0,0.8);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 3000;
+        animation: fadeIn 0.3s ease-out;
+    `;
+
+    document.body.appendChild(popup);
+
+    // Style the content
+    const content = popup.querySelector('.place-visit-content');
+    content.style.cssText = `
+        background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 50%, #c8e6c0 100%);
+        border-radius: 20px;
+        padding: 1.5rem;
+        max-width: 320px;
+        text-align: center;
+        animation: levelUpPop 0.5s ease-out;
+        box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+    `;
+
+    popup.querySelector('.place-visit-icon').style.cssText = 'font-size: 4rem; margin-bottom: 0.5rem;';
+    popup.querySelector('.place-visit-name').style.cssText = 'color: #3d7c47; font-size: 1.3rem; margin-bottom: 0.3rem;';
+    popup.querySelector('.place-visit-desc').style.cssText = 'color: #5c4a32; font-size: 0.9rem; margin-bottom: 1rem;';
+
+    const charDiv = popup.querySelector('.place-visit-character');
+    charDiv.style.cssText = `
+        display: flex;
+        align-items: center;
+        gap: 0.8rem;
+        background: rgba(255,255,255,0.7);
+        border-radius: 12px;
+        padding: 0.8rem;
+        margin-bottom: 1rem;
+    `;
+
+    popup.querySelector('.character-icon').style.cssText = 'font-size: 2.5rem;';
+    popup.querySelector('.character-name').style.cssText = 'font-weight: 800; color: #3d7c47; font-size: 0.95rem;';
+    popup.querySelector('.character-quote').style.cssText = 'font-style: italic; color: #5c4a32; font-size: 0.85rem;';
+}
+
+function claimPlaceGift(placeIndex) {
+    const place = ISLAND_PLACES[placeIndex];
+    const giftDiv = document.getElementById('place-gift');
+
+    // Give reward based on gift type
+    const giftIcons = {
+        bells: '💰', fossil: '🦴', clothes: '👕', star: '⭐', snack: '🍪',
+        shell: '🐚', mushroom: '🍄', bug: '🦋', gem: '💎', treasure: '📦',
+        honey: '🍯', music: '🎵', flower: '🌸', pearl: '🦪', crown: '👑'
+    };
+
+    const icon = giftIcons[place.gift] || '🎁';
+
+    // Add to collectibles based on type
+    if (place.gift === 'shell' || place.gift === 'pearl') {
+        collectibles.shells++;
+    } else if (place.gift === 'bug') {
+        collectibles.bugs++;
+    } else if (place.gift === 'fossil') {
+        // Add to a special collection or just show it
+    }
+
+    renderCollectiblesBar();
+    saveCollectibles();
+
+    // Show the gift with animation
+    giftDiv.innerHTML = `
+        <div style="font-size: 3rem; animation: levelUpPop 0.5s ease-out;">${icon}</div>
+        <div style="color: #3d7c47; font-weight: 700; margin-top: 0.5rem;">
+            You got: ${place.gift.charAt(0).toUpperCase() + place.gift.slice(1)}!
+        </div>
+    `;
+
+    playSound('fanfare');
+    launchConfetti();
+}
+
+function closePlacePopup() {
+    const popup = document.querySelector('.place-visit-popup');
+    if (popup) {
+        popup.style.animation = 'fadeIn 0.2s ease-out reverse';
+        setTimeout(() => popup.remove(), 200);
+    }
 }
 
 // Add map button
