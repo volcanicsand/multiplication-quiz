@@ -3415,18 +3415,20 @@ function toggleMusic() {
     const btn = document.getElementById('music-toggle');
 
     if (musicPlaying) {
-        stopMusic();
+        musicPlaying = false;
         btn.classList.add('muted');
         btn.textContent = '🔇';
     } else {
-        playBackgroundMusic();
+        musicPlaying = true;
         btn.classList.remove('muted');
         btn.textContent = '🎵';
+        playBackgroundMusic();
     }
-    musicPlaying = !musicPlaying;
 }
 
 function playBackgroundMusic() {
+    if (!musicPlaying) return;
+
     try {
         // Create a simple pleasant melody loop
         const playNote = (freq, startTime, duration) => {
@@ -3436,7 +3438,7 @@ function playBackgroundMusic() {
             gain.connect(audioContext.destination);
             osc.frequency.setValueAtTime(freq, audioContext.currentTime + startTime);
             osc.type = 'sine';
-            gain.gain.setValueAtTime(0.08, audioContext.currentTime + startTime);
+            gain.gain.setValueAtTime(0.1, audioContext.currentTime + startTime);
             gain.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + startTime + duration);
             osc.start(audioContext.currentTime + startTime);
             osc.stop(audioContext.currentTime + startTime + duration);
