@@ -1769,6 +1769,145 @@
             .mode-select .mode-btn:nth-child(3) { grid-column: 1 / -1; }
             .level-btn { font-size: 0.7rem; padding: 0.35rem 0.55rem; }
         }
+
+        /* ── World Quiz Geography Game ── */
+        .geo-map-container {
+            width: 100%;
+            border-radius: 12px;
+            overflow: hidden;
+            background: #e8f4fd;
+            border: 2px solid rgba(61,124,71,0.2);
+            position: relative;
+            touch-action: manipulation;
+        }
+        .geo-map-container svg {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+        .geo-country {
+            fill: #7bc67e;
+            stroke: #4a8a4e;
+            stroke-width: 0.3;
+            cursor: pointer;
+            transition: fill 0.2s;
+        }
+        .geo-country:hover {
+            fill: #ffd700;
+            stroke: #b8860b;
+            stroke-width: 0.5;
+        }
+        .geo-country.geo-correct {
+            fill: #2ecc71;
+            stroke: #27ae60;
+            stroke-width: 0.8;
+            animation: geoPulse 0.5s ease-out;
+        }
+        .geo-country.geo-wrong {
+            fill: #e74c3c;
+            stroke: #c0392b;
+            stroke-width: 0.8;
+        }
+        .geo-country.geo-highlight {
+            fill: #ff8c00;
+            stroke: #e67300;
+            stroke-width: 0.8;
+            animation: geoHighlightPulse 1s ease-in-out infinite;
+        }
+        .geo-country.geo-dimmed {
+            fill: #c8dcc8;
+            stroke: #a0b8a0;
+            cursor: default;
+        }
+        @keyframes geoPulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.02); }
+            100% { transform: scale(1); }
+        }
+        @keyframes geoHighlightPulse {
+            0%, 100% { fill: #ff8c00; }
+            50% { fill: #ffb347; }
+        }
+        .geo-prompt {
+            text-align: center;
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: #3d7c47;
+            margin: 0.5rem 0;
+            min-height: 2em;
+        }
+        .geo-choices {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.5rem;
+            margin-top: 0.5rem;
+        }
+        .geo-choice-btn {
+            background: linear-gradient(135deg, #e8f5e2, #c8e6c0);
+            border: 2px solid rgba(61,124,71,0.3);
+            border-radius: 10px;
+            padding: 0.7rem;
+            font-family: 'Nunito', sans-serif;
+            font-weight: 700;
+            font-size: 0.9rem;
+            color: #3d7c47;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .geo-choice-btn:hover {
+            background: linear-gradient(135deg, #c8e6c0, #a8d6a0);
+            transform: scale(1.03);
+        }
+        .geo-choice-btn.geo-btn-correct {
+            background: linear-gradient(135deg, #2ecc71, #27ae60) !important;
+            color: white !important;
+            border-color: #27ae60 !important;
+        }
+        .geo-choice-btn.geo-btn-wrong {
+            background: linear-gradient(135deg, #e74c3c, #c0392b) !important;
+            color: white !important;
+            border-color: #c0392b !important;
+        }
+        .geo-fun-fact {
+            background: rgba(255,255,255,0.8);
+            border-radius: 10px;
+            padding: 0.6rem;
+            margin-top: 0.5rem;
+            font-size: 0.85rem;
+            color: #5c4a32;
+            text-align: center;
+        }
+        .geo-region-btn {
+            background: rgba(255,255,255,0.8);
+            border: 2px solid rgba(61,124,71,0.2);
+            border-radius: 10px;
+            padding: 0.6rem 0.8rem;
+            font-family: 'Nunito', sans-serif;
+            font-weight: 700;
+            font-size: 0.85rem;
+            color: #5c4a32;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .geo-region-btn:hover {
+            background: rgba(61,124,71,0.15);
+        }
+        .geo-region-btn.active {
+            background: #3d7c47;
+            color: white;
+            border-color: #3d7c47;
+        }
+        .geo-score-display {
+            display: flex;
+            justify-content: space-around;
+            background: rgba(255,255,255,0.7);
+            border-radius: 10px;
+            padding: 0.5rem;
+            margin-bottom: 0.5rem;
+            font-weight: 700;
+            font-size: 0.85rem;
+            color: #3d7c47;
+        }
     </style>
 </head>
 <body>
@@ -1843,6 +1982,9 @@
                 </button>
                 <button class="mode-btn" id="btn-practice" onclick="showPracticeView()">
                     <span class="mode-icon">🎯</span>Keep Practicing
+                </button>
+                <button class="mode-btn" id="btn-worldquiz" onclick="showGeoMenu()">
+                    <span class="mode-icon">🌍</span>World Quiz
                 </button>
             </div>
 
@@ -2022,7 +2164,10 @@ const ACHIEVEMENTS = [
     { id: 'century', name: 'Century Club', desc: 'Answer 100 questions', icon: '💯', check: () => multData.stats.totalAnswered >= 100 },
     { id: 'master', name: 'Math Master', desc: 'Answer 500 questions', icon: '🧙', check: () => multData.stats.totalAnswered >= 500 },
     { id: 'perfectionist', name: 'Perfectionist', desc: 'Get 5 perfect rounds', icon: '👑', check: () => false },
-    { id: 'explorer', name: 'Island Explorer', desc: 'Unlock all levels', icon: '🗺️', check: () => unlockedLevel >= LEVELS.length }
+    { id: 'explorer', name: 'Island Explorer', desc: 'Unlock all levels', icon: '🗺️', check: () => unlockedLevel >= LEVELS.length },
+    { id: 'geo_first', name: 'World Traveler', desc: 'Complete your first geography round', icon: '🌍', check: () => (multData.geoStats?.roundsPlayed || 0) >= 1 },
+    { id: 'geo_perfect', name: 'Perfect Map', desc: 'Get 10/10 in a geography round', icon: '🗺️', check: () => (multData.geoStats?.perfectRounds || 0) >= 1 },
+    { id: 'geo_50', name: 'Globe Trotter', desc: 'Answer 50 geography questions', icon: '✈️', check: () => (multData.geoStats?.totalAnswered || 0) >= 50 }
 ];
 
 function checkAchievements() {
@@ -2307,6 +2452,9 @@ async function loadMultiplicationData() {
             if (m.islandName) {
                 multData.islandName = m.islandName;
                 updateIslandName();
+            }
+            if (m.geoStats) {
+                multData.geoStats = m.geoStats;
             }
             if (multData.stats.unlockedLevel) {
                 unlockedLevel = multData.stats.unlockedLevel;
@@ -4796,6 +4944,7 @@ function addMinigameButton() {
     }
 }
 
+
 // ── Update submitAnswer to include collectibles and bonus ──
 const originalSubmitAnswer = submitAnswer;
 submitAnswer = function() {
@@ -6716,6 +6865,662 @@ function closeIsabelleAnnouncement() {
             startRound(); // Start the game after closing
         }, 300);
     }
+}
+
+// ══════════════════════════════════════════════════════════
+// ── World Quiz (Geography Game) ──
+// ══════════════════════════════════════════════════════════
+
+const GEO_REGIONS = {
+    world:  { name: 'World',         emoji: '🌍', viewBox: '0 0 1000 500' },
+    na:     { name: 'North America',  emoji: '🦅', viewBox: '30 50 350 250' },
+    sa:     { name: 'South America',  emoji: '🦜', viewBox: '180 230 200 270' },
+    europe: { name: 'Europe',         emoji: '🏰', viewBox: '430 40 200 180' },
+    africa: { name: 'Africa',         emoji: '🦁', viewBox: '420 150 200 300' },
+    asia:   { name: 'Asia',           emoji: '🐼', viewBox: '580 30 400 280' },
+    oceania:{ name: 'Oceania',        emoji: '🦘', viewBox: '750 280 250 200' }
+};
+
+const GEO_COUNTRIES = [
+    // North America
+    { code: 'us', name: 'United States', region: 'na' },
+    { code: 'ca', name: 'Canada', region: 'na' },
+    { code: 'mx', name: 'Mexico', region: 'na' },
+    { code: 'gt', name: 'Guatemala', region: 'na' },
+    { code: 'cu', name: 'Cuba', region: 'na' },
+    { code: 'ht', name: 'Haiti', region: 'na' },
+    { code: 'jm', name: 'Jamaica', region: 'na' },
+    { code: 'hn', name: 'Honduras', region: 'na' },
+    { code: 'ni', name: 'Nicaragua', region: 'na' },
+    { code: 'cr', name: 'Costa Rica', region: 'na' },
+    { code: 'pa', name: 'Panama', region: 'na' },
+    // South America
+    { code: 'br', name: 'Brazil', region: 'sa' },
+    { code: 'ar', name: 'Argentina', region: 'sa' },
+    { code: 'co', name: 'Colombia', region: 'sa' },
+    { code: 'pe', name: 'Peru', region: 'sa' },
+    { code: 've', name: 'Venezuela', region: 'sa' },
+    { code: 'cl', name: 'Chile', region: 'sa' },
+    { code: 'ec', name: 'Ecuador', region: 'sa' },
+    { code: 'bo', name: 'Bolivia', region: 'sa' },
+    { code: 'py', name: 'Paraguay', region: 'sa' },
+    { code: 'uy', name: 'Uruguay', region: 'sa' },
+    { code: 'gy', name: 'Guyana', region: 'sa' },
+    { code: 'sr', name: 'Suriname', region: 'sa' },
+    // Europe
+    { code: 'gb', name: 'United Kingdom', region: 'europe' },
+    { code: 'fr', name: 'France', region: 'europe' },
+    { code: 'de', name: 'Germany', region: 'europe' },
+    { code: 'it', name: 'Italy', region: 'europe' },
+    { code: 'es', name: 'Spain', region: 'europe' },
+    { code: 'pt', name: 'Portugal', region: 'europe' },
+    { code: 'pl', name: 'Poland', region: 'europe' },
+    { code: 'se', name: 'Sweden', region: 'europe' },
+    { code: 'no', name: 'Norway', region: 'europe' },
+    { code: 'fi', name: 'Finland', region: 'europe' },
+    { code: 'ua', name: 'Ukraine', region: 'europe' },
+    { code: 'ro', name: 'Romania', region: 'europe' },
+    { code: 'gr', name: 'Greece', region: 'europe' },
+    { code: 'nl', name: 'Netherlands', region: 'europe' },
+    { code: 'be', name: 'Belgium', region: 'europe' },
+    { code: 'at', name: 'Austria', region: 'europe' },
+    { code: 'ch', name: 'Switzerland', region: 'europe' },
+    { code: 'ie', name: 'Ireland', region: 'europe' },
+    { code: 'dk', name: 'Denmark', region: 'europe' },
+    { code: 'cz', name: 'Czech Republic', region: 'europe' },
+    { code: 'hu', name: 'Hungary', region: 'europe' },
+    { code: 'rs', name: 'Serbia', region: 'europe' },
+    { code: 'bg', name: 'Bulgaria', region: 'europe' },
+    { code: 'hr', name: 'Croatia', region: 'europe' },
+    { code: 'is', name: 'Iceland', region: 'europe' },
+    // Africa
+    { code: 'eg', name: 'Egypt', region: 'africa' },
+    { code: 'ng', name: 'Nigeria', region: 'africa' },
+    { code: 'za', name: 'South Africa', region: 'africa' },
+    { code: 'ke', name: 'Kenya', region: 'africa' },
+    { code: 'et', name: 'Ethiopia', region: 'africa' },
+    { code: 'gh', name: 'Ghana', region: 'africa' },
+    { code: 'tz', name: 'Tanzania', region: 'africa' },
+    { code: 'dz', name: 'Algeria', region: 'africa' },
+    { code: 'ma', name: 'Morocco', region: 'africa' },
+    { code: 'cd', name: 'DR Congo', region: 'africa' },
+    { code: 'mg', name: 'Madagascar', region: 'africa' },
+    { code: 'sn', name: 'Senegal', region: 'africa' },
+    { code: 'ml', name: 'Mali', region: 'africa' },
+    { code: 'ne', name: 'Niger', region: 'africa' },
+    { code: 'td', name: 'Chad', region: 'africa' },
+    { code: 'ly', name: 'Libya', region: 'africa' },
+    { code: 'sd', name: 'Sudan', region: 'africa' },
+    { code: 'ao', name: 'Angola', region: 'africa' },
+    { code: 'mz', name: 'Mozambique', region: 'africa' },
+    { code: 'cm', name: 'Cameroon', region: 'africa' },
+    // Asia
+    { code: 'cn', name: 'China', region: 'asia' },
+    { code: 'in', name: 'India', region: 'asia' },
+    { code: 'jp', name: 'Japan', region: 'asia' },
+    { code: 'kr', name: 'South Korea', region: 'asia' },
+    { code: 'id', name: 'Indonesia', region: 'asia' },
+    { code: 'th', name: 'Thailand', region: 'asia' },
+    { code: 'vn', name: 'Vietnam', region: 'asia' },
+    { code: 'ph', name: 'Philippines', region: 'asia' },
+    { code: 'my', name: 'Malaysia', region: 'asia' },
+    { code: 'pk', name: 'Pakistan', region: 'asia' },
+    { code: 'bd', name: 'Bangladesh', region: 'asia' },
+    { code: 'ir', name: 'Iran', region: 'asia' },
+    { code: 'iq', name: 'Iraq', region: 'asia' },
+    { code: 'sa_c', name: 'Saudi Arabia', region: 'asia' },
+    { code: 'tr', name: 'Turkey', region: 'asia' },
+    { code: 'af', name: 'Afghanistan', region: 'asia' },
+    { code: 'mm', name: 'Myanmar', region: 'asia' },
+    { code: 'np', name: 'Nepal', region: 'asia' },
+    { code: 'kz', name: 'Kazakhstan', region: 'asia' },
+    { code: 'uz', name: 'Uzbekistan', region: 'asia' },
+    { code: 'mn', name: 'Mongolia', region: 'asia' },
+    // Oceania
+    { code: 'au', name: 'Australia', region: 'oceania' },
+    { code: 'nz', name: 'New Zealand', region: 'oceania' },
+    { code: 'pg', name: 'Papua New Guinea', region: 'oceania' },
+    { code: 'fj', name: 'Fiji', region: 'oceania' },
+    // Russia spans both
+    { code: 'ru', name: 'Russia', region: 'asia' }
+];
+
+const GEO_FUN_FACTS = {
+    us: "The US has 50 states and its capital is Washington, D.C.!",
+    ca: "Canada has more lakes than all other countries combined!",
+    mx: "Mexico City was built on top of an ancient Aztec city!",
+    gt: "Guatemala means 'place of many trees' in the Mayan language!",
+    cu: "Cuba is the largest island in the Caribbean!",
+    ht: "Haiti was the first free Black republic in the world!",
+    jm: "Jamaica is the birthplace of reggae music!",
+    hn: "Honduras has the second largest coral reef in the world!",
+    ni: "Nicaragua has two big lakes: Lake Managua and Lake Nicaragua!",
+    cr: "Costa Rica means 'Rich Coast' in Spanish!",
+    pa: "The Panama Canal connects the Atlantic and Pacific Oceans!",
+    br: "Brazil is home to the Amazon Rainforest, the largest in the world!",
+    ar: "Argentina is named after the Latin word for silver!",
+    co: "Colombia is the only South American country with coasts on both oceans!",
+    pe: "Peru is home to Machu Picchu, an ancient Inca city in the mountains!",
+    ve: "Venezuela has the world's highest waterfall: Angel Falls!",
+    cl: "Chile is the longest north-south country in the world!",
+    ec: "Ecuador is named after the equator which runs through it!",
+    bo: "Bolivia has two capital cities: La Paz and Sucre!",
+    py: "Paraguay's flag has different designs on each side!",
+    uy: "Uruguay was the first country to host the FIFA World Cup in 1930!",
+    gy: "Guyana is the only English-speaking country in South America!",
+    sr: "Suriname is the smallest country in South America!",
+    gb: "The UK includes England, Scotland, Wales, and Northern Ireland!",
+    fr: "France is the most visited country in the world!",
+    de: "Germany is famous for its castles - it has over 20,000!",
+    it: "Italy is shaped like a boot!",
+    es: "Spain introduced chocolate to Europe!",
+    pt: "Portugal is one of the oldest countries in Europe!",
+    pl: "Poland is home to the Wieliczka Salt Mine, an underground city!",
+    se: "Sweden invented the zipper, dynamite, and the computer mouse!",
+    no: "Norway has the longest coastline in Europe!",
+    fi: "Finland has more saunas than cars!",
+    ua: "Ukraine is the largest country entirely in Europe!",
+    ro: "Romania is home to Dracula's castle (Bran Castle)!",
+    gr: "Greece hosted the first modern Olympic Games in 1896!",
+    nl: "About one-third of the Netherlands is below sea level!",
+    be: "Belgium is famous for chocolate, waffles, and comic books!",
+    at: "Austria is the birthplace of Mozart!",
+    ch: "Switzerland has four official languages!",
+    ie: "Ireland's national symbol is the shamrock!",
+    dk: "Denmark is home to the oldest amusement park in the world, Tivoli Gardens!",
+    cz: "The Czech Republic is famous for its beautiful castles!",
+    hu: "Hungary's Lake Balaton is the largest lake in Central Europe!",
+    rs: "Serbia is one of the largest raspberry producers in the world!",
+    bg: "Bulgaria invented the Cyrillic alphabet!",
+    hr: "Croatia has over 1,000 islands!",
+    is: "Iceland has no mosquitoes!",
+    eg: "Egypt's Great Pyramid is one of the Seven Wonders of the Ancient World!",
+    ng: "Nigeria is called the 'Giant of Africa' because of its large population!",
+    za: "South Africa has three capital cities!",
+    ke: "Kenya is famous for its wildlife safaris and the Great Migration!",
+    et: "Ethiopia has its own calendar with 13 months!",
+    gh: "Ghana was the first African country south of the Sahara to gain independence!",
+    tz: "Tanzania is home to Mount Kilimanjaro, Africa's tallest mountain!",
+    dz: "Algeria is the largest country in Africa!",
+    ma: "Morocco is just 8 miles from Spain across the Strait of Gibraltar!",
+    cd: "The Congo River is the deepest river in the world!",
+    mg: "Madagascar is home to animals found nowhere else on Earth, like lemurs!",
+    sn: "Senegal is known as the Gateway to Africa!",
+    ml: "Mali's Timbuktu was once one of the richest cities in the world!",
+    ne: "Niger is named after the Niger River!",
+    td: "Chad has over 200 different ethnic groups!",
+    ly: "Libya is mostly covered by the Sahara Desert!",
+    sd: "Sudan has more pyramids than Egypt!",
+    ao: "Angola is one of Africa's top oil producers!",
+    mz: "Mozambique's flag features a book, a hoe, and a rifle!",
+    cm: "Cameroon is called 'Africa in Miniature' for its diverse landscapes!",
+    cn: "China's Great Wall is over 13,000 miles long!",
+    in: "India has the most languages spoken in any country - over 700!",
+    jp: "Japan has over 6,800 islands!",
+    kr: "South Korea invented the world's first metal movable type printing!",
+    id: "Indonesia is the world's largest island country with over 17,000 islands!",
+    th: "Thailand is the only Southeast Asian country never colonized by Europe!",
+    vn: "Vietnam is the world's largest exporter of cashew nuts!",
+    ph: "The Philippines has over 7,000 islands!",
+    my: "Malaysia's Petronas Towers were once the world's tallest buildings!",
+    pk: "Pakistan has the second highest mountain in the world: K2!",
+    bd: "Bangladesh has the longest beach in the world: Cox's Bazar!",
+    ir: "Iran is home to one of the world's oldest civilizations!",
+    iq: "Iraq is home to ancient Mesopotamia, the 'Cradle of Civilization'!",
+    sa_c: "Saudi Arabia has no permanent rivers!",
+    tr: "Turkey is the only country that spans two continents!",
+    af: "Afghanistan's national sport is Buzkashi, played on horseback!",
+    mm: "Myanmar has the largest book in the world, carved on 729 marble slabs!",
+    np: "Nepal is home to Mount Everest, the tallest mountain on Earth!",
+    kz: "Kazakhstan is the largest landlocked country in the world!",
+    uz: "Uzbekistan is one of only two double-landlocked countries!",
+    mn: "Mongolia has the lowest population density of any country!",
+    au: "Australia is both a country and a continent!",
+    nz: "New Zealand was the first country to give women the right to vote!",
+    pg: "Papua New Guinea has over 800 languages - more than any other country!",
+    fj: "Fiji has over 300 islands but only about 100 are inhabited!",
+    ru: "Russia spans 11 time zones, more than any other country!"
+};
+
+// Simplified SVG path data for world map
+// Uses a ~1000x500 coordinate system (equirectangular-ish projection)
+const WORLD_MAP_PATHS = {
+    // North America
+    us: "M90,130 L95,120 L110,115 L130,110 L155,108 L175,112 L190,118 L195,130 L200,140 L210,148 L215,160 L210,170 L195,175 L180,178 L160,180 L140,178 L120,175 L105,168 L95,155 L90,140Z",
+    ca: "M80,60 L100,55 L130,52 L160,50 L190,52 L210,58 L215,70 L210,85 L200,100 L190,110 L175,112 L155,108 L130,110 L110,115 L95,120 L90,130 L82,115 L75,95 L72,75Z",
+    mx: "M90,180 L100,175 L115,172 L130,175 L140,180 L148,190 L152,200 L148,210 L140,218 L130,222 L118,220 L108,215 L100,205 L92,195Z",
+    gt: "M132,222 L138,220 L144,222 L146,228 L140,232 L134,230Z",
+    cu: "M165,205 L175,200 L190,198 L200,202 L195,208 L180,210 L170,210Z",
+    ht: "M205,208 L215,205 L222,208 L220,215 L212,215Z",
+    jm: "M192,215 L200,213 L204,216 L198,219Z",
+    hn: "M140,232 L148,230 L156,232 L158,238 L150,240 L142,238Z",
+    ni: "M148,240 L158,238 L162,244 L158,252 L150,252 L146,246Z",
+    cr: "M150,252 L156,250 L160,256 L156,262 L150,260Z",
+    pa: "M156,262 L164,258 L172,260 L176,266 L168,268 L160,268Z",
+    // South America
+    br: "M240,280 L260,270 L280,265 L300,268 L315,275 L325,290 L330,310 L328,330 L320,350 L305,368 L285,380 L265,385 L248,378 L235,365 L225,345 L220,320 L222,300 L228,288Z",
+    ar: "M240,385 L255,380 L265,385 L270,400 L268,420 L260,440 L250,460 L240,470 L232,462 L228,445 L225,425 L222,405 L228,392Z",
+    co: "M200,260 L215,255 L230,258 L240,265 L245,278 L240,288 L228,288 L218,280 L208,272Z",
+    pe: "M200,290 L215,285 L228,288 L225,305 L222,320 L215,335 L205,340 L195,330 L192,310 L195,298Z",
+    ve: "M225,245 L240,240 L255,242 L265,250 L268,262 L260,270 L245,270 L235,265 L228,255Z",
+    cl: "M228,392 L235,388 L240,400 L238,420 L235,445 L232,462 L225,470 L220,460 L218,440 L220,420 L222,405Z",
+    ec: "M190,280 L200,275 L210,278 L212,290 L205,298 L195,298 L190,290Z",
+    bo: "M230,335 L245,330 L255,340 L252,358 L242,368 L232,365 L225,352 L225,342Z",
+    py: "M258,365 L270,360 L278,370 L275,385 L265,390 L255,385 L252,375Z",
+    uy: "M275,392 L285,388 L292,395 L288,405 L278,408 L272,402Z",
+    gy: "M262,255 L272,250 L278,258 L275,268 L268,270 L262,265Z",
+    sr: "M278,255 L288,252 L292,260 L288,268 L280,268 L278,262Z",
+    // Europe
+    gb: "M455,75 L460,68 L465,62 L470,65 L472,72 L468,80 L462,85 L455,82Z",
+    fr: "M470,90 L480,85 L492,88 L498,95 L496,105 L488,110 L478,108 L472,100 L470,95Z",
+    de: "M492,78 L502,75 L510,78 L514,86 L512,95 L505,98 L496,96 L492,90Z",
+    it: "M498,100 L504,98 L510,105 L512,115 L508,125 L502,130 L498,125 L496,115 L496,108Z",
+    es: "M455,105 L468,100 L478,102 L480,110 L475,118 L465,120 L455,118 L452,112Z",
+    pt: "M448,108 L455,105 L455,118 L452,122 L448,118Z",
+    pl: "M510,75 L522,72 L530,76 L532,84 L528,90 L520,92 L512,90 L510,82Z",
+    se: "M505,40 L512,35 L518,38 L520,50 L518,62 L514,68 L508,65 L505,55Z",
+    no: "M495,38 L505,32 L510,36 L508,48 L505,58 L500,62 L496,55 L494,45Z",
+    fi: "M520,35 L528,30 L535,34 L536,48 L532,58 L526,60 L522,52 L520,42Z",
+    ua: "M530,82 L545,78 L558,82 L562,90 L558,98 L548,100 L538,97 L532,92Z",
+    ro: "M525,95 L535,92 L542,96 L542,104 L536,108 L528,106 L524,100Z",
+    gr: "M520,115 L528,112 L534,116 L532,125 L526,130 L520,128 L518,122Z",
+    nl: "M482,78 L488,76 L492,78 L492,84 L488,86 L484,84Z",
+    be: "M478,85 L484,84 L488,86 L488,90 L484,92 L478,90Z",
+    at: "M500,92 L510,90 L516,93 L514,98 L508,100 L500,98Z",
+    ch: "M486,95 L494,93 L498,96 L496,100 L490,102 L486,99Z",
+    ie: "M445,72 L452,68 L458,72 L456,78 L450,80 L445,77Z",
+    dk: "M495,65 L502,62 L506,66 L504,72 L498,74 L495,70Z",
+    cz: "M504,84 L512,82 L518,85 L516,90 L510,92 L504,90Z",
+    hu: "M516,92 L524,90 L530,93 L528,98 L522,100 L516,98Z",
+    rs: "M524,100 L530,98 L534,102 L532,108 L527,110 L523,106Z",
+    bg: "M534,102 L542,100 L548,104 L546,110 L540,112 L534,109Z",
+    hr: "M510,98 L518,96 L524,100 L522,106 L516,108 L510,104Z",
+    is: "M430,42 L442,38 L452,42 L450,50 L440,54 L432,50Z",
+    // Africa
+    eg: "M530,158 L545,155 L555,160 L558,172 L552,182 L540,185 L532,180 L528,170Z",
+    ng: "M480,225 L492,220 L502,224 L504,235 L498,242 L488,244 L480,240Z",
+    za: "M520,380 L535,375 L545,380 L548,395 L542,405 L530,410 L520,405 L516,395Z",
+    ke: "M555,255 L565,250 L572,256 L570,268 L562,274 L554,270 L552,262Z",
+    et: "M548,232 L560,228 L570,234 L568,246 L560,252 L550,248 L546,240Z",
+    gh: "M472,232 L480,228 L486,232 L484,240 L478,244 L472,240Z",
+    tz: "M555,272 L565,268 L572,274 L570,288 L564,294 L555,290 L552,282Z",
+    dz: "M468,152 L485,148 L498,152 L502,168 L495,180 L480,184 L468,178 L464,165Z",
+    ma: "M452,155 L465,150 L470,158 L468,168 L460,175 L452,170Z",
+    cd: "M520,275 L535,270 L545,278 L542,295 L535,305 L522,308 L515,300 L512,288Z",
+    mg: "M570,340 L578,335 L584,342 L582,358 L576,368 L570,365 L568,352Z",
+    sn: "M440,222 L450,218 L456,222 L454,228 L448,232 L440,230Z",
+    ml: "M455,195 L470,190 L480,196 L478,210 L470,218 L458,215 L452,205Z",
+    ne: "M478,192 L492,188 L502,194 L500,208 L492,215 L480,212 L476,202Z",
+    td: "M502,195 L515,190 L524,198 L522,215 L514,222 L504,218 L500,208Z",
+    ly: "M500,155 L518,150 L530,158 L528,175 L520,185 L505,188 L498,178 L498,165Z",
+    sd: "M530,195 L545,190 L555,198 L552,218 L544,228 L532,225 L526,212 L528,200Z",
+    ao: "M500,300 L515,295 L522,305 L518,320 L510,328 L500,325 L496,312Z",
+    mz: "M550,330 L560,325 L568,332 L566,350 L558,360 L548,356 L546,342Z",
+    cm: "M495,235 L505,230 L512,238 L510,252 L502,258 L494,254 L492,244Z",
+    // Asia
+    cn: "M680,110 L710,100 L740,95 L770,100 L790,110 L795,130 L785,150 L770,162 L745,168 L720,165 L700,158 L685,145 L678,128Z",
+    in: "M650,165 L668,158 L682,165 L690,180 L688,200 L680,218 L668,228 L655,225 L645,212 L640,195 L642,178Z",
+    jp: "M810,115 L818,110 L825,112 L828,122 L824,132 L818,138 L812,135 L808,125Z",
+    kr: "M795,125 L802,120 L808,124 L806,134 L800,138 L795,134Z",
+    id: "M740,260 L755,255 L770,258 L785,262 L790,270 L780,278 L765,280 L750,278 L740,272Z",
+    th: "M720,195 L728,190 L734,195 L732,210 L728,220 L722,225 L718,215 L718,205Z",
+    vn: "M735,195 L742,190 L748,198 L746,215 L740,225 L734,222 L732,210Z",
+    ph: "M785,200 L792,195 L798,200 L796,215 L790,222 L784,218 L782,208Z",
+    my: "M730,245 L740,240 L748,245 L746,255 L738,258 L730,255Z",
+    pk: "M628,148 L642,142 L655,148 L658,162 L650,172 L638,175 L630,168 L626,158Z",
+    bd: "M682,185 L690,180 L696,186 L694,195 L688,200 L682,196Z",
+    ir: "M595,145 L612,140 L625,148 L628,162 L620,175 L608,178 L598,172 L592,158Z",
+    iq: "M580,148 L595,142 L605,150 L602,165 L592,172 L582,168 L578,158Z",
+    sa_c: "M575,178 L592,172 L605,180 L610,198 L602,212 L588,218 L575,210 L570,195Z",
+    tr: "M545,110 L565,105 L580,110 L585,120 L578,130 L565,135 L550,132 L542,122Z",
+    af: "M640,135 L655,130 L665,138 L662,152 L652,158 L642,155 L636,145Z",
+    mm: "M708,185 L716,180 L722,188 L720,205 L714,215 L708,210 L706,198Z",
+    np: "M665,162 L675,158 L682,164 L680,172 L672,176 L665,172Z",
+    kz: "M610,80 L635,72 L660,78 L670,90 L665,105 L650,112 L630,115 L615,108 L608,95Z",
+    uz: "M625,100 L640,95 L650,102 L648,112 L640,118 L628,115 L622,108Z",
+    mn: "M700,85 L720,80 L740,84 L745,95 L738,105 L722,108 L708,104 L700,95Z",
+    ru: "M540,30 L580,22 L640,18 L720,15 L800,18 L860,25 L900,35 L920,50 L910,70 L880,80 L840,82 L800,78 L760,72 L720,68 L680,70 L650,68 L620,65 L590,62 L560,58 L545,48Z",
+    // Oceania
+    au: "M780,330 L810,318 L840,315 L870,320 L890,332 L895,350 L885,370 L868,382 L845,388 L820,385 L800,375 L785,360 L778,345Z",
+    nz: "M910,380 L918,375 L924,380 L922,392 L916,400 L910,396Z",
+    pg: "M820,270 L835,265 L845,272 L842,282 L834,288 L822,285 L818,278Z",
+    fj: "M930,340 L936,336 L940,340 L938,346 L932,348Z"
+};
+
+// ── Geo game state ──
+let geoState = {
+    mode: 'click',       // 'click' or 'name'
+    region: 'world',
+    questions: [],
+    currentQ: 0,
+    score: 0,
+    correct: 0,
+    streak: 0,
+    bestStreak: 0,
+    questionStart: 0,
+    answered: false
+};
+
+function getGeoStats() {
+    if (!multData.geoStats) {
+        multData.geoStats = { totalAnswered: 0, totalCorrect: 0, bestScore: 0, roundsPlayed: 0, perfectRounds: 0 };
+    }
+    return multData.geoStats;
+}
+
+function showGeoMenu() {
+    practiceViewActive = true;
+    document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
+    document.querySelector('.score-bar').style.display = 'none';
+
+    const stats = getGeoStats();
+    const card = document.getElementById('card');
+    card.innerHTML = `
+        <div style="text-align: center;">
+            <h3 style="color: #3d7c47;">🌍 World Quiz!</h3>
+            <p style="color: #5c4a32; margin-bottom: 0.8rem;">Learn countries around the world!</p>
+
+            <div style="margin-bottom: 0.8rem;">
+                <div style="font-weight: 700; color: #3d7c47; margin-bottom: 0.4rem;">Pick a Region:</div>
+                <div style="display: flex; flex-wrap: wrap; gap: 0.4rem; justify-content: center;" id="geo-region-picker">
+                    ${Object.entries(GEO_REGIONS).map(([key, r]) =>
+                        `<button class="geo-region-btn ${geoState.region === key ? 'active' : ''}" onclick="selectGeoRegion('${key}')">${r.emoji} ${r.name}</button>`
+                    ).join('')}
+                </div>
+            </div>
+
+            <div style="margin-bottom: 1rem;">
+                <div style="font-weight: 700; color: #3d7c47; margin-bottom: 0.4rem;">Game Mode:</div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem;">
+                    <button class="geo-region-btn ${geoState.mode === 'click' ? 'active' : ''}" onclick="selectGeoMode('click')">
+                        🗺️ Click the Country
+                    </button>
+                    <button class="geo-region-btn ${geoState.mode === 'name' ? 'active' : ''}" onclick="selectGeoMode('name')">
+                        🏷️ Name the Country
+                    </button>
+                </div>
+            </div>
+
+            <button onclick="startGeoRound()" style="background: linear-gradient(135deg, #3d7c47, #2d6a37); color: white; border: none; border-radius: 12px; padding: 1rem 2.5rem; font-family: inherit; font-weight: 700; font-size: 1.1rem; cursor: pointer;">
+                Start Quiz!
+            </button>
+
+            ${stats.roundsPlayed > 0 ? `
+                <div style="margin-top: 0.8rem; background: rgba(255,255,255,0.6); border-radius: 10px; padding: 0.5rem; font-size: 0.85rem; color: #5c4a32;">
+                    Rounds: ${stats.roundsPlayed} | Best: ${stats.bestScore}/100 | Correct: ${stats.totalCorrect}/${stats.totalAnswered}
+                </div>
+            ` : ''}
+
+            <button class="back-btn" onclick="setMode('times', document.getElementById('btn-times'))" style="margin-top: 0.8rem;">Back to Math</button>
+        </div>
+    `;
+}
+
+function selectGeoRegion(region) {
+    geoState.region = region;
+    document.querySelectorAll('#geo-region-picker .geo-region-btn').forEach(b => b.classList.remove('active'));
+    event.target.classList.add('active');
+}
+
+function selectGeoMode(mode) {
+    geoState.mode = mode;
+    showGeoMenu();
+}
+
+function startGeoRound() {
+    let pool = GEO_COUNTRIES.filter(c => geoState.region === 'world' || c.region === geoState.region);
+    // Shuffle
+    for (let i = pool.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [pool[i], pool[j]] = [pool[j], pool[i]];
+    }
+    geoState.questions = pool.slice(0, 10);
+    geoState.currentQ = 0;
+    geoState.score = 0;
+    geoState.correct = 0;
+    geoState.streak = 0;
+    geoState.bestStreak = 0;
+    showGeoQuestion();
+}
+
+function buildGeoMapSVG(highlightCode, clickable) {
+    const vb = GEO_REGIONS[geoState.region].viewBox;
+    let paths = '';
+    const regionCountries = geoState.region === 'world'
+        ? GEO_COUNTRIES
+        : GEO_COUNTRIES.filter(c => c.region === geoState.region);
+    const regionCodes = new Set(regionCountries.map(c => c.code));
+
+    for (const [code, d] of Object.entries(WORLD_MAP_PATHS)) {
+        const isInRegion = regionCodes.has(code);
+        const cls = highlightCode === code
+            ? 'geo-country geo-highlight'
+            : (isInRegion ? 'geo-country' : 'geo-country geo-dimmed');
+        const click = clickable && isInRegion ? `onclick="geoClickCountry('${code}')"` : '';
+        paths += `<path id="geo-${code}" class="${cls}" d="${d}" ${click}><title>${(GEO_COUNTRIES.find(c=>c.code===code)||{}).name||code}</title></path>`;
+    }
+
+    return `<div class="geo-map-container">
+        <svg viewBox="${vb}" xmlns="http://www.w3.org/2000/svg" style="background: #d4eaf7;">
+            ${paths}
+        </svg>
+    </div>`;
+}
+
+function showGeoQuestion() {
+    if (geoState.currentQ >= geoState.questions.length) {
+        showGeoResults();
+        return;
+    }
+
+    const q = geoState.questions[geoState.currentQ];
+    geoState.answered = false;
+    geoState.questionStart = Date.now();
+
+    const card = document.getElementById('card');
+
+    if (geoState.mode === 'click') {
+        // "Click the Country" mode
+        card.innerHTML = `
+            <div>
+                <div class="geo-score-display">
+                    <span>Q ${geoState.currentQ + 1}/10</span>
+                    <span>Score: ${geoState.score}</span>
+                    <span>Streak: ${geoState.streak}</span>
+                </div>
+                <div class="geo-prompt">Click on: <strong>${q.name}</strong></div>
+                ${buildGeoMapSVG(null, true)}
+                <div id="geo-feedback"></div>
+            </div>
+        `;
+    } else {
+        // "Name the Country" mode - show highlighted country + 4 choices
+        const choices = generateGeoChoices(q);
+        card.innerHTML = `
+            <div>
+                <div class="geo-score-display">
+                    <span>Q ${geoState.currentQ + 1}/10</span>
+                    <span>Score: ${geoState.score}</span>
+                    <span>Streak: ${geoState.streak}</span>
+                </div>
+                <div class="geo-prompt">Which country is highlighted?</div>
+                ${buildGeoMapSVG(q.code, false)}
+                <div class="geo-choices" id="geo-choices">
+                    ${choices.map(c => `
+                        <button class="geo-choice-btn" onclick="geoNameAnswer('${c.code}')">${c.name}</button>
+                    `).join('')}
+                </div>
+                <div id="geo-feedback"></div>
+            </div>
+        `;
+    }
+}
+
+function generateGeoChoices(correct) {
+    const pool = GEO_COUNTRIES.filter(c => c.code !== correct.code);
+    // Shuffle pool
+    for (let i = pool.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [pool[i], pool[j]] = [pool[j], pool[i]];
+    }
+    const wrong = pool.slice(0, 3);
+    const all = [correct, ...wrong];
+    // Shuffle choices
+    for (let i = all.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [all[i], all[j]] = [all[j], all[i]];
+    }
+    return all;
+}
+
+function geoClickCountry(code) {
+    if (geoState.answered) return;
+    geoState.answered = true;
+
+    const q = geoState.questions[geoState.currentQ];
+    const isCorrect = code === q.code;
+    const elapsed = (Date.now() - geoState.questionStart) / 1000;
+
+    // Highlight correct/wrong on map
+    const clickedEl = document.getElementById(`geo-${code}`);
+    const correctEl = document.getElementById(`geo-${q.code}`);
+
+    if (isCorrect) {
+        if (clickedEl) clickedEl.classList.add('geo-correct');
+        const speedBonus = Math.max(0, Math.floor((10 - elapsed) * 1));
+        const pts = 10 + speedBonus;
+        geoState.score += pts;
+        geoState.correct++;
+        geoState.streak++;
+        if (geoState.streak > geoState.bestStreak) geoState.bestStreak = geoState.streak;
+        playSound('correct');
+        mascotReact(true);
+        showGeoFeedback(true, q, pts);
+    } else {
+        if (clickedEl) clickedEl.classList.add('geo-wrong');
+        if (correctEl) correctEl.classList.add('geo-correct');
+        geoState.streak = 0;
+        playSound('wrong');
+        mascotReact(false);
+        showGeoFeedback(false, q, 0);
+    }
+
+    setTimeout(() => {
+        geoState.currentQ++;
+        showGeoQuestion();
+    }, 2500);
+}
+
+function geoNameAnswer(code) {
+    if (geoState.answered) return;
+    geoState.answered = true;
+
+    const q = geoState.questions[geoState.currentQ];
+    const isCorrect = code === q.code;
+    const elapsed = (Date.now() - geoState.questionStart) / 1000;
+
+    // Highlight buttons
+    document.querySelectorAll('.geo-choice-btn').forEach(btn => {
+        btn.style.pointerEvents = 'none';
+        const btnCode = btn.getAttribute('onclick').match(/'([^']+)'/)[1];
+        if (btnCode === q.code) btn.classList.add('geo-btn-correct');
+        else if (btnCode === code && !isCorrect) btn.classList.add('geo-btn-wrong');
+    });
+
+    // Highlight on map
+    const correctEl = document.getElementById(`geo-${q.code}`);
+    if (correctEl) correctEl.classList.add('geo-correct');
+
+    if (isCorrect) {
+        const speedBonus = Math.max(0, Math.floor((10 - elapsed) * 1));
+        const pts = 10 + speedBonus;
+        geoState.score += pts;
+        geoState.correct++;
+        geoState.streak++;
+        if (geoState.streak > geoState.bestStreak) geoState.bestStreak = geoState.streak;
+        playSound('correct');
+        mascotReact(true);
+        showGeoFeedback(true, q, pts);
+    } else {
+        geoState.streak = 0;
+        playSound('wrong');
+        mascotReact(false);
+        showGeoFeedback(false, q, 0);
+    }
+
+    setTimeout(() => {
+        geoState.currentQ++;
+        showGeoQuestion();
+    }, 2500);
+}
+
+function showGeoFeedback(correct, country, pts) {
+    const fb = document.getElementById('geo-feedback');
+    const fact = GEO_FUN_FACTS[country.code] || '';
+    fb.innerHTML = `
+        <div style="text-align: center; margin-top: 0.5rem;">
+            <div style="font-size: 1.2rem; font-weight: 700; color: ${correct ? '#2ecc71' : '#e74c3c'};">
+                ${correct ? `Correct! +${pts} points` : `That was ${country.name}!`}
+            </div>
+            ${fact ? `<div class="geo-fun-fact">💡 ${fact}</div>` : ''}
+        </div>
+    `;
+}
+
+function showGeoResults() {
+    const stats = getGeoStats();
+    stats.totalAnswered += 10;
+    stats.totalCorrect += geoState.correct;
+    stats.roundsPlayed++;
+    if (geoState.score > stats.bestScore) stats.bestScore = geoState.score;
+    if (geoState.correct === 10) stats.perfectRounds++;
+
+    // Add points to main score
+    multData.stats.totalCorrect += geoState.correct;
+    multData.stats.totalAnswered += 10;
+
+    saveMultiplicationData();
+    checkAchievements();
+
+    const pct = geoState.correct * 10;
+    const emoji = pct === 100 ? '🏆' : pct >= 70 ? '🌟' : pct >= 50 ? '👍' : '📚';
+
+    if (pct === 100) launchConfetti();
+
+    const card = document.getElementById('card');
+    card.innerHTML = `
+        <div style="text-align: center;">
+            <div style="font-size: 3rem;">${emoji}</div>
+            <h3 style="color: #3d7c47;">Round Complete!</h3>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; margin: 1rem 0;">
+                <div style="background: rgba(255,255,255,0.7); border-radius: 10px; padding: 0.8rem;">
+                    <div style="font-size: 1.5rem; font-weight: 800; color: #3d7c47;">${geoState.correct}/10</div>
+                    <div style="font-size: 0.8rem; color: #5c4a32;">Correct</div>
+                </div>
+                <div style="background: rgba(255,255,255,0.7); border-radius: 10px; padding: 0.8rem;">
+                    <div style="font-size: 1.5rem; font-weight: 800; color: #3d7c47;">${geoState.score}</div>
+                    <div style="font-size: 0.8rem; color: #5c4a32;">Points</div>
+                </div>
+                <div style="background: rgba(255,255,255,0.7); border-radius: 10px; padding: 0.8rem;">
+                    <div style="font-size: 1.5rem; font-weight: 800; color: #ff8c00;">${geoState.bestStreak}</div>
+                    <div style="font-size: 0.8rem; color: #5c4a32;">Best Streak</div>
+                </div>
+                <div style="background: rgba(255,255,255,0.7); border-radius: 10px; padding: 0.8rem;">
+                    <div style="font-size: 1.5rem; font-weight: 800; color: #3d7c47;">${stats.bestScore}</div>
+                    <div style="font-size: 0.8rem; color: #5c4a32;">All-Time Best</div>
+                </div>
+            </div>
+            <div style="display: flex; gap: 0.5rem; justify-content: center; flex-wrap: wrap;">
+                <button onclick="startGeoRound()" style="background: linear-gradient(135deg, #3d7c47, #2d6a37); color: white; border: none; border-radius: 12px; padding: 0.8rem 1.5rem; font-family: inherit; font-weight: 700; cursor: pointer;">
+                    Play Again
+                </button>
+                <button onclick="showGeoMenu()" style="background: linear-gradient(135deg, #ff8c00, #e67300); color: white; border: none; border-radius: 12px; padding: 0.8rem 1.5rem; font-family: inherit; font-weight: 700; cursor: pointer;">
+                    Change Mode
+                </button>
+            </div>
+            <button class="back-btn" onclick="setMode('times', document.getElementById('btn-times'))" style="margin-top: 0.8rem;">Back to Math</button>
+        </div>
+    `;
 }
 
 // Check if should show announcement (once per session)
