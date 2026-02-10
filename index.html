@@ -1359,6 +1359,104 @@
             50% { opacity: 0.7; }
         }
 
+        .rainbow-stripe {
+            position: absolute;
+            height: 100%;
+            opacity: 0.15;
+            animation: rainbowShimmer 3s ease-in-out infinite;
+        }
+
+        @keyframes rainbowShimmer {
+            0%, 100% { opacity: 0.1; }
+            50% { opacity: 0.2; }
+        }
+
+        .cloud {
+            position: absolute;
+            font-size: 3rem;
+            opacity: 0.4;
+            animation: cloudDrift 20s linear infinite;
+        }
+
+        @keyframes cloudDrift {
+            0% { transform: translateX(-100px); }
+            100% { transform: translateX(calc(100vw + 100px)); }
+        }
+
+        .sunset-glow {
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+            height: 40%;
+            background: linear-gradient(transparent, rgba(255,100,50,0.15), rgba(255,50,50,0.1));
+            animation: sunsetPulse 4s ease-in-out infinite;
+        }
+
+        @keyframes sunsetPulse {
+            0%, 100% { opacity: 0.6; }
+            50% { opacity: 1; }
+        }
+
+        .weather-picker-btn {
+            position: fixed;
+            bottom: 12px;
+            left: 12px;
+            background: rgba(255,255,255,0.85);
+            border: 2px solid rgba(61,124,71,0.3);
+            border-radius: 50%;
+            width: 44px;
+            height: 44px;
+            font-size: 1.4rem;
+            cursor: pointer;
+            z-index: 100;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            transition: transform 0.2s;
+        }
+        .weather-picker-btn:hover {
+            transform: scale(1.1);
+        }
+
+        .weather-picker-popup {
+            position: fixed;
+            bottom: 65px;
+            left: 12px;
+            background: rgba(255,255,255,0.95);
+            border: 2px solid rgba(61,124,71,0.2);
+            border-radius: 16px;
+            padding: 0.8rem;
+            z-index: 100;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+            display: none;
+        }
+        .weather-picker-popup.open {
+            display: block;
+        }
+        .weather-option {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 0.8rem;
+            border-radius: 10px;
+            cursor: pointer;
+            font-family: 'Nunito', sans-serif;
+            font-weight: 700;
+            font-size: 0.85rem;
+            color: #3d7c47;
+            border: none;
+            background: none;
+            width: 100%;
+            transition: background 0.2s;
+        }
+        .weather-option:hover {
+            background: rgba(61,124,71,0.1);
+        }
+        .weather-option.active {
+            background: rgba(61,124,71,0.15);
+        }
+
         /* Leaderboard */
         .leaderboard-view h3 {
             color: #3d7c47;
@@ -2210,14 +2308,31 @@ function showBadge(achievement) {
 }
 
 // Weather effects
-function setWeather() {
-    const container = document.getElementById('weather-container');
-    container.innerHTML = '';
+let currentWeather = 'auto';
+const WEATHER_TYPES = {
+    auto:    { name: 'Auto',    icon: '🔄' },
+    sunny:   { name: 'Sunny',   icon: '☀️' },
+    rain:    { name: 'Rainy',   icon: '🌧️' },
+    cloudy:  { name: 'Cloudy',  icon: '☁️' },
+    rainbow: { name: 'Rainbow', icon: '🌈' },
+    sunset:  { name: 'Sunset',  icon: '🌅' },
+    snow:    { name: 'Snow',    icon: '❄️' },
+    all:     { name: 'All!',    icon: '🌪️' }
+};
 
+function getAutoWeather() {
     const hour = new Date().getHours();
+    if (hour >= 6 && hour < 12) return 'sunny';
+    if (hour >= 12 && hour < 17) return 'sunny';
+    if (hour >= 17 && hour < 20) return 'sunset';
+    return 'snow';
+}
 
-    if (hour >= 6 && hour < 12) {
-        // Morning sunshine
+function renderWeatherEffect(type) {
+    const container = document.getElementById('weather-container');
+    // Don't clear — allows layering for 'all' mode
+
+    if (type === 'sunny') {
         for (let i = 0; i < 8; i++) {
             const ray = document.createElement('div');
             ray.className = 'sunray';
@@ -2225,11 +2340,10 @@ function setWeather() {
             ray.style.animationDelay = Math.random() * 2 + 's';
             container.appendChild(ray);
         }
-    } else if (hour >= 12 && hour < 17) {
-        // Afternoon - clear/sparkly (already have sparkles)
-    } else if (hour >= 17 && hour < 20) {
-        // Evening - light rain
-        for (let i = 0; i < 30; i++) {
+    }
+
+    if (type === 'rain') {
+        for (let i = 0; i < 40; i++) {
             const drop = document.createElement('div');
             drop.className = 'raindrop';
             drop.style.left = Math.random() * 100 + '%';
@@ -2237,10 +2351,53 @@ function setWeather() {
             drop.style.animationDuration = (Math.random() * 0.3 + 0.6) + 's';
             container.appendChild(drop);
         }
-    } else {
-        // Night - snow
+    }
+
+    if (type === 'cloudy') {
+        const clouds = ['☁️', '🌥️', '⛅'];
+        for (let i = 0; i < 6; i++) {
+            const cloud = document.createElement('div');
+            cloud.className = 'cloud';
+            cloud.textContent = clouds[Math.floor(Math.random() * clouds.length)];
+            cloud.style.top = (Math.random() * 40) + '%';
+            cloud.style.animationDelay = (Math.random() * 15) + 's';
+            cloud.style.animationDuration = (15 + Math.random() * 15) + 's';
+            cloud.style.fontSize = (2 + Math.random() * 2) + 'rem';
+            container.appendChild(cloud);
+        }
+    }
+
+    if (type === 'rainbow') {
+        const colors = ['#ff0000', '#ff7700', '#ffff00', '#00cc00', '#0000ff', '#8b00ff'];
+        colors.forEach((color, i) => {
+            const stripe = document.createElement('div');
+            stripe.className = 'rainbow-stripe';
+            stripe.style.left = (i * 16) + '%';
+            stripe.style.width = '20%';
+            stripe.style.background = color;
+            stripe.style.animationDelay = (i * 0.3) + 's';
+            container.appendChild(stripe);
+        });
+    }
+
+    if (type === 'sunset') {
+        const glow = document.createElement('div');
+        glow.className = 'sunset-glow';
+        container.appendChild(glow);
+        // Add a few sun rays too
+        for (let i = 0; i < 5; i++) {
+            const ray = document.createElement('div');
+            ray.className = 'sunray';
+            ray.style.left = (i * 20 + Math.random() * 10) + '%';
+            ray.style.animationDelay = Math.random() * 2 + 's';
+            ray.style.background = 'linear-gradient(rgba(255,150,50,0.5), transparent)';
+            container.appendChild(ray);
+        }
+    }
+
+    if (type === 'snow') {
         const snowflakes = ['❄', '❅', '❆', '✧'];
-        for (let i = 0; i < 20; i++) {
+        for (let i = 0; i < 25; i++) {
             const flake = document.createElement('div');
             flake.className = 'snowflake';
             flake.textContent = snowflakes[Math.floor(Math.random() * snowflakes.length)];
@@ -2251,7 +2408,78 @@ function setWeather() {
         }
     }
 }
+
+function setWeather(type) {
+    if (type !== undefined) currentWeather = type;
+    const container = document.getElementById('weather-container');
+    container.innerHTML = '';
+
+    if (currentWeather === 'all') {
+        ['sunny', 'rain', 'cloudy', 'rainbow', 'sunset', 'snow'].forEach(t => renderWeatherEffect(t));
+    } else if (currentWeather === 'auto') {
+        renderWeatherEffect(getAutoWeather());
+    } else {
+        renderWeatherEffect(currentWeather);
+    }
+
+    // Update picker button icon
+    const btn = document.getElementById('weather-picker-btn');
+    if (btn) btn.textContent = WEATHER_TYPES[currentWeather].icon;
+
+    // Update active state in popup
+    document.querySelectorAll('.weather-option').forEach(opt => {
+        opt.classList.toggle('active', opt.dataset.weather === currentWeather);
+    });
+
+    // Save preference
+    if (multData.preferences) {
+        multData.preferences.weather = currentWeather;
+        saveMultiplicationData();
+    }
+}
+
+function createWeatherPicker() {
+    // Button
+    const btn = document.createElement('button');
+    btn.id = 'weather-picker-btn';
+    btn.className = 'weather-picker-btn';
+    btn.textContent = WEATHER_TYPES[currentWeather].icon;
+    btn.onclick = () => {
+        document.getElementById('weather-popup').classList.toggle('open');
+    };
+    document.body.appendChild(btn);
+
+    // Popup
+    const popup = document.createElement('div');
+    popup.id = 'weather-popup';
+    popup.className = 'weather-picker-popup';
+    popup.innerHTML = `
+        <div style="font-weight: 800; color: #3d7c47; margin-bottom: 0.3rem; font-size: 0.8rem;">Pick Weather:</div>
+        ${Object.entries(WEATHER_TYPES).map(([key, w]) => `
+            <button class="weather-option ${key === currentWeather ? 'active' : ''}" data-weather="${key}" onclick="setWeather('${key}'); document.getElementById('weather-popup').classList.remove('open');">
+                ${w.icon} ${w.name}
+            </button>
+        `).join('')}
+    `;
+    document.body.appendChild(popup);
+
+    // Close popup when clicking elsewhere
+    document.addEventListener('click', (e) => {
+        if (!e.target.closest('.weather-picker-btn') && !e.target.closest('.weather-picker-popup')) {
+            document.getElementById('weather-popup')?.classList.remove('open');
+        }
+    });
+}
+
+// Load saved weather preference
+function loadWeatherPreference() {
+    if (multData.preferences?.weather) {
+        currentWeather = multData.preferences.weather;
+    }
+}
+
 setWeather();
+createWeatherPicker();
 
 // Double points round
 let isDoublePoints = false;
@@ -6783,6 +7011,8 @@ function loadNewFeatures() {
     }
     if (multData.garden) garden = { ...garden, ...multData.garden };
     if (multData.preferences?.lastSpinDate) lastSpinDate = multData.preferences.lastSpinDate;
+    loadWeatherPreference();
+    setWeather();
 }
 
 function initNewFeatures() {
