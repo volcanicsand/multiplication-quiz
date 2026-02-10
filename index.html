@@ -2466,6 +2466,12 @@ async function loadMultiplicationData() {
             if (m.geoStats) {
                 multData.geoStats = m.geoStats;
             }
+            if (m.collectedSongs) {
+                multData.collectedSongs = m.collectedSongs;
+            }
+            if (m.passport) {
+                multData.passport = m.passport;
+            }
             if (multData.stats.unlockedLevel) {
                 unlockedLevel = multData.stats.unlockedLevel;
                 if (currentLevel > unlockedLevel) currentLevel = unlockedLevel;
@@ -2481,6 +2487,8 @@ async function loadMultiplicationData() {
 
 async function saveMultiplicationData() {
     if (!currentUser) return;
+    // Sync runtime state into multData before saving
+    multData.collectedSongs = collectedSongs;
     try {
         await db.collection('users').doc(currentUser.uid).set({
             multiplication: multData
@@ -5447,7 +5455,7 @@ function showTrophies() {
 }
 
 // ── Jukebox (K.K. Songs) ──
-let collectedSongs = ['K.K. Island'];
+let collectedSongs = ['K.K. Island', 'K.K. Bossa', 'K.K. Jazz', 'Bubblegum K.K.', 'K.K. Disco'];
 const ALL_SONGS = ['K.K. Island', 'K.K. Bossa', 'K.K. Jazz', 'Bubblegum K.K.', 'K.K. Disco',
     'K.K. Rock', 'K.K. Soul', 'K.K. Reggae', 'K.K. Country', 'K.K. Lullaby'];
 
@@ -6764,6 +6772,15 @@ function loadNewFeatures() {
     if (multData.petBuddy) petBuddy = { ...petBuddy, ...multData.petBuddy };
     if (multData.encyclopedia) encyclopedia = { ...encyclopedia, ...multData.encyclopedia };
     if (multData.collectedSongs) collectedSongs = multData.collectedSongs;
+    // One-time restore: grant 5 songs if fewer than 5 (lost songs fix)
+    if (collectedSongs.length < 5) {
+        const firstFive = ALL_SONGS.slice(0, 5);
+        for (const song of firstFive) {
+            if (!collectedSongs.includes(song)) collectedSongs.push(song);
+        }
+        multData.collectedSongs = collectedSongs;
+        saveMultiplicationData();
+    }
     if (multData.garden) garden = { ...garden, ...multData.garden };
     if (multData.preferences?.lastSpinDate) lastSpinDate = multData.preferences.lastSpinDate;
 }
@@ -6876,6 +6893,105 @@ function closeIsabelleAnnouncement() {
             startRound(); // Start the game after closing
         }, 300);
     }
+}
+
+// ══════════════════════════════════════════════════════════
+// ── Passport Stamps ──
+// ══════════════════════════════════════════════════════════
+
+const PASSPORT_STAMPS = {
+    na:      { name: 'North America',  stamp: '🦅', color: '#4a90d9' },
+    sa:      { name: 'South America',  stamp: '🦜', color: '#2ecc71' },
+    europe:  { name: 'Europe',         stamp: '🏰', color: '#9b59b6' },
+    africa:  { name: 'Africa',         stamp: '🦁', color: '#e67e22' },
+    asia:    { name: 'Asia',           stamp: '🐼', color: '#e74c3c' },
+    oceania: { name: 'Oceania',        stamp: '🦘', color: '#1abc9c' }
+};
+
+function getPassport() {
+    if (!multData.passport) {
+        multData.passport = {};
+    }
+    return multData.passport;
+}
+
+function awardPassportStamp(region, score) {
+    if (region === 'world') return; // No stamp for "world" — pick a specific region!
+    const passport = getPassport();
+    const isGold = score === 10;
+    const existing = passport[region];
+
+    if (existing && existing.gold) return; // Already have gold, nothing to upgrade
+    if (existing && !isGold) return; // Already have stamp, not upgrading to gold
+
+    passport[region] = {
+        earned: true,
+        gold: isGold,
+        date: new Date().toLocaleDateString()
+    };
+
+    saveMultiplicationData();
+    showStampAnimation(region, isGold);
+}
+
+function showStampAnimation(region, isGold) {
+    const info = PASSPORT_STAMPS[region];
+    if (!info) return;
+
+    const popup = document.createElement('div');
+    popup.style.cssText = `
+        position: fixed; top: 15%; left: 50%; transform: translateX(-50%);
+        background: ${isGold ? 'linear-gradient(135deg, #f6d365, #fda085)' : `linear-gradient(135deg, ${info.color}, ${info.color}cc)`};
+        color: white; padding: 1.5rem 2.5rem; border-radius: 20px; z-index: 2000;
+        text-align: center; animation: badgePop 0.5s ease-out;
+        box-shadow: 0 8px 30px rgba(0,0,0,0.2);
+        border: 3px solid ${isGold ? '#f0c030' : 'rgba(255,255,255,0.4)'};
+    `;
+    popup.innerHTML = `
+        <div style="font-size: 3rem;">${isGold ? '✨' : ''}${info.stamp}${isGold ? '✨' : ''}</div>
+        <div style="font-weight: 800; font-size: 1.2rem;">${isGold ? 'GOLD ' : ''}Passport Stamp!</div>
+        <div style="font-size: 0.9rem; margin-top: 0.3rem;">${info.name}</div>
+        <div style="font-size: 0.8rem; margin-top: 0.2rem; opacity: 0.8;">${isGold ? 'Perfect score! 10/10' : 'Score 10/10 for gold!'}</div>
+    `;
+    document.body.appendChild(popup);
+    playSound('fanfare');
+    if (isGold) launchConfetti();
+    setTimeout(() => popup.remove(), 3000);
+}
+
+function renderPassport() {
+    const passport = getPassport();
+    const regions = Object.keys(PASSPORT_STAMPS);
+    const earned = regions.filter(r => passport[r]?.earned).length;
+    const golds = regions.filter(r => passport[r]?.gold).length;
+
+    return `
+        <div style="background: linear-gradient(135deg, #1a3a5c, #2c5f8a); border-radius: 16px; padding: 1rem; margin-bottom: 1rem; color: white; position: relative; overflow: hidden;">
+            <div style="position: absolute; top: -20px; right: -20px; font-size: 5rem; opacity: 0.1;">🛂</div>
+            <div style="font-weight: 800; font-size: 1.1rem; margin-bottom: 0.6rem;">🛂 My Passport <span style="font-size: 0.8rem; opacity: 0.7;">${earned}/${regions.length} stamps</span></div>
+            <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.5rem;">
+                ${regions.map(r => {
+                    const info = PASSPORT_STAMPS[r];
+                    const stamp = passport[r];
+                    const isGold = stamp?.gold;
+                    const isEarned = stamp?.earned;
+                    return `
+                        <div style="background: ${isEarned ? (isGold ? 'linear-gradient(135deg, #f6d365, #fda085)' : 'rgba(255,255,255,0.2)') : 'rgba(0,0,0,0.2)'};
+                            border-radius: 10px; padding: 0.5rem; text-align: center;
+                            border: 2px solid ${isGold ? '#f0c030' : (isEarned ? 'rgba(255,255,255,0.3)' : 'rgba(255,255,255,0.1)')};
+                            ${!isEarned ? 'opacity: 0.5;' : ''}">
+                            <div style="font-size: 1.5rem;">${isEarned ? info.stamp : '❓'}</div>
+                            <div style="font-size: 0.65rem; font-weight: 700;">${info.name}</div>
+                            ${isGold ? '<div style="font-size: 0.6rem;">⭐ GOLD</div>' : ''}
+                            ${isEarned && !isGold ? '<div style="font-size: 0.6rem; opacity: 0.7;">✓ Earned</div>' : ''}
+                            ${!isEarned ? '<div style="font-size: 0.6rem; opacity: 0.7;">Score 7+</div>' : ''}
+                        </div>
+                    `;
+                }).join('')}
+            </div>
+            ${golds === regions.length ? '<div style="text-align: center; margin-top: 0.5rem; font-weight: 800;">🏆 ALL GOLD — Master Explorer! 🏆</div>' : ''}
+        </div>
+    `;
 }
 
 // ══════════════════════════════════════════════════════════
@@ -7343,6 +7459,8 @@ function showGeoMenu() {
             <h3 style="color: #3d7c47;">🌍 World Quiz!</h3>
             <p style="color: #5c4a32; margin-bottom: 0.8rem;">Learn countries around the world!</p>
 
+            ${renderPassport()}
+
             <div style="margin-bottom: 0.8rem;">
                 <div style="font-weight: 700; color: #3d7c47; margin-bottom: 0.4rem;">Pick a Region:</div>
                 <div style="display: flex; flex-wrap: wrap; gap: 0.4rem; justify-content: center;" id="geo-region-picker">
@@ -7602,6 +7720,11 @@ function showGeoResults() {
     // Add points to main score
     multData.stats.totalCorrect += geoState.correct;
     multData.stats.totalAnswered += 10;
+
+    // Award passport stamp for 7+ correct on a specific region
+    if (geoState.correct >= 7 && geoState.region !== 'world') {
+        awardPassportStamp(geoState.region, geoState.correct);
+    }
 
     saveMultiplicationData();
     checkAchievements();
