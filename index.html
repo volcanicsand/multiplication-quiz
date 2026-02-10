@@ -2021,6 +2021,8 @@
 <body>
     <div id="confetti-container" class="confetti-container"></div>
     <div id="weather-container" class="weather-container"></div>
+    <button id="weather-picker-btn" class="weather-picker-btn" onclick="document.getElementById('weather-popup').classList.toggle('open')">🔄</button>
+    <div id="weather-popup" class="weather-picker-popup"></div>
     <div class="mascot" id="mascot">🦝</div>
     <div class="combo-display" id="combo-display">🔥 x3 Combo!</div>
 
@@ -2439,20 +2441,10 @@ function setWeather(type) {
 }
 
 function createWeatherPicker() {
-    // Button
-    const btn = document.createElement('button');
-    btn.id = 'weather-picker-btn';
-    btn.className = 'weather-picker-btn';
+    const btn = document.getElementById('weather-picker-btn');
     btn.textContent = WEATHER_TYPES[currentWeather].icon;
-    btn.onclick = () => {
-        document.getElementById('weather-popup').classList.toggle('open');
-    };
-    document.body.appendChild(btn);
 
-    // Popup
-    const popup = document.createElement('div');
-    popup.id = 'weather-popup';
-    popup.className = 'weather-picker-popup';
+    const popup = document.getElementById('weather-popup');
     popup.innerHTML = `
         <div style="font-weight: 800; color: #3d7c47; margin-bottom: 0.3rem; font-size: 0.8rem;">Pick Weather:</div>
         ${Object.entries(WEATHER_TYPES).map(([key, w]) => `
@@ -2461,12 +2453,11 @@ function createWeatherPicker() {
             </button>
         `).join('')}
     `;
-    document.body.appendChild(popup);
 
     // Close popup when clicking elsewhere
     document.addEventListener('click', (e) => {
         if (!e.target.closest('.weather-picker-btn') && !e.target.closest('.weather-picker-popup')) {
-            document.getElementById('weather-popup')?.classList.remove('open');
+            popup.classList.remove('open');
         }
     });
 }
