@@ -1780,10 +1780,19 @@
             position: relative;
             touch-action: manipulation;
         }
+        .container.geo-active {
+            max-width: 1100px;
+        }
+        .container.geo-active .header {
+            display: none !important;
+        }
+        .container.geo-active #game-area > *:not(#card) {
+            display: none !important;
+        }
         .geo-map-container svg {
             width: 100%;
             height: auto;
-            min-height: 250px;
+            min-height: 500px;
             display: block;
         }
         .geo-country {
@@ -2679,6 +2688,7 @@ function problemKey(a, b) {
 function setMode(mode, btn) {
     practiceViewActive = false;
     currentMode = mode;
+    document.querySelector('.container').classList.remove('geo-active');
     document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
     btn.classList.add('active');
     roundLength = mode === 'times' ? TIMES_ROUND : BREAKDOWN_ROUND;
@@ -7324,6 +7334,7 @@ function showGeoMenu() {
     practiceViewActive = true;
     document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
     document.querySelector('.score-bar').style.display = 'none';
+    document.querySelector('.container').classList.add('geo-active');
 
     const stats = getGeoStats();
     const card = document.getElementById('card');
@@ -7409,7 +7420,8 @@ function buildGeoMapSVG(highlightCode, clickable) {
             ? 'geo-country geo-highlight'
             : (isInRegion ? 'geo-country' : 'geo-country geo-dimmed');
         const click = clickable && isInRegion ? `onclick="geoClickCountry('${code}')"` : '';
-        paths += `<path id="geo-${code}" class="${cls}" d="${d}" ${click}><title>${(GEO_COUNTRIES.find(c=>c.code===code)||{}).name||code}</title></path>`;
+        const title = (highlightCode !== undefined) ? '' : `<title>${(GEO_COUNTRIES.find(c=>c.code===code)||{}).name||code}</title>`;
+        paths += `<path id="geo-${code}" class="${cls}" d="${d}" ${click}>${title}</path>`;
     }
 
     return `<div class="geo-map-container">
