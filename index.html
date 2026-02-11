@@ -4045,8 +4045,58 @@ function addLeaderboardButton() {
 let avatar = {
     hairColor: '#8d6e63',
     shirtColor: '#4fc3f7',
-    pantsColor: '#7986cb'
+    pantsColor: '#7986cb',
+    hairstyle: 'short'
 };
+
+const HAIRSTYLES = {
+    short:    { name: 'Short',      icon: '✂️' },
+    long:     { name: 'Long',       icon: '💇‍♀️' },
+    pigtails: { name: 'Pigtails',   icon: '🎀' },
+    ponytail: { name: 'Ponytail',   icon: '💁‍♀️' },
+    curly:    { name: 'Curly',      icon: '🌀' },
+    bun:     { name: 'Bun',        icon: '🍡' },
+    bob:      { name: 'Bob',        icon: '💇' },
+    spiky:    { name: 'Spiky',      icon: '⚡' }
+};
+
+function getHairSVG(color, style) {
+    switch(style) {
+        case 'long':
+            return `<ellipse fill="${color}" cx="20" cy="8" rx="10" ry="8"/>
+                    <rect fill="${color}" x="10" y="6" width="6" height="22" rx="3"/>
+                    <rect fill="${color}" x="24" y="6" width="6" height="22" rx="3"/>`;
+        case 'pigtails':
+            return `<ellipse fill="${color}" cx="20" cy="8" rx="10" ry="8"/>
+                    <circle fill="${color}" cx="6" cy="10" r="5"/>
+                    <circle fill="${color}" cx="34" cy="10" r="5"/>
+                    <circle fill="#ff4081" cx="9" cy="6" r="2"/>
+                    <circle fill="#ff4081" cx="31" cy="6" r="2"/>`;
+        case 'ponytail':
+            return `<ellipse fill="${color}" cx="20" cy="8" rx="10" ry="8"/>
+                    <rect fill="${color}" x="17" y="3" width="6" height="20" rx="3"/>
+                    <circle fill="#ff4081" cx="20" cy="5" r="2"/>`;
+        case 'curly':
+            return `<circle fill="${color}" cx="12" cy="6" r="5"/>
+                    <circle fill="${color}" cx="20" cy="4" r="5"/>
+                    <circle fill="${color}" cx="28" cy="6" r="5"/>
+                    <circle fill="${color}" cx="10" cy="11" r="4"/>
+                    <circle fill="${color}" cx="30" cy="11" r="4"/>`;
+        case 'bun':
+            return `<ellipse fill="${color}" cx="20" cy="8" rx="10" ry="8"/>
+                    <circle fill="${color}" cx="20" cy="-1" r="6"/>`;
+        case 'bob':
+            return `<ellipse fill="${color}" cx="20" cy="8" rx="11" ry="9"/>
+                    <rect fill="${color}" x="9" y="6" width="5" height="12" rx="2.5"/>
+                    <rect fill="${color}" x="26" y="6" width="5" height="12" rx="2.5"/>`;
+        case 'spiky':
+            return `<polygon fill="${color}" points="20,0 15,8 10,2 12,10 6,6 10,12 25,8"/>
+                    <polygon fill="${color}" points="20,0 25,8 30,2 28,10 34,6 30,12 15,8"/>`;
+        case 'short':
+        default:
+            return `<ellipse fill="${color}" cx="20" cy="8" rx="10" ry="8"/>`;
+    }
+}
 
 const AVATAR_COLORS = {
     hair: ['#8d6e63', '#5d4037', '#ffeb3b', '#ff5722', '#212121', '#e91e63'],
@@ -4067,10 +4117,22 @@ function showAvatarCreator() {
               onclick="setAvatarColor('${type}', '${color}')"></div>`
     ).join('');
 
+    const hairstyleOptions = Object.entries(HAIRSTYLES).map(([key, h]) => `
+        <div class="avatar-option ${avatar.hairstyle === key ? 'selected' : ''}"
+              style="background: #f5f5f5; font-size: 1.2rem; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px;"
+              onclick="setHairstyle('${key}')">
+            <span>${h.icon}</span>
+            <span style="font-size: 0.55rem; font-weight: 700; color: #5c4a32;">${h.name}</span>
+        </div>
+    `).join('');
+
     card.innerHTML = `
         <div class="avatar-creator">
             <h3>🎨 Create Your Character</h3>
             <div class="avatar-preview" id="avatar-preview"></div>
+
+            <div class="avatar-label">Hairstyle</div>
+            <div class="avatar-options">${hairstyleOptions}</div>
 
             <div class="avatar-label">Hair Color</div>
             <div class="avatar-options">${colorOptions('hair')}</div>
@@ -4094,13 +4156,18 @@ function setAvatarColor(type, color) {
     showAvatarCreator(); // Refresh view
 }
 
+function setHairstyle(style) {
+    avatar.hairstyle = style;
+    showAvatarCreator();
+}
+
 function updateAvatarPreview() {
     const preview = document.getElementById('avatar-preview');
     if (!preview) return;
 
     preview.innerHTML = `
         <svg viewBox="0 0 40 60" xmlns="http://www.w3.org/2000/svg">
-            <ellipse fill="${avatar.hairColor}" cx="20" cy="8" rx="10" ry="8"/>
+            ${getHairSVG(avatar.hairColor, avatar.hairstyle)}
             <circle fill="#ffcc80" cx="20" cy="12" r="9"/>
             <circle fill="#5d4037" cx="16" cy="11" r="2"/>
             <circle fill="#5d4037" cx="24" cy="11" r="2"/>
@@ -4116,10 +4183,26 @@ function updateAvatarPreview() {
     `;
 }
 
-function saveAvatar() {
-    // Update the runner SVG colors
+function updateRunnerHair() {
     const runner = document.getElementById('runner');
-    runner.querySelector('.hair').style.fill = avatar.hairColor;
+    const svg = runner.querySelector('svg');
+    // Remove old hair elements
+    svg.querySelectorAll('.hair-group').forEach(el => el.remove());
+    // Remove the original hair ellipse if it exists
+    const oldHair = svg.querySelector('.hair');
+    if (oldHair) oldHair.remove();
+    // Add new hair group before the head
+    const hairGroup = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+    hairGroup.classList.add('hair-group');
+    hairGroup.innerHTML = getHairSVG(avatar.hairColor, avatar.hairstyle);
+    const head = svg.querySelector('.head');
+    svg.insertBefore(hairGroup, head);
+}
+
+function saveAvatar() {
+    // Update the runner SVG
+    updateRunnerHair();
+    const runner = document.getElementById('runner');
     runner.querySelectorAll('.shirt').forEach(el => el.style.fill = avatar.shirtColor);
     runner.querySelectorAll('.pants').forEach(el => el.style.fill = avatar.pantsColor);
 
@@ -4140,7 +4223,7 @@ function loadAvatar() {
         avatar = { ...avatar, ...multData.avatar };
         const runner = document.getElementById('runner');
         if (runner) {
-            runner.querySelector('.hair').style.fill = avatar.hairColor;
+            updateRunnerHair();
             runner.querySelectorAll('.shirt').forEach(el => el.style.fill = avatar.shirtColor);
             runner.querySelectorAll('.pants').forEach(el => el.style.fill = avatar.pantsColor);
         }
