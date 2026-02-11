@@ -1535,6 +1535,40 @@
             color: #7a9a5a;
             margin: 0.8rem 0 0.3rem;
         }
+        .hairstyle-option {
+            width: auto;
+            height: auto;
+            border: 2px solid #e5e7eb;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+            padding: 0.4rem 0.6rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 2px;
+            background: #f9f9f9;
+        }
+        .hairstyle-option:hover, .hairstyle-option.selected {
+            border-color: #3d7c47;
+            transform: scale(1.1);
+            background: #e8f5e2;
+        }
+        .hairstyle-option .hs-icon {
+            font-size: 1.3rem;
+        }
+        .hairstyle-option .hs-name {
+            font-size: 0.6rem;
+            font-weight: 700;
+            color: #5c4a32;
+        }
+        .hairstyle-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 0.4rem;
+            margin-bottom: 0.3rem;
+        }
 
         /* Bonus Question */
         .bonus-question .question-card {
@@ -4118,11 +4152,10 @@ function showAvatarCreator() {
     ).join('');
 
     const hairstyleOptions = Object.entries(HAIRSTYLES).map(([key, h]) => `
-        <div class="avatar-option ${avatar.hairstyle === key ? 'selected' : ''}"
-              style="background: #f5f5f5; font-size: 1.2rem; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px;"
+        <div class="hairstyle-option ${avatar.hairstyle === key ? 'selected' : ''}"
               onclick="setHairstyle('${key}')">
-            <span>${h.icon}</span>
-            <span style="font-size: 0.55rem; font-weight: 700; color: #5c4a32;">${h.name}</span>
+            <span class="hs-icon">${h.icon}</span>
+            <span class="hs-name">${h.name}</span>
         </div>
     `).join('');
 
@@ -4132,7 +4165,7 @@ function showAvatarCreator() {
             <div class="avatar-preview" id="avatar-preview"></div>
 
             <div class="avatar-label">Hairstyle</div>
-            <div class="avatar-options">${hairstyleOptions}</div>
+            <div class="hairstyle-grid">${hairstyleOptions}</div>
 
             <div class="avatar-label">Hair Color</div>
             <div class="avatar-options">${colorOptions('hair')}</div>
