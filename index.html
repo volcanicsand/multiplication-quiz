@@ -4085,7 +4085,8 @@ let avatar = {
     mouth: 'smile',
     skinColor: '#ffcc80',
     shirtStyle: 'tshirt',
-    bottomStyle: 'pants'
+    bottomStyle: 'pants',
+    shoeColor: '#f44336'
 };
 
 const EYE_STYLES = {
@@ -4272,7 +4273,8 @@ function getHairSVG(color, style) {
 const AVATAR_COLORS = {
     hair: ['#8d6e63', '#5d4037', '#ffeb3b', '#ff5722', '#212121', '#e91e63'],
     shirt: ['#4fc3f7', '#81c784', '#ff8a65', '#ba68c8', '#fff176', '#90a4ae'],
-    pants: ['#7986cb', '#4db6ac', '#f06292', '#a1887f', '#64b5f6', '#aed581']
+    pants: ['#7986cb', '#4db6ac', '#f06292', '#a1887f', '#64b5f6', '#aed581'],
+    shoe: ['#f44336', '#212121', '#ffffff', '#ff69b4', '#4fc3f7', '#ffd700']
 };
 
 function showAvatarCreator() {
@@ -4366,6 +4368,9 @@ function showAvatarCreator() {
             <div class="avatar-label">Bottom Color</div>
             <div class="avatar-options">${colorOptions('pants')}</div>
 
+            <div class="avatar-label">Shoe Color</div>
+            <div class="avatar-options">${colorOptions('shoe')}</div>
+
             <button class="play-again-btn" onclick="saveAvatar()" style="margin-top:1rem">Save Character</button>
             <button class="back-btn" onclick="setMode('times', document.getElementById('btn-times'))">Cancel</button>
         </div>
@@ -4401,8 +4406,8 @@ function updateAvatarPreview() {
             ${getMouthSVG(avatar.mouth || 'smile')}
             ${getShirtSVG(avatar.shirtColor, avatar.shirtStyle || 'tshirt')}
             ${getBottomSVG(avatar.pantsColor, avatar.bottomStyle || 'pants')}
-            <ellipse fill="#f44336" cx="15" cy="50" rx="5" ry="3"/>
-            <ellipse fill="#f44336" cx="25" cy="50" rx="5" ry="3"/>
+            <ellipse fill="${avatar.shoeColor || '#f44336'}" cx="15" cy="50" rx="5" ry="3"/>
+            <ellipse fill="${avatar.shoeColor || '#f44336'}" cx="25" cy="50" rx="5" ry="3"/>
         </svg>
     `;
 }
@@ -4446,6 +4451,7 @@ function updateRunnerAppearance() {
     // Update colors
     runner.querySelectorAll('.shirt').forEach(el => el.style.fill = avatar.shirtColor);
     runner.querySelectorAll('.pants').forEach(el => el.style.fill = avatar.pantsColor);
+    runner.querySelectorAll('.shoes').forEach(el => el.style.fill = avatar.shoeColor || '#f44336');
 }
 
 function saveAvatar() {
