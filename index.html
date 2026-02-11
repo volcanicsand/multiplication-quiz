@@ -2725,6 +2725,9 @@ async function loadMultiplicationData() {
             if (m.passport) {
                 multData.passport = m.passport;
             }
+            if (m.avatar) {
+                multData.avatar = m.avatar;
+            }
             if (multData.stats.unlockedLevel) {
                 unlockedLevel = multData.stats.unlockedLevel;
                 if (currentLevel > unlockedLevel) currentLevel = unlockedLevel;
@@ -2742,6 +2745,7 @@ async function saveMultiplicationData() {
     if (!currentUser) return;
     // Sync runtime state into multData before saving
     multData.collectedSongs = collectedSongs;
+    multData.avatar = { ...avatar };
     try {
         await db.collection('users').doc(currentUser.uid).set({
             multiplication: multData
