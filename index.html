@@ -4080,8 +4080,145 @@ let avatar = {
     hairColor: '#8d6e63',
     shirtColor: '#4fc3f7',
     pantsColor: '#7986cb',
-    hairstyle: 'short'
+    hairstyle: 'short',
+    eyes: 'normal',
+    mouth: 'smile',
+    skinColor: '#ffcc80',
+    shirtStyle: 'tshirt',
+    bottomStyle: 'pants'
 };
+
+const EYE_STYLES = {
+    normal:   { name: 'Normal',    icon: '👀' },
+    big:      { name: 'Big',       icon: '🥺' },
+    sparkle:  { name: 'Sparkle',   icon: '✨' },
+    sleepy:   { name: 'Sleepy',    icon: '😴' },
+    wink:     { name: 'Wink',      icon: '😉' },
+    cool:     { name: 'Cool',      icon: '😎' }
+};
+
+const MOUTH_STYLES = {
+    smile:    { name: 'Smile',     icon: '😊' },
+    grin:     { name: 'Grin',      icon: '😁' },
+    cat:      { name: 'Cat',       icon: '😺' },
+    tongue:   { name: 'Tongue',    icon: '😋' },
+    open:     { name: 'Surprised', icon: '😮' },
+    flat:     { name: 'Chill',     icon: '😐' }
+};
+
+const SKIN_COLORS = ['#ffcc80', '#ffe0bd', '#f5c4a1', '#dba270', '#c68642', '#8d5524'];
+
+const SHIRT_STYLES = {
+    tshirt:   { name: 'T-Shirt',   icon: '👕' },
+    dress:    { name: 'Dress',     icon: '👗' },
+    hoodie:   { name: 'Hoodie',    icon: '🧥' },
+    tank:     { name: 'Tank Top',  icon: '🎽' },
+    stripe:   { name: 'Striped',   icon: '📏' },
+    heart:    { name: 'Heart Tee', icon: '❤️' }
+};
+
+const BOTTOM_STYLES = {
+    pants:    { name: 'Pants',     icon: '👖' },
+    skirt:    { name: 'Skirt',     icon: '💃' },
+    shorts:   { name: 'Shorts',    icon: '🩳' }
+};
+
+function getBottomSVG(color, style) {
+    switch(style) {
+        case 'skirt':
+            return `<path fill="${color}" d="M 12 35 L 8 47 L 32 47 L 28 35 Z" rx="2"/>`;
+        case 'shorts':
+            return `<rect fill="${color}" x="12" y="35" width="7" height="6" rx="2"/>
+                    <rect fill="${color}" x="21" y="35" width="7" height="6" rx="2"/>`;
+        case 'pants':
+        default:
+            return `<rect fill="${color}" x="12" y="35" width="7" height="12" rx="2"/>
+                    <rect fill="${color}" x="21" y="35" width="7" height="12" rx="2"/>`;
+    }
+}
+
+function getShirtSVG(color, style) {
+    const c = color;
+    switch(style) {
+        case 'dress':
+            return `<rect fill="${c}" x="12" y="21" width="16" height="20" rx="3"/>
+                    <rect fill="${c}" x="4" y="22" width="8" height="4" rx="2"/>
+                    <rect fill="${c}" x="28" y="22" width="8" height="4" rx="2"/>
+                    <path fill="${c}" d="M 12 35 Q 10 41 8 41 L 32 41 Q 30 41 28 35 Z" opacity="0.7"/>`;
+        case 'hoodie':
+            return `<rect fill="${c}" x="12" y="21" width="16" height="14" rx="3"/>
+                    <rect fill="${c}" x="4" y="22" width="8" height="10" rx="2"/>
+                    <rect fill="${c}" x="28" y="22" width="8" height="10" rx="2"/>
+                    <path fill="${c}" d="M 16 21 Q 20 24 24 21" opacity="0.6"/>
+                    <rect fill="${c}" x="16" y="28" width="8" height="5" rx="2" opacity="0.7"/>`;
+        case 'tank':
+            return `<rect fill="${c}" x="14" y="21" width="12" height="14" rx="2"/>`;
+        case 'stripe':
+            return `<rect fill="${c}" x="12" y="21" width="16" height="14" rx="3"/>
+                    <rect fill="${c}" x="4" y="22" width="8" height="4" rx="2"/>
+                    <rect fill="${c}" x="28" y="22" width="8" height="4" rx="2"/>
+                    <rect fill="rgba(255,255,255,0.4)" x="12" y="24" width="16" height="2"/>
+                    <rect fill="rgba(255,255,255,0.4)" x="12" y="29" width="16" height="2"/>`;
+        case 'heart':
+            return `<rect fill="${c}" x="12" y="21" width="16" height="14" rx="3"/>
+                    <rect fill="${c}" x="4" y="22" width="8" height="4" rx="2"/>
+                    <rect fill="${c}" x="28" y="22" width="8" height="4" rx="2"/>
+                    <text x="20" y="31" text-anchor="middle" font-size="6" fill="rgba(255,255,255,0.8)">♥</text>`;
+        case 'tshirt':
+        default:
+            return `<rect fill="${c}" x="12" y="21" width="16" height="14" rx="3"/>
+                    <rect fill="${c}" x="4" y="22" width="8" height="4" rx="2"/>
+                    <rect fill="${c}" x="28" y="22" width="8" height="4" rx="2"/>`;
+    }
+}
+
+function getEyesSVG(style) {
+    switch(style) {
+        case 'big':
+            return `<circle fill="white" cx="15" cy="11" r="3"/>
+                    <circle fill="#5d4037" cx="15.5" cy="11" r="2"/>
+                    <circle fill="white" cx="25" cy="11" r="3"/>
+                    <circle fill="#5d4037" cx="25.5" cy="11" r="2"/>`;
+        case 'sparkle':
+            return `<circle fill="#5d4037" cx="16" cy="11" r="2"/>
+                    <circle fill="white" cx="17" cy="10" r="0.7"/>
+                    <circle fill="#5d4037" cx="24" cy="11" r="2"/>
+                    <circle fill="white" cx="25" cy="10" r="0.7"/>`;
+        case 'sleepy':
+            return `<path d="M 14 11 Q 16 12 18 11" fill="none" stroke="#5d4037" stroke-width="1.5" stroke-linecap="round"/>
+                    <path d="M 22 11 Q 24 12 26 11" fill="none" stroke="#5d4037" stroke-width="1.5" stroke-linecap="round"/>`;
+        case 'wink':
+            return `<circle fill="#5d4037" cx="16" cy="11" r="2"/>
+                    <path d="M 22 11 Q 24 12 26 11" fill="none" stroke="#5d4037" stroke-width="1.5" stroke-linecap="round"/>`;
+        case 'cool':
+            return `<rect fill="#333" x="12" y="9.5" width="8" height="3.5" rx="1.5"/>
+                    <rect fill="#333" x="21" y="9.5" width="8" height="3.5" rx="1.5"/>
+                    <rect fill="#333" x="19.5" y="10" width="2" height="2" rx="0.5"/>`;
+        case 'normal':
+        default:
+            return `<circle fill="#5d4037" cx="16" cy="11" r="2"/>
+                    <circle fill="#5d4037" cx="24" cy="11" r="2"/>`;
+    }
+}
+
+function getMouthSVG(style) {
+    switch(style) {
+        case 'grin':
+            return `<path d="M 14 15 Q 20 21 26 15" fill="none" stroke="#e65100" stroke-width="1.5" stroke-linecap="round"/>`;
+        case 'cat':
+            return `<path d="M 15 15 L 20 17 L 25 15" fill="none" stroke="#e65100" stroke-width="1.2" stroke-linecap="round"/>`;
+        case 'tongue':
+            return `<path d="M 16 16 Q 20 20 24 16" fill="none" stroke="#e65100" stroke-width="1.5" stroke-linecap="round"/>
+                    <ellipse fill="#ff6b6b" cx="20" cy="18" rx="2" ry="1.5"/>`;
+        case 'open':
+            return `<ellipse fill="#e65100" cx="20" cy="16.5" rx="2.5" ry="2"/>`;
+        case 'flat':
+            return `<line x1="16" y1="16" x2="24" y2="16" stroke="#e65100" stroke-width="1.5" stroke-linecap="round"/>`;
+        case 'smile':
+        default:
+            return `<path d="M 16 16 Q 20 20 24 16" fill="none" stroke="#e65100" stroke-width="1.5" stroke-linecap="round"/>`;
+    }
+}
 
 const HAIRSTYLES = {
     short:    { name: 'Short',      icon: '✂️' },
@@ -4159,10 +4296,57 @@ function showAvatarCreator() {
         </div>
     `).join('');
 
+    const eyeOptions = Object.entries(EYE_STYLES).map(([key, e]) => `
+        <div class="hairstyle-option ${avatar.eyes === key ? 'selected' : ''}"
+              onclick="setFaceOption('eyes', '${key}')">
+            <span class="hs-icon">${e.icon}</span>
+            <span class="hs-name">${e.name}</span>
+        </div>
+    `).join('');
+
+    const mouthOptions = Object.entries(MOUTH_STYLES).map(([key, m]) => `
+        <div class="hairstyle-option ${avatar.mouth === key ? 'selected' : ''}"
+              onclick="setFaceOption('mouth', '${key}')">
+            <span class="hs-icon">${m.icon}</span>
+            <span class="hs-name">${m.name}</span>
+        </div>
+    `).join('');
+
+    const skinOptions = SKIN_COLORS.map(color =>
+        `<div class="avatar-option ${avatar.skinColor === color ? 'selected' : ''}"
+              style="background:${color}"
+              onclick="setFaceOption('skinColor', '${color}')"></div>`
+    ).join('');
+
+    const shirtStyleOptions = Object.entries(SHIRT_STYLES).map(([key, s]) => `
+        <div class="hairstyle-option ${(avatar.shirtStyle || 'tshirt') === key ? 'selected' : ''}"
+              onclick="setFaceOption('shirtStyle', '${key}')">
+            <span class="hs-icon">${s.icon}</span>
+            <span class="hs-name">${s.name}</span>
+        </div>
+    `).join('');
+
+    const bottomStyleOptions = Object.entries(BOTTOM_STYLES).map(([key, b]) => `
+        <div class="hairstyle-option ${(avatar.bottomStyle || 'pants') === key ? 'selected' : ''}"
+              onclick="setFaceOption('bottomStyle', '${key}')">
+            <span class="hs-icon">${b.icon}</span>
+            <span class="hs-name">${b.name}</span>
+        </div>
+    `).join('');
+
     card.innerHTML = `
         <div class="avatar-creator">
             <h3>🎨 Create Your Character</h3>
             <div class="avatar-preview" id="avatar-preview"></div>
+
+            <div class="avatar-label">Skin Color</div>
+            <div class="avatar-options">${skinOptions}</div>
+
+            <div class="avatar-label">Eyes</div>
+            <div class="hairstyle-grid">${eyeOptions}</div>
+
+            <div class="avatar-label">Mouth</div>
+            <div class="hairstyle-grid">${mouthOptions}</div>
 
             <div class="avatar-label">Hairstyle</div>
             <div class="hairstyle-grid">${hairstyleOptions}</div>
@@ -4170,10 +4354,16 @@ function showAvatarCreator() {
             <div class="avatar-label">Hair Color</div>
             <div class="avatar-options">${colorOptions('hair')}</div>
 
-            <div class="avatar-label">Shirt Color</div>
+            <div class="avatar-label">Top Style</div>
+            <div class="hairstyle-grid">${shirtStyleOptions}</div>
+
+            <div class="avatar-label">Top Color</div>
             <div class="avatar-options">${colorOptions('shirt')}</div>
 
-            <div class="avatar-label">Pants Color</div>
+            <div class="avatar-label">Bottom Style</div>
+            <div class="hairstyle-grid">${bottomStyleOptions}</div>
+
+            <div class="avatar-label">Bottom Color</div>
             <div class="avatar-options">${colorOptions('pants')}</div>
 
             <button class="play-again-btn" onclick="saveAvatar()" style="margin-top:1rem">Save Character</button>
@@ -4194,6 +4384,11 @@ function setHairstyle(style) {
     showAvatarCreator();
 }
 
+function setFaceOption(option, value) {
+    avatar[option] = value;
+    showAvatarCreator();
+}
+
 function updateAvatarPreview() {
     const preview = document.getElementById('avatar-preview');
     if (!preview) return;
@@ -4201,50 +4396,61 @@ function updateAvatarPreview() {
     preview.innerHTML = `
         <svg viewBox="0 0 40 60" xmlns="http://www.w3.org/2000/svg">
             ${getHairSVG(avatar.hairColor, avatar.hairstyle)}
-            <circle fill="#ffcc80" cx="20" cy="12" r="9"/>
-            <circle fill="#5d4037" cx="16" cy="11" r="2"/>
-            <circle fill="#5d4037" cx="24" cy="11" r="2"/>
-            <path d="M 16 16 Q 20 20 24 16" fill="none" stroke="#e65100" stroke-width="1.5" stroke-linecap="round"/>
-            <rect fill="${avatar.shirtColor}" x="12" y="21" width="16" height="14" rx="3"/>
-            <rect fill="${avatar.shirtColor}" x="4" y="22" width="8" height="4" rx="2"/>
-            <rect fill="${avatar.shirtColor}" x="28" y="22" width="8" height="4" rx="2"/>
-            <rect fill="${avatar.pantsColor}" x="12" y="35" width="7" height="12" rx="2"/>
-            <rect fill="${avatar.pantsColor}" x="21" y="35" width="7" height="12" rx="2"/>
+            <circle fill="${avatar.skinColor || '#ffcc80'}" cx="20" cy="12" r="9"/>
+            ${getEyesSVG(avatar.eyes || 'normal')}
+            ${getMouthSVG(avatar.mouth || 'smile')}
+            ${getShirtSVG(avatar.shirtColor, avatar.shirtStyle || 'tshirt')}
+            ${getBottomSVG(avatar.pantsColor, avatar.bottomStyle || 'pants')}
             <ellipse fill="#f44336" cx="15" cy="50" rx="5" ry="3"/>
             <ellipse fill="#f44336" cx="25" cy="50" rx="5" ry="3"/>
         </svg>
     `;
 }
 
-function updateRunnerHair() {
+function updateRunnerAppearance() {
     const runner = document.getElementById('runner');
+    if (!runner) return;
     const svg = runner.querySelector('svg');
-    // Remove old hair elements
+
+    // Update hair
     svg.querySelectorAll('.hair-group').forEach(el => el.remove());
-    // Remove the original hair ellipse if it exists
     const oldHair = svg.querySelector('.hair');
     if (oldHair) oldHair.remove();
-    // Add new hair group before the head
     const hairGroup = document.createElementNS('http://www.w3.org/2000/svg', 'g');
     hairGroup.classList.add('hair-group');
     hairGroup.innerHTML = getHairSVG(avatar.hairColor, avatar.hairstyle);
     const head = svg.querySelector('.head');
     svg.insertBefore(hairGroup, head);
+
+    // Update skin
+    if (head) head.style.fill = avatar.skinColor || '#ffcc80';
+
+    // Update eyes
+    svg.querySelectorAll('.eyes, .eyes-group').forEach(el => el.remove());
+    const eyesGroup = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+    eyesGroup.classList.add('eyes-group');
+    eyesGroup.innerHTML = getEyesSVG(avatar.eyes || 'normal');
+    const mouth = svg.querySelector('.mouth');
+    if (mouth) svg.insertBefore(eyesGroup, mouth);
+    else svg.appendChild(eyesGroup);
+
+    // Update mouth
+    svg.querySelectorAll('.mouth, .mouth-group').forEach(el => el.remove());
+    const mouthGroup = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+    mouthGroup.classList.add('mouth-group');
+    mouthGroup.innerHTML = getMouthSVG(avatar.mouth || 'smile');
+    const shirt = svg.querySelector('.shirt');
+    if (shirt) svg.insertBefore(mouthGroup, shirt);
+    else svg.appendChild(mouthGroup);
+
+    // Update colors
+    runner.querySelectorAll('.shirt').forEach(el => el.style.fill = avatar.shirtColor);
+    runner.querySelectorAll('.pants').forEach(el => el.style.fill = avatar.pantsColor);
 }
 
 function saveAvatar() {
-    // Update the runner SVG
-    updateRunnerHair();
-    const runner = document.getElementById('runner');
-    runner.querySelectorAll('.shirt').forEach(el => el.style.fill = avatar.shirtColor);
-    runner.querySelectorAll('.pants').forEach(el => el.style.fill = avatar.pantsColor);
-
-    // Save to Firebase
-    if (multData.avatar) {
-        multData.avatar = avatar;
-    } else {
-        multData.avatar = { ...avatar };
-    }
+    updateRunnerAppearance();
+    multData.avatar = { ...avatar };
     saveMultiplicationData();
 
     // Go back to game
@@ -4254,12 +4460,7 @@ function saveAvatar() {
 function loadAvatar() {
     if (multData.avatar) {
         avatar = { ...avatar, ...multData.avatar };
-        const runner = document.getElementById('runner');
-        if (runner) {
-            updateRunnerHair();
-            runner.querySelectorAll('.shirt').forEach(el => el.style.fill = avatar.shirtColor);
-            runner.querySelectorAll('.pants').forEach(el => el.style.fill = avatar.pantsColor);
-        }
+        updateRunnerAppearance();
     }
 }
 
