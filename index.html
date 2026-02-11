@@ -4242,7 +4242,8 @@ const BANG_STYLES = {
     straight:   { name: 'Straight',    icon: '➖' },
     wispy:      { name: 'Wispy',       icon: '〰️' },
     side:       { name: 'Side Swept',  icon: '↗️' },
-    curtain:    { name: 'Curtain',     icon: '🪟' }
+    curtain:    { name: 'Curtain',     icon: '🪟' },
+    faceframe:  { name: 'Face Frame',  icon: '👩' }
 };
 
 function getBangsSVG(color, style) {
@@ -4256,7 +4257,11 @@ function getBangsSVG(color, style) {
         case 'curtain':
             return `<path fill="${color}" d="M 11 4 Q 14 9 17 5 L 17 4 Z" opacity="0.95"/>
                     <path fill="${color}" d="M 23 4 Q 26 9 29 5 L 29 4 Z" opacity="0.95"/>`;
+        case 'faceframe':
+            return `<rect fill="${color}" x="8" y="4" width="4" height="14" rx="2"/>
+                    <rect fill="${color}" x="28" y="4" width="4" height="14" rx="2"/>`;
         case 'none':
+
         default:
             return '';
     }
